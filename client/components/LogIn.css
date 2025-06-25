@@ -1,0 +1,98 @@
+.LogIn
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(173, 201, 176, 0.8);
+    border-radius: 12px;
+    width: 50rem;
+    height: 55rem;
+
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    /* align-items: center; */
+}
+
+.login-container h2 {
+    color: #fff;
+    text-align: center;
+    margin:  2rem 1rem;
+
+    font-size: 2.8rem;
+  }
+
+.input-forms
+{
+    display: flex;
+    flex-direction: column;
+    /* width: 100%; */
+}
+
+.input-forms input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    margin-bottom: 16px;
+  }
+
+.input-forms button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 6px;
+    background-color: rgb(173, 201, 126);
+    color: white;
+    cursor: pointer;
+}
+
+.forgot-password {
+    font-size: 1.3rem;
+    color: #fff;
+    text-decoration: none;
+    align-self: flex-start;
+    margin-top: -8px;
+    margin-bottom: 26px;
+}
+
+.divider {
+    display: flex;
+    color: #fff;
+    align-items: center;
+    text-align: center;
+    margin: 2rem;
+}
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+.divider::before { margin-right: 12px; }
+.divider::after  { margin-left: 12px; }
+
+
+.social {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.google-btn {
+    border: 1px solid #ccc;
+    background-color: #ebebf0;
+    color: #000;
+  }

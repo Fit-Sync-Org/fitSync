@@ -1,0 +1,28 @@
+:root {
+  font-family: "Montserrat", Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background-color: #3a413d;
+}
+
+*
+{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-size: 1.6rem;
+}
+
+
+html
+{
+  font-size: 62.5%;
+}
+
+button {
+
+  padding: 0.6rem 1.2rem;
+  font-size: 1.8rem;
+  font-family: inherit;
+  cursor: pointer;
+}

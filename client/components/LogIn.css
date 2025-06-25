@@ -14,7 +14,6 @@
     display: flex;
     flex-direction: column;
     width: 70%;
-    /* align-items: center; */
 }
 
 .login-container h2 {
@@ -29,7 +28,6 @@
 {
     display: flex;
     flex-direction: column;
-    /* width: 100%; */
 }
 
 .input-forms input {

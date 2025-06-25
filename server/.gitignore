@@ -2,3 +2,4 @@
 node_modules/
 /server/serviceAccountKey.json
 server/Firebase/serviceAccountKey.json
+server/Firebase/

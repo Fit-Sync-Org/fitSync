@@ -1,4 +1,4 @@
-const admin = require("../Firebase/firebase");
+const admin = require("../firebase");
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const db = new PrismaClient();

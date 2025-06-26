@@ -7,10 +7,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AgeRange {
+  A18_25
+  A26_35
+  A36_45
+  A46_PLUS
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum SessionPreference {
+  LONGER_FEWER
+  SHORTER_MORE
+}
+
+model FitnessGoal {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[] @relation("UserGoals")
+}
+
 model User {
+  id                 Int                  @id @default(autoincrement())
+  firebaseUid        String               @unique
+  email              String               
+  username           String?              @unique
+  createdAt          DateTime             @default(now())
+  firstName          String?
+  lastName           String?
+  ageRange           AgeRange?
+  gender             Gender?
+  occupation         String?
+  inspiration        String?
+  phone              String?
+  weeklyWorkoutHours Float?
+  sessionPreference  SessionPreference?
+  goals              FitnessGoal[]        @relation("UserGoals")
+  lastLogin          DateTime?
+  streakCount        Int                  @default(0)
+  meals              Meal[]
+  workouts           Workout[]
+}
+
+model Meal {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?   @unique
-  password  String?
-  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  foodName  String
+  calories  Float
+  protein   Float
+  carbs     Float
+  fat       Float
+  quantity  Float
+  mealType  String
+  date      DateTime @default(now())
+}
+
+model Workout {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  workoutType     String
+  durationMinutes Float
+  intensity       String
+  caloriesBurned  Float
+  date            DateTime @default(now())
 }

@@ -1,0 +1,18 @@
+-- CreateTable
+CREATE TABLE "Meal" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "foodName" TEXT NOT NULL,
+    "calories" DOUBLE PRECISION NOT NULL,
+    "protein" DOUBLE PRECISION NOT NULL,
+    "carbs" DOUBLE PRECISION NOT NULL,
+    "fat" DOUBLE PRECISION NOT NULL,
+    "quantity" DOUBLE PRECISION NOT NULL,
+    "mealType" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Meal_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "Meal" ADD CONSTRAINT "Meal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

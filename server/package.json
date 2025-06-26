@@ -21,7 +21,7 @@
   "homepage": "",
   "dependencies": {
     "@prisma/client": "^6.10.1",
-    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
@@ -29,5 +29,8 @@
   "devDependencies": {
     "nodemon": "^3.1.10",
     "prisma": "^6.10.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

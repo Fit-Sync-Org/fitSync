@@ -1,6 +1,5 @@
 const admin = require("../firebase");
 const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
 const db = new PrismaClient();
 
 exports.firebaseLogin = async (req, res) => {
@@ -8,44 +7,55 @@ exports.firebaseLogin = async (req, res) => {
 
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
-    const email = decoded.email;
+    const { uid, email } = decoded;
 
-    let user = await db.user.findUnique({ where: { email } });
+    let user = await db.user.findUnique({
+      where: { firebaseUid: uid },
+    });
+
     if (!user) {
       user = await db.user.create({
-        data: { email, password: "", createdAt: new Date() },
+        data: {
+          firebaseUid: uid,
+          email,
+          createdAt: new Date(),
+        },
       });
     }
+
     res
       .cookie("token", idToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
+        path: "/",
       })
       .json({ message: "Firebase login successful" });
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ error: "Invalid Firebase ID token" });
+  } catch (err) {
+    console.error("firebaseLogin error:", err);
+    return res
+      .status(401)
+      .json({ error: err.errorInfo?.message || "Invalid Firebase ID token" });
   }
 };
 
-exports.register = async (req, res) => {
-  const { username, email, password } = req.body;
+exports.logout = (req, res) => {
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    })
+    .json({ message: "Logged out successfully" });
+};
+
+exports.me = (req, res) => {
   try {
-    const existingEmail = await db.user.findUnique({ where: { email } });
-    const existingUsername = await db.user.findUnique({ where: { username } });
-    if (existingEmail || existingUsername) {
-      return res.status(400).json({ error: "Email or username already taken" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await db.user.create({
-      data: { username, email, password: hashedPassword, createdAt: new Date() },
-    });
-
-    res.status(201).json({ message: "User registered successfully" });
+    const { /*password,*/ ...publicData } = req.user;
+    return res.json(publicData);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Registration failed" });
+    console.error("me handler error:", err);
+    return res.status(500).json({ error: "Could not fetch user" });
   }
 };

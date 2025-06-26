@@ -1,23 +1,21 @@
-.LogIn
+.login-container1
 {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(173, 201, 176, 0.8);
+    box-shadow: 0 0px 15px rgba(173, 201, 176, 0.8);
     border-radius: 12px;
     width: 50rem;
     height: 55rem;
-
 }
 
-.login-container {
+.login-container2 {
     display: flex;
     flex-direction: column;
     width: 70%;
-    /* align-items: center; */
 }
 
-.login-container h2 {
+.login-header {
     color: #fff;
     text-align: center;
     margin:  2rem 1rem;
@@ -29,7 +27,6 @@
 {
     display: flex;
     flex-direction: column;
-    /* width: 100%; */
 }
 
 .input-forms input {
@@ -48,7 +45,7 @@
     font-size: 1.5rem;
     border: none;
     border-radius: 6px;
-    background-color: rgb(173, 201, 126);
+    background-color: #adc97e;
     color: white;
     cursor: pointer;
 }
@@ -96,3 +93,17 @@
     background-color: #ebebf0;
     color: #000;
   }
+
+.google-icon
+{
+    height: 24px; width: 24px;
+}
+
+.register-tag
+{
+    display: block;
+    color: #adc97e;
+    text-align: center;
+    font-size: 1.3rem;
+    margin-top: 3rem;
+}

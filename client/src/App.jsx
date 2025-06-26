@@ -1,12 +1,21 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LogIn from "../components/LogIn";
-import "./App.css"
+import Dashboard from "../components/Dashboard";
+import ProtectedRoute from "../components/ProtectedRoute";
+import "./App.css";
+import Register from "../components/Register";
 
-const App = () => {
+function App() {
   return (
     <div className="App">
-        <div>
-            <LogIn />
-        </div>
+        <BrowserRouter>
+        <Routes>
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+        </BrowserRouter>
     </div>
   );
 }

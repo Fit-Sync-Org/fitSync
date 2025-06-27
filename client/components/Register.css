@@ -1,4 +1,4 @@
-.login-container1
+.register-container1
 {
     display: flex;
     justify-content: center;
@@ -9,17 +9,17 @@
     height: 55rem;
 }
 
-.login-container2 {
+.register-container2 {
     display: flex;
     flex-direction: column;
     width: 70%;
+    margin: 3.2rem auto;
 }
 
-.login-header {
+.register-header {
     color: #fff;
     text-align: center;
     margin:  2rem 1rem;
-
     font-size: 2.8rem;
   }
 
@@ -52,14 +52,22 @@
     cursor: pointer;
 }
 
-.forgot-password {
-    font-size: 1.3rem;
-    color: #fff;
-    text-decoration: none;
-    align-self: flex-start;
-    margin-top: -8px;
-    margin-bottom: 26px;
+
+.register-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 26px;
+    border-radius: 6px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    background-color: #ebebf0;
+    color: #000;
 }
+
 
 .divider {
     display: flex;
@@ -94,14 +102,11 @@
     border: 1px solid #ccc;
     background-color: #ebebf0;
     color: #000;
-  }
-
-.google-icon
-{
-    height: 24px; width: 24px;
 }
 
-.register-tag
+
+
+.login-tag
 {
     display: block;
     color: #fff;
@@ -110,7 +115,7 @@
     margin-top: 3rem;
 }
 
-.register-link
+.login-link
 {
     color: #adc97e;
     font-size: 1.6rem;

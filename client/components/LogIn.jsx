@@ -81,7 +81,7 @@ const LogIn = () => {
           </div>
         </div>
          <p className="register-tag">
-          Not a member yet? <Link to="/register"> Sign up now!</Link>
+          Not a member yet? <Link to="/register" className="register-link"> Sign up now!</Link>
           </p>
       </div>
       );

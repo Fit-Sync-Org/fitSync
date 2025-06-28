@@ -31,7 +31,7 @@ exports.firebaseLogin = async (req, res) => {
       });
 
 
-    res.json({ message: "Firebase login successful". user});
+    res.json({ message: "Firebase login successful", user});
   } catch (err) {
     console.error("firebaseLogin error:", err);
     return res

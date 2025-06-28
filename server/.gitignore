@@ -3,3 +3,8 @@ node_modules/
 /server/serviceAccountKey.json
 server/Firebase/serviceAccountKey.json
 server/Firebase/
+
+# Ignore local Firebase service account key
+/private-keys/
+/*.json
+firebase-service-account.json

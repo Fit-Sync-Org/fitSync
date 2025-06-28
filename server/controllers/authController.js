@@ -5,11 +5,8 @@ const db = new PrismaClient();
 exports.firebaseLogin = async (req, res) => {
   const { idToken } = req.body;
 
-  console.log("received ID Token:", idToken);
-
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
-    console.log("decoded Token:", decoded);
     const { uid, email } = decoded;
 
     let user = await db.user.findUnique({

@@ -1,15 +1,15 @@
-.register-container1
+.register-wrapper
 {
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 0px 15px rgba(173, 201, 176, 0.8);
     border-radius: 12px;
-    width: 50rem;
-    height: 55rem;
+    max-width: 50rem;
+    height: auto;
 }
 
-.register-container2 {
+.register-content {
     display: flex;
     flex-direction: column;
     width: 70%;
@@ -52,7 +52,6 @@
     cursor: pointer;
 }
 
-
 .register-button {
     width: 100%;
     padding: 12px;
@@ -67,7 +66,6 @@
     background-color: #ebebf0;
     color: #000;
 }
-
 
 .divider {
     display: flex;
@@ -86,7 +84,6 @@
 .divider::before { margin-right: 12px; }
 .divider::after  { margin-left: 12px; }
 
-
 .social {
     width: 100%;
     padding: 12px;
@@ -103,8 +100,6 @@
     background-color: #ebebf0;
     color: #000;
 }
-
-
 
 .login-tag
 {

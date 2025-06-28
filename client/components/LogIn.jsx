@@ -44,13 +44,10 @@ const LogIn = () => {
       }
     };
 
-
-
     return (
       <div className="LogIn">
-
-        <div className="login-container1">
-          <div className="login-container2">
+        <div className="login-wrapper">
+          <div className="login-content">
             <h2 className="login-header"> Member Login </h2>
             <form className="input-forms" onSubmit={handleEmailLogin}>
               <input
@@ -70,7 +67,6 @@ const LogIn = () => {
               </a>
               <button type="submit">Login</button>
             </form>
-
             <div className="divider">or</div>
 
             <button className="social google-btn" onClick={handleGoogleLogin}>

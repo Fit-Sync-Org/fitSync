@@ -23,11 +23,10 @@ exports.firebaseLogin = async (req, res) => {
       });
     }
 
-    res
-      .cookie("token", idToken, {
+    res.cookie("token", idToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production" ? true : false, 
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
       });
 
@@ -61,5 +60,3 @@ exports.me = (req, res) => {
     return res.status(500).json({ error: "Could not fetch user" });
   }
 };
-
-

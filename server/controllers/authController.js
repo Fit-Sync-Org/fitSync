@@ -29,8 +29,10 @@ exports.firebaseLogin = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-      })
-      .json({ message: "Firebase login successful" });
+      });
+
+
+    res.json({ message: "Firebase login successful". user});
   } catch (err) {
     console.error("firebaseLogin error:", err);
     return res
@@ -59,3 +61,5 @@ exports.me = (req, res) => {
     return res.status(500).json({ error: "Could not fetch user" });
   }
 };
+
+

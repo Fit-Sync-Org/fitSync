@@ -10,13 +10,8 @@ require("dotenv").config();
 const app  = express();
 const port = process.env.PORT || 3001;
 
-const allowedOrigins = [
-  "https://fitsync-5tf7.onrender.com",
-  "http://localhost:5173",
-];
-
 app.use(cors({
-  origin: allowedOrigins,
+  origin: ["https://fitsync-5tf7.onrender.com", "http://localhost:5173"],
   credentials: true,
 }));
 

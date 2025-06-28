@@ -39,7 +39,7 @@ export default function Register() {
       <div className="register-container1">
         <div className="register-container2">
           <h2 className="register-header"> Sign Up </h2>
-          <form class="input-forms" onSubmit={handleRegister}>
+          <form className="input-forms" onSubmit={handleRegister}>
             <input
               type="email"
               placeholder="Email"

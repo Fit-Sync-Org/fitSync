@@ -5,8 +5,11 @@ const db = new PrismaClient();
 exports.firebaseLogin = async (req, res) => {
   const { idToken } = req.body;
 
+  console.log("received ID Token:", idToken);
+
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
+    console.log("decoded Token:", decoded);
     const { uid, email } = decoded;
 
     let user = await db.user.findUnique({
@@ -25,7 +28,7 @@ exports.firebaseLogin = async (req, res) => {
 
     res.cookie("token", idToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ? true : false, 
+        secure: process.env.NODE_ENV === "production" ? true : false,
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
       });

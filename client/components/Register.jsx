@@ -36,10 +36,10 @@ export default function Register() {
   return (
     <div className="Register">
 
-      <div className="register-container1">
-        <div className="register-container2">
+      <div className="register-wrapper">
+        <div className="register-content">
           <h2 className="register-header"> Sign Up </h2>
-          <form class="input-forms" onSubmit={handleRegister}>
+          <form className="input-forms" onSubmit={handleRegister}>
             <input
               type="email"
               placeholder="Email"

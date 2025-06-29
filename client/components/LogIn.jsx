@@ -11,7 +11,7 @@ const LogIn = () => {
     const nav = useNavigate();
 
     async function authFirebaseLogin(idToken) {
-      await fetch("http://localhost:3001/auth/firebase-login", {
+      await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
         method:"POST",
         headers:{ "Content-Type": "application/json" },
         credentials: "include",

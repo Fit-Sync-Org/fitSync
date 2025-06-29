@@ -15,7 +15,7 @@ export default function Register() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       const idToken = await user.getIdToken();
-      const resp = await fetch("http://localhost:3001/auth/firebase-login", {
+      const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

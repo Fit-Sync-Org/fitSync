@@ -6,7 +6,7 @@ export default function Dashboard() {
   const nav = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3001/auth/me", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/auth/me`, { credentials: "include" })
       .then(res  => res.json())
       .then(data => setUser(data))
       .catch(() => {
@@ -17,7 +17,7 @@ export default function Dashboard() {
   if (!user) return <p>Loading your profile…</p>;
 
   const logout = () => {
-    fetch("http://localhost:3001/auth/logout", {
+    fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
       method:      "POST",
       credentials: "include",
     }).then(() => {

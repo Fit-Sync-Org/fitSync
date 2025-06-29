@@ -1,5 +1,15 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("/Users/cjason/private-keys/firebase-service-account.json");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set");
+}
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+
+serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

@@ -35,7 +35,6 @@ export default function Register() {
 
   return (
     <div className="Register">
-
       <div className="register-wrapper">
         <div className="register-content">
           <h2 className="register-header"> Sign Up </h2>

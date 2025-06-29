@@ -44,13 +44,10 @@ const LogIn = () => {
       }
     };
 
-
-
     return (
       <div className="LogIn">
-
-        <div className="login-container1">
-          <div className="login-container2">
+        <div className="login-wrapper">
+          <div className="login-content">
             <h2 className="login-header"> Member Login </h2>
             <form className="input-forms" onSubmit={handleEmailLogin}>
               <input
@@ -68,9 +65,8 @@ const LogIn = () => {
               <a href="/forgot-password" className="forgot-password">
                 Forgot password?
               </a>
-              <button type="submit">Login</button>
+              <button className="login-button" type="submit">Login</button>
             </form>
-
             <div className="divider">or</div>
 
             <button className="social google-btn" onClick={handleGoogleLogin}>
@@ -81,7 +77,7 @@ const LogIn = () => {
           </div>
         </div>
          <p className="register-tag">
-          Not a member yet? <Link to="/register"> Sign up now!</Link>
+          Not a member yet? <Link to="/register" className="register-link"> Sign up now!</Link>
           </p>
       </div>
       );

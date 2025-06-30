@@ -1,4 +1,4 @@
-.LogIn {
+.Register {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,7 +9,7 @@
   padding: 2rem;
 }
 
-.login-wrapper
+.register-wrapper
 {
     margin: 40% 0 0 0;
     box-shadow: 0 0px 15px rgba(173, 201, 176, 0.8);
@@ -20,19 +20,19 @@
     padding: 2rem;
 }
 
-.login-content {
+.register-content {
     display: flex;
     flex-direction: column;
     width: 70%;
     margin: 3.2rem auto;
 }
 
-.login-header {
+.register-header {
     color: #fff;
     text-align: center;
     margin:  2rem 1rem;
     font-size: 2.8rem;
-}
+  }
 
 .input-forms
 {
@@ -50,40 +50,41 @@
     margin-bottom: 16px;
   }
 
-.login-button {
+.input-forms button {
     width: 100%;
     padding: 12px;
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 6px;
-    background-color: #adc97e;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.login-button:hover {
+.register-button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 26px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #adc97e;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+
+.register-button:hover {
   background-color: #97b76d;
 }
 
-.login-button:active {
+.register-button:active {
   background-color: #7ea055;
   transform: scale(0.98);
 }
 
-.forgot-password {
-    font-size: 1.3rem;
-    color: #fff;
-    text-decoration: none;
-    align-self: flex-start;
-    margin-top: -8px;
-    margin-bottom: 26px;
-}
-
 .divider {
-    display: flex;
+  display: flex;
     color: #fff;
     align-items: center;
     text-align: center;
@@ -99,7 +100,6 @@
 .divider::before { margin-right: 12px; }
 .divider::after  { margin-left: 12px; }
 
-
 .social {
     width: 100%;
     padding: 12px;
@@ -109,20 +109,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.social:hover {
+  background-color: #dcdce0;
+}
+
+.social:active {
+  background-color: #c4c4c8;
+  transform: scale(0.98);
 }
 
 .google-btn {
     border: 1px solid #ccc;
     background-color: #ebebf0;
     color: #000;
-  }
-
-.google-icon
-{
-    height: 24px; width: 24px;
 }
 
-.register-tag
+.login-tag
 {
     display: block;
     color: #fff;
@@ -131,30 +136,29 @@
     margin-top: 3rem;
 }
 
-.register-link
+.login-link
 {
     color: #adc97e;
     font-size: 1.6rem;
 }
 
-
 @media (max-width: 768px) {
-  .login-wrapper {
+  .register-wrapper {
     padding: 1.5rem;
   }
 
-  .login-header {
+  .register-header {
     font-size: 2.2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .login-wrapper {
+  .register-wrapper {
     box-shadow: none;
     padding: 1rem;
   }
 
-  .login-header {
+  .register-header {
     font-size: 1.8rem;
   }
 
@@ -164,7 +168,7 @@
     font-size: 1.3rem;
   }
 
-  .register-tag {
+  .login-tag {
     font-size: 1.4rem;
   }
 }

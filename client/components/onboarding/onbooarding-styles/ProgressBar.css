@@ -1,0 +1,15 @@
+.progress-bar {
+  width: 100%;               /* full-width of parent */
+  height: 8px;               /* thickness */
+  background-color: #ddd;    /* track color */
+  border-radius: 4px;        /* rounded corners */
+  overflow: hidden;          /* clip the fill */
+  margin: 1.5rem 0;          /* vertical spacing */
+}
+
+.progress-bar__fill {
+  width: 0%;                         /* start empty */
+  height: 100%;                      /* match track height */
+  background-color: #adc97e;         /* your fill color */
+  transition: width 0.3s ease-in-out;/* smooth animation */
+}

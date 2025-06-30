@@ -31,7 +31,11 @@ exports.firebaseLogin = async (req, res) => {
       });
 
 
-    res.json({ message: "Firebase login successful", user});
+    res.json({
+    message: "Firebase login successful",
+     user: {
+        id: user.id, email: user.email, hasCompletedOnboarding: user.hasCompletedOnboarding}
+});
   } catch (err) {
     console.error("firebaseLogin error:", err);
     return res
@@ -58,5 +62,18 @@ exports.me = (req, res) => {
   } catch (err) {
     console.error("me handler error:", err);
     return res.status(500).json({ error: "Could not fetch user" });
+  }
+};
+
+exports.completeOnboarding = async (req, res) => {
+  try {
+    await db.user.update({
+      where: { id: req.user.id },
+      data: { hasCompletedOnboarding: true },
+    });
+    res.json({ message: "Onboarding marked complete" });
+  } catch (err) {
+    console.error("completeOnboarding error:", err);
+    res.status(500).json({ error: "Failed to update onboarding status" });
   }
 };

@@ -4,6 +4,7 @@ import Dashboard from "../components/Dashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import "./App.css";
 import Register from "../components/Register";
+import OnboardingWizard from "../components/OnboardingWizard";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
+            <Route path="/OnboardingWizard" element={ <ProtectedRoute> <OnboardingWizard /> </ProtectedRoute>}/>
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         </BrowserRouter>

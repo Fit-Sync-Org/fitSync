@@ -33,25 +33,26 @@ model FitnessGoal {
 }
 
 model User {
-  id                 Int                  @id @default(autoincrement())
-  firebaseUid        String               @unique
-  email              String               
-  username           String?              @unique
-  createdAt          DateTime             @default(now())
-  firstName          String?
-  lastName           String?
-  ageRange           AgeRange?
-  gender             Gender?
-  occupation         String?
-  inspiration        String?
-  phone              String?
-  weeklyWorkoutHours Float?
-  sessionPreference  SessionPreference?
-  goals              FitnessGoal[]        @relation("UserGoals")
-  lastLogin          DateTime?
-  streakCount        Int                  @default(0)
-  meals              Meal[]
-  workouts           Workout[]
+  id                      Int                  @id @default(autoincrement())
+  firebaseUid             String               @unique
+  email                   String
+  username                String?              @unique
+  createdAt               DateTime             @default(now())
+  firstName               String?
+  lastName                String?
+  ageRange                AgeRange?
+  gender                  Gender?
+  occupation              String?
+  inspiration             String?
+  phone                   String?
+  weeklyWorkoutHours      Float?
+  sessionPreference       SessionPreference?
+  goals                   FitnessGoal[]        @relation("UserGoals")
+  lastLogin               DateTime?
+  streakCount             Int                  @default(0)
+  meals                   Meal[]
+  workouts                Workout[]
+  hasCompletedOnboarding  Boolean              @default(false)
 }
 
 model Meal {

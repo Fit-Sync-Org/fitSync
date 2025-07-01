@@ -18,10 +18,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/auth", authRoutes);
-app.use(requireAuth);
 
 const onboardingRouter = require("./routes/onboarding");
 app.use("/onboarding", onboardingRouter);
+
+app.use(requireAuth);
+
 
 const mealsRouter = require("./routes/meals");
 app.use("/meals", mealsRouter);

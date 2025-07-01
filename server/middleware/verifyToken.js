@@ -8,11 +8,11 @@ module.exports = async function verifyToken(req, res, next) {
     if (!token) {
       return res.status(401).json({ error: "Missing Firebase token" });
     }
-    const decoded = await admin.auth().verifyIdToken(token);
-    req.decoded = decoded;
-    next();
+
+    req.decoded = await admin.auth().verifyIdToken(token);
+    return next();
   } catch (err) {
-    console.error("verifyToken error:", err);
-    return res.status(401).json({ error: "Invalid or expired Firebase token" });
+    console.error("verifyToken failed:", err);
+    return res.status(401).json({ error: "Unauthorized" });
   }
 };

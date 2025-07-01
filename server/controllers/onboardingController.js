@@ -30,11 +30,13 @@ exports.registerNewUser = async (req, res) => {
     },
   });
 
+  const isProd = process.env.NODE_ENV === "production";
+
   res.cookie("token", req.headers.authorization.split("Bearer ")[1], {
-    httpOnly: true,
-    sameSite: "lax",
-    secure:  process.env.NODE_ENV === "production" ? true : false,
-    path: "/",
+    sameSite: isProd ? "none" : "lax",  
+    secure  : isProd,                   
+    path    : "/",
+    domain  : isProd ? ".onrender.com" : "localhost",
   });
 
   res.json({ message: "Onboarding complete", userId: user.id });

@@ -1,43 +1,51 @@
 const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 
+exports.registerNewUser = async (req, res) => {
+  const { uid, email } = req.decoded;
+  const data = req.body;
+
+  const exists = await db.user.findUnique({ where: { firebaseUid: uid } });
+  if (exists) return res.status(409).json({ error: "User already exists" });
+
+  const user = await db.user.create({
+    data: {
+      firebaseUid: uid,
+      email,
+      firstName: data.name.firstName,
+      lastName : data.name.lastName,
+      ageRange : data.age,
+      gender   : data.gender,
+      occupation: data.occupation,
+      phone     : data.phone,
+      weeklyWorkoutHours: data.availability,
+      sessionPreference : data.preference,
+      dietaryRestrictions: data.diet,
+      heightCm:  data.metrics.height,
+      weightKg:  data.metrics.weight,
+      Goals: {
+        connect: Array.isArray(data.goal) ? data.goal.map(id => ({ id })) : [],
+      },
+      hasCompletedOnboarding: true,
+    },
+  });
+
+  res.cookie("token", req.headers.authorization.split("Bearer ")[1], {
+    httpOnly: true,
+    sameSite: "lax",
+    secure:  process.env.NODE_ENV === "production" ? true : false,
+    path: "/",
+  });
+
+  res.json({ message: "Onboarding complete", userId: user.id });
+};
+
 exports.completeOnboarding = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const {
-      name,
-      age,
-      goal,
-      gender,
-      occupation,
-      availability,
-      preference,
-      diet,
-      metrics,
-      phone,
-    } = req.body;
-
     await db.user.update({
-      where: { id: userId },
-      data: {
-        firstName: name.firstName,
-        lastName: name.lastName,
-        ageRange: age,
-        gender,
-        occupation,
-        phone,
-        weeklyWorkoutHours: availability,
-        sessionPreference: preference,
-        dietaryRestrictions: diet,
-        heightCm: metrics.height,
-        weightKg: metrics.weight,
-        Goals: {
-          connect: Array.isArray(goal) ? goal.map((id) => ({ id })) : [],
-        },
-        hasCompletedOnboarding: true,
-      },
+      where: { id: req.user.id },
+      data: { hasCompletedOnboarding: true },
     });
-
     res.json({ message: "Onboarding marked complete" });
   } catch (err) {
     console.error("completeOnboarding error:", err);

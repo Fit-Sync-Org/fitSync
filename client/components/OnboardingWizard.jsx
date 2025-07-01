@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {auth} from "../src/firebase";
 
 import StepName from "./onboarding/StepName";
 import StepAge from "./onboarding/StepAge";
@@ -16,10 +17,7 @@ import ProgressBar from "./onboarding/ProgressBar";
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: {
-      firstName: "",
-      lastName: "",
-    },
+    name: { firstName: "", lastName: "", },
     age: "",
     goal: [],
     gender: "",
@@ -27,7 +25,7 @@ export default function OnboardingWizard() {
     availability: "",
     preference: "",
     diet: "",
-    metrics: "",
+    metrics: { height: "", weight: "" },
     phone: "",
   });
 
@@ -67,7 +65,7 @@ export default function OnboardingWizard() {
 
     switch (stepId) {
       case "name":
-        return value.firstName.trim() !== "" && value.lastName.trim() !== "";
+        return value.firstName && value.lastName;
       case "age":
         return value !== "" && !isNaN(value);
       case "goal":
@@ -105,29 +103,38 @@ export default function OnboardingWizard() {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    for (let step of steps) {
-      if (step.required && !isStepValid(step.id)) {
-        alert(`Please complete the ${step.id} step before submitting.`);
-      return;
-      }
+    for (const s of steps)
+      if (s.required && !isStepValid(s.id))
+        return alert(`Complete the ${s.id} step first`);
+
+    try {
+      const idToken =
+        sessionStorage.getItem("fitsyncTempToken") ||
+        (await auth.currentUser.getIdToken(true));
+
+        console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_URL}/onboarding/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (!resp.ok) throw new Error("Server rejected onboarding");
+
+      sessionStorage.removeItem("fitbuddyTempToken");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Could not complete onboarding");
     }
-
-    console.log("Submitting formData:", formData);
-
-    const resp = await fetch(
-      `${import.meta.env.VITE_API_URL}/onboarding/complete`,
-      { method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json", },
-        body: JSON.stringify({ onboardingData: formData }),
-       }
-    );
-
-    if (!resp.ok) {
-      console.error("Failed to mark onboarding complete");
-      return;
-    }
-    navigate("/dashboard");
   };
+
 
   return (
     <div className="wizard-container">
@@ -141,7 +148,7 @@ export default function OnboardingWizard() {
       {StepComponent && (
         <StepComponent
           value={formData[steps[currentStep].id]}
-          setValue={(val) => updateFormData(steps[currentStep].id, val)}
+          setValue={(value) => updateFormData(steps[currentStep].id, value)}
         />
       )}
 

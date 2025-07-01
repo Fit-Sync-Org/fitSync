@@ -7,11 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum AgeRange {
-  A18_25
-  A26_35
-  A36_45
-  A46_PLUS
+enum Goals {
+  LOSE_WEIGHT
+  GAIN_WEIGHT
+  BUILD_MUSCLE
+  TONE_AND_STRENGTHEN
+  MAINTAIN_WEIGHT
+  EAT_HEALTHY
+  HEALTH_AND_LONGEVITY
+  MANAGE_STRESS_AND_RECOVERY
 }
 
 enum Gender {
@@ -40,14 +44,17 @@ model User {
   createdAt               DateTime             @default(now())
   firstName               String?
   lastName                String?
-  ageRange                AgeRange?
+  ageRange                Int?
   gender                  Gender?
   occupation              String?
   inspiration             String?
   phone                   String?
   weeklyWorkoutHours      Float?
   sessionPreference       SessionPreference?
-  goals                   FitnessGoal[]        @relation("UserGoals")
+  dietaryRestrictions     String?
+  heightCm                Float?
+  weightKg                Float?
+  Goals                   FitnessGoal[]        @relation("UserGoals")
   lastLogin               DateTime?
   streakCount             Int                  @default(0)
   meals                   Meal[]

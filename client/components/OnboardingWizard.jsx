@@ -41,6 +41,21 @@ export default function OnboardingWizard() {
     { id: "phone", required: false },
   ];
 
+  const stepComponents = {
+    name: StepName,
+    age: StepAge,
+    goal: StepGoal,
+    gender: StepGender,
+    occupation: StepOccupation,
+    availability: StepAvailability,
+    preference: StepPreference,
+    diet: StepDiet,
+    metrics: StepMetrics,
+    phone: StepPhone,
+  };
+
+  const StepComponent = stepComponents[steps[currentStep].id];
+
   const updateFormData = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -60,10 +75,12 @@ export default function OnboardingWizard() {
 
   const handleSubmit = async () => {
     console.log("Submitting formData:", formData);
+
     const resp = await fetch(
       `${import.meta.env.VITE_API_URL}/auth/complete-onboarding`,
       { method: "POST", credentials: "include" }
     );
+
     if (!resp.ok) {
       console.error("Failed to mark onboarding complete");
       return;
@@ -74,69 +91,16 @@ export default function OnboardingWizard() {
   return (
     <div className="wizard-container">
       Complete your FitSync registration here
+
       <ProgressBar
         currentStep={currentStep}
         totalSteps={steps.length}
       />
 
-      {currentStep === 0 && (
-        <StepName
-          value={formData.name}
-          setValue={(val) => updateFormData("name", val)}
-        />
-      )}
-      {currentStep === 1 && (
-        <StepAge
-          value={formData.age}
-          setValue={(val) => updateFormData("age", val)}
-        />
-      )}
-      {currentStep === 2 && (
-        <StepGoal
-          value={formData.goal}
-          setValue={(val) => updateFormData("goal", val)}
-        />
-      )}
-      {currentStep === 3 && (
-        <StepGender
-          value={formData.gender}
-          setValue={(val) => updateFormData("gender", val)}
-        />
-      )}
-      {currentStep === 4 && (
-        <StepOccupation
-          value={formData.occupation}
-          setValue={(val) => updateFormData("occupation", val)}
-        />
-      )}
-      {currentStep === 5 && (
-        <StepAvailability
-          value={formData.availability}
-          setValue={(val) => updateFormData("availability", val)}
-        />
-      )}
-      {currentStep === 6 && (
-        <StepPreference
-          value={formData.preference}
-          setValue={(val) => updateFormData("preference", val)}
-        />
-      )}
-      {currentStep === 7 && (
-        <StepDiet
-          value={formData.diet}
-          setValue={(val) => updateFormData("diet", val)}
-        />
-      )}
-      {currentStep === 8 && (
-        <StepMetrics
-          value={formData.metrics}
-          setValue={(val) => updateFormData("metrics", val)}
-        />
-      )}
-      {currentStep === 9 && (
-        <StepPhone
-          value={formData.phone}
-          setValue={(val) => updateFormData("phone", val)}
+      {StepComponent && (
+        <StepComponent
+          value={formData[steps[currentStep].id]}
+          setValue={(val) => updateFormData(steps[currentStep].id, val)}
         />
       )}
 

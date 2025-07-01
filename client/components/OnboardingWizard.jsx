@@ -108,9 +108,8 @@ export default function OnboardingWizard() {
         return alert(`Complete the ${s.id} step first`);
 
     try {
-      const idToken =
-        sessionStorage.getItem("fitsyncTempToken") ||
-        (await auth.currentUser.getIdToken(true));
+      const idToken = await auth.currentUser.getIdToken(true);
+      sessionStorage.setItem("fitsyncTempToken", idToken);
 
         console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
       const resp = await fetch(

@@ -129,8 +129,8 @@ export default function OnboardingWizard() {
       )}
       {currentStep === 8 && (
         <StepMetrics
-          value={formData.biometric}
-          setValue={(val) => updateFormData("biometric", val)}
+          value={formData.metrics}
+          setValue={(val) => updateFormData("metrics", val)}
         />
       )}
       {currentStep === 9 && (

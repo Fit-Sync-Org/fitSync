@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { auth, googleProvider } from "../src/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { Link } from "react-router-dom";
 import "./Register.css";
 
 export default function Register() {
@@ -11,6 +10,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   async function authFirebaseLogin(idToken) {
+    console.log("Sending ID Token to backend:", idToken);
     const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
       method: "POST",
       credentials: "include",
@@ -18,47 +18,64 @@ export default function Register() {
       body: JSON.stringify({ idToken }),
     });
     if (!resp.ok) {
-      const body = await resp.json();
+      const body = await resp.json().catch(() => ({}));
       throw new Error(body.error || resp.statusText);
     }
-    return resp.json(); 
+    return resp.json();
   }
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
+      console.log("Attempting to register with:", email, password);
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      const idToken = await user.getIdToken(/* forceRefresh */ true);
-      const data = await authFirebaseLogin(idToken);
+      console.log("Firebase user created:", user);
 
-      if (data.user.hasCompletedOnboarding) {
+      if (!user) throw new Error("No user returned from Firebase");
+
+      const idToken = await user.getIdToken(true);
+      console.log("Generated ID Token:", idToken);
+
+      const data = await authFirebaseLogin(idToken);
+      console.log("Server response:", data);
+
+      if (data.user?.hasCompletedOnboarding) {
         navigate("/dashboard");
       } else {
         navigate("/OnboardingWizard");
       }
+
     } catch (err) {
       console.error("Register failed:", err);
-      alert(err.message);
+      alert(err.message || "Registration failed");
     }
   };
 
   const handleGoogleRegister = async () => {
     try {
+      console.log("Starting Google sign up flow");
       const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken(/* forceRefresh */ true);
-      const data = await authFirebaseLogin(idToken);
+      const user = result.user;
 
-      if (data.user.hasCompletedOnboarding) {
+      if (!user) throw new Error("No user returned from Google sign-in");
+
+      const idToken = await user.getIdToken(true);
+      console.log("Generated ID Token (Google):", idToken);
+
+      const data = await authFirebaseLogin(idToken);
+      console.log("Server response:", data);
+
+      if (data.user?.hasCompletedOnboarding) {
         navigate("/dashboard");
       } else {
         navigate("/OnboardingWizard");
       }
+
     } catch (err) {
       console.error("Google sign up failed:", err);
-      alert("Google sign up failed: " + err.message);
+      alert(err.message || "Google sign up failed");
     }
   };
-
 
   return (
     <div className="Register">
@@ -70,14 +87,14 @@ export default function Register() {
               type="email"
               placeholder="Email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Password (min 8 characters)"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               minLength={8}
               required
             />
@@ -87,12 +104,22 @@ export default function Register() {
           <div className="divider">or</div>
 
           <button className="social google-btn" onClick={handleGoogleRegister}>
-              <img className="google-icon" src="../icons8-google.svg" alt="" style={{marginRight: '8px'}} />
-              Sign up with Google
+            <img
+              className="google-icon"
+              src="../icons8-google.svg"
+              alt="Google icon"
+              style={{ marginRight: "8px" }}
+            />
+            Sign up with Google
           </button>
         </div>
       </div>
-      <p className="login-tag"> Already have an account? <Link to="/login" className="login-link">Log in</Link> </p>
-  </div>
+      <p className="login-tag">
+        Already have an account?{" "}
+        <Link to="/login" className="login-link">
+          Log in
+        </Link>
+      </p>
+    </div>
   );
 }

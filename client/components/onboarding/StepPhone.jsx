@@ -1,4 +1,4 @@
-export default function StepPhone({ value, setValue }) {
+const StepPhone = ({ value, setValue }) => {
   return (
     <div className="step">
       <div className="input-wrapper phone-number">
@@ -20,3 +20,5 @@ export default function StepPhone({ value, setValue }) {
     </div>
   );
 }
+
+export default StepPhone

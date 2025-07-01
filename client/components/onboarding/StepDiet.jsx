@@ -1,4 +1,4 @@
-export default function StepDiet({ value, setValue }) {
+const StepDiet = ({ value, setValue }) => {
   return (
     <div className="step">
       <div className="input-wrapper diet">
@@ -18,3 +18,4 @@ export default function StepDiet({ value, setValue }) {
   );
 }
 
+export default StepDiet;

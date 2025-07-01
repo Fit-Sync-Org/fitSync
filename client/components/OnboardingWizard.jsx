@@ -16,9 +16,12 @@ import ProgressBar from "./onboarding/ProgressBar";
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: "",
+    name: {
+      firstName: "",
+      lastName: "",
+    },
     age: "",
-    goal: "",
+    goal: [],
     gender: "",
     occupation: "",
     availability: "",
@@ -59,7 +62,33 @@ export default function OnboardingWizard() {
   const updateFormData = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
+  const isStepValid = (stepId) => {
+    const value = formData[stepId];
+
+    switch (stepId) {
+      case "name":
+        return value.firstName.trim() !== "" && value.lastName.trim() !== "";
+      case "age":
+        return value !== "" && !isNaN(value);
+      case "goal":
+        return Array.isArray(value) && value.length > 0;
+      case "gender":
+        return value !== "";
+      case "availability":
+        return value !== "" && !isNaN(value);
+      case "diet":
+        return value.trim() !== "";
+      case "metrics":
+        return value.height && value.weight;
+      default:
+        return true;
+    }
+  };
+
   const nextStep = () => {
+    const {id, required} = steps[currentStep];
+    if (required && !isStepValid(id)) {alert("Please fill required fields"); return; };
+
     if (currentStep < steps.length - 1) setCurrentStep((prev) => prev + 1);
   };
 
@@ -71,14 +100,26 @@ export default function OnboardingWizard() {
     if (!steps[currentStep].required) nextStep();
   };
 
+
+
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    for (let step of steps) {
+      if (step.required && !isStepValid(step.id)) {
+        alert(`Please complete the ${step.id} step before submitting.`);
+      return;
+      }
+    }
+
     console.log("Submitting formData:", formData);
 
     const resp = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/complete-onboarding`,
-      { method: "POST", credentials: "include" }
+      `${import.meta.env.VITE_API_URL}/onboarding/complete`,
+      { method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json", },
+        body: JSON.stringify({ onboardingData: formData }),
+       }
     );
 
     if (!resp.ok) {

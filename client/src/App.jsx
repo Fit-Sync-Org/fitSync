@@ -13,8 +13,9 @@ function App() {
         <Routes>
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/OnboardingWizard" element={<OnboardingWizard />} />
+            <Route element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
             <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
-            <Route path="/OnboardingWizard" element={ <ProtectedRoute> <OnboardingWizard /> </ProtectedRoute>}/>
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         </BrowserRouter>

@@ -4,7 +4,7 @@
   "description": "FitSync Meta Universitym Capstone Project",
   "main": "server.js",
   "scripts": {
-    "start": "npx prisma migrate deploy && node server.js",
+    "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step'",
     "postinstall": "npx prisma generate"

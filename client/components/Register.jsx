@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth , googleProvider } from "../src/firebase";
+import { auth, googleProvider } from "../src/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Link } from "react-router-dom";
 import "./Register.css";
@@ -11,27 +11,31 @@ export default function Register() {
   const navigate = useNavigate();
 
   async function authFirebaseLogin(idToken) {
-  const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
-  });
-  if (!resp.ok) {
-    const body = await resp.json();
-    console.error("Backend login failed:", body);
-    throw new Error(body.error || resp.statusText);
+    const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+    if (!resp.ok) {
+      const body = await resp.json();
+      throw new Error(body.error || resp.statusText);
     }
+    return resp.json(); 
   }
 
-
-  const handleRegister = async e => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      const idToken = await user.getIdToken();(/*forceRefresh: */ true);
-      await authFirebaseLogin(idToken);
-      navigate("/dashboard");
+      const idToken = await user.getIdToken(/* forceRefresh */ true);
+      const data = await authFirebaseLogin(idToken);
+
+      if (data.user.hasCompletedOnboarding) {
+        navigate("/dashboard");
+      } else {
+        navigate("/OnboardingWizard");
+      }
     } catch (err) {
       console.error("Register failed:", err);
       alert(err.message);
@@ -40,15 +44,21 @@ export default function Register() {
 
   const handleGoogleRegister = async () => {
     try {
-      const result   = await signInWithPopup(auth, googleProvider);
-      const idToken  = await result.user.getIdToken(/* forceRefresh= */ true);
-      await authFirebaseLogin(idToken);
-      navigate("/dashboard");
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken(/* forceRefresh */ true);
+      const data = await authFirebaseLogin(idToken);
+
+      if (data.user.hasCompletedOnboarding) {
+        navigate("/dashboard");
+      } else {
+        navigate("/OnboardingWizard");
+      }
     } catch (err) {
       console.error("Google sign up failed:", err);
       alert("Google sign up failed: " + err.message);
     }
   };
+
 
   return (
     <div className="Register">

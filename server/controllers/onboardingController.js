@@ -14,7 +14,7 @@ exports.registerNewUser = async (req, res) => {
       email,
       firstName: data.name.firstName,
       lastName : data.name.lastName,
-      ageRange : data.age,
+      age : data.age,
       gender   : data.gender,
       occupation: data.occupation,
       phone     : data.phone,
@@ -24,7 +24,7 @@ exports.registerNewUser = async (req, res) => {
       heightCm:  data.metrics.height,
       weightKg:  data.metrics.weight,
       Goals: {
-        connect: Array.isArray(data.goal) ? data.goal.map(id => ({ id })) : [],
+        connect: Array.isArray(data.goal) ? data.goal.map(id => ({ name: id })) : [],
       },
       hasCompletedOnboarding: true,
     },
@@ -33,8 +33,8 @@ exports.registerNewUser = async (req, res) => {
   const isProd = process.env.NODE_ENV === "production";
 
   res.cookie("token", req.headers.authorization.split("Bearer ")[1], {
-    sameSite: isProd ? "none" : "lax",  
-    secure  : isProd,                   
+    sameSite: isProd ? "none" : "lax",
+    secure  : isProd,
     path    : "/",
     domain  : isProd ? ".onrender.com" : "localhost",
   });

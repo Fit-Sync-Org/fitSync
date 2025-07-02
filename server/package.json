@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step'",
+    "postinstall": "npx prisma generate",
+    "postbuild": "npx prisma migrate deploy"
   },
   "repository": {
     "type": "git",

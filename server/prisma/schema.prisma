@@ -44,7 +44,6 @@ model User {
   createdAt               DateTime             @default(now())
   firstName               String?
   lastName                String?
-  age                     Int?
   gender                  Gender?
   occupation              String?
   inspiration             String?

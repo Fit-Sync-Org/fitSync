@@ -107,6 +107,8 @@ export default function OnboardingWizard() {
       if (s.required && !isStepValid(s.id))
         return alert(`Complete the ${s.id} step first`);
 
+    const sanitized = { ...formData, preference: formData.preference || null };
+
     try {
       const idToken = await auth.currentUser.getIdToken(true);
       sessionStorage.setItem("fitsyncTempToken", idToken);
@@ -120,7 +122,7 @@ export default function OnboardingWizard() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(sanitized),
         }
       );
 

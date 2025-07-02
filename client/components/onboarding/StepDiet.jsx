@@ -1,9 +1,13 @@
 const StepDiet = ({ value, setValue }) => {
   return (
     <div className="step">
+      <h2 className="step-header"> Diet </h2>
       <div className="input-wrapper diet">
-        <label htmlFor="diet">
-          Do you have any dietary restrictions? <span className="tooltip">ⓘ</span>
+        <label className="step-label" htmlFor="diet">
+          Do you have any dietary restrictions?
+          <span className="tooltip">
+            <p>ⓘ</p>
+          </span>
         </label>
         <input
           id="diet"

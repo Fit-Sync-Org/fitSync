@@ -12,7 +12,7 @@
 .login-wrapper
 {
     margin: 40% 0 0 0;
-    box-shadow: 0 0px 15px rgba(173, 201, 176, 0.8);
+    box-shadow: 0 0px 15px rgba(173, 201, 176, 0.3);
     border-radius: 12px;
     width: 90%;
     max-width: 50rem;

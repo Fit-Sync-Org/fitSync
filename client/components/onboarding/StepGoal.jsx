@@ -1,4 +1,4 @@
-import './onbooarding-styles/StepGoal.css'
+import './onbooarding-styles/OnboardingStyles.css'
 const StepGoal= ({ value, setValue }) => {
 
   function handleToggleGoal(goal) {
@@ -12,10 +12,10 @@ const StepGoal= ({ value, setValue }) => {
   return (
     <div className="step">
         <div className="input-wrapper goals">
-
-            <label htmlFor="goals">
+            <h2 className="step-header">Why are you here? </h2>
+            <label className="step-label" htmlFor="goals">
               What are your primary fitness goals?
-              <span> Select up to three(3) </span>
+              <span className='step-span'> Select up to three(3) </span>
             </label>
             <div className="options">
                 <button

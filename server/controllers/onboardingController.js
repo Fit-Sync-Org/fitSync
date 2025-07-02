@@ -23,7 +23,7 @@ exports.registerNewUser = async (req, res) => {
       dietaryRestrictions: data.diet,
       heightCm:  data.metrics.height,
       weightKg:  data.metrics.weight,
-      Goals: {
+      goals: {
         connect: Array.isArray(data.goal) ? data.goal.map(id => ({ name: id })) : [],
       },
       hasCompletedOnboarding: true,

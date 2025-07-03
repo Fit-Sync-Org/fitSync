@@ -8,6 +8,8 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     async function refreshCookie(idToken) {
       await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {

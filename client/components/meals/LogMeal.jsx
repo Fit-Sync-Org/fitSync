@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LogMeal.css";
+import MealSection from "./MealSection";
 
 export default function LogMeal() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -75,6 +76,23 @@ export default function LogMeal() {
       addWater(amount);
       setCustomWater("");
     }
+  };
+
+  const handleAddFood = (mealType) => {
+  // TODO: open “search & add food” modal for each mealType
+  console.log('add food to', mealType);
+  };
+
+const handleQuickTools = (mealType) => {
+  // TODO: make a dropdown(quick-actions) for each mealType
+  console.log('quick tools for', mealType);
+  };
+
+const handleRemoveFood = (mealType, idx) => {
+  setMeals(prev => ({
+    ...prev,
+    [mealType]: prev[mealType].filter((_, i) => i !== idx)
+  }));
   };
 
   return (
@@ -155,7 +173,27 @@ export default function LogMeal() {
           </div>
         </div>
 
+        <div className="meal-section-wrapper">
+          {Object.entries(meals).map(([mealKey, foods]) => (
+            <MealSection
+            key={mealKey}
+            name={mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}
+            foods={foods}
+            onAddFood={() => handleAddFood(mealKey)}
+            onQuickTools={() => handleQuickTools(mealKey)}
+            onRemoveFood={(idx) => handleRemoveFood(mealKey, idx)}
+            />
+          ))}
+        </div>
 
+        <div>
+          <div className="complete-entry-section">
+            <p className="complete-text">
+              When you're finished logging all foods for this day, click here:
+            </p>
+            <button className="complete-entry-btn">Complete This Entry</button>
+          </div>
+        </div>
 
         <div className="water-section">
           <h2>Water Consumption</h2>

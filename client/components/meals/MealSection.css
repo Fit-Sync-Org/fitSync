@@ -1,0 +1,48 @@
+.meal-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(173, 201, 126, 0.1);
+  padding-bottom: 1.5rem;
+}
+
+.meal-header {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.food-item {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.food-name {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #e6efd8;
+}
+
+.empty-meal {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  opacity: 0.6;
+}
+
+.empty-values {
+  display: flex;
+  justify-content: space-between;
+}
+
+.empty-values span {
+  text-align: center;
+  font-size: 1.3rem;
+  color: #b8c5a8;
+}

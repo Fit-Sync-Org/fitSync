@@ -50,6 +50,18 @@ body{
   text-align: center;
 }
 
+.complete-entry-section {
+  text-align: center;
+  border: 5px solid rgba(173, 201, 126, 0.1);
+  margin: 6rem 0;
+}
+
+.complete-text {
+  font-size: 1.4rem;
+  color: #b8c5a8;
+  margin-bottom: 1.5rem;
+}
+
 .water-section h2 {
   font-size: 2.4rem;
   font-weight: 700;

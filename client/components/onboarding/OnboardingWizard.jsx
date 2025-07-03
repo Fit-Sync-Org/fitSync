@@ -1,19 +1,19 @@
 import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
-import {auth} from "../src/firebase";
+import {auth} from "../../src/firebase";
 
-import StepName from "./onboarding/StepName";
-import StepAge from "./onboarding/StepAge";
-import StepGoal from "./onboarding/StepGoal";
-import StepGender from "./onboarding/StepGender";
-import StepOccupation from "./onboarding/StepOccupation";
-import StepAvailability from "./onboarding/StepAvailability";
-import StepPreference from "./onboarding/StepPreference";
-import StepDiet from "./onboarding/StepDiet";
-import StepMetrics from "./onboarding/StepMetrics";
-import StepPhone from "./onboarding/StepPhone";
-import ProgressBar from "./onboarding/ProgressBar";
-import "./onboarding/onbooarding-styles/OnboardingWizard.css";
+import StepName from "./StepName";
+import StepAge from "./StepAge";
+import StepGoal from "./StepGoal";
+import StepGender from "./StepGender";
+import StepOccupation from "./StepOccupation";
+import StepAvailability from "./StepAvailability";
+import StepPreference from "./StepPreference";
+import StepDiet from "./StepDiet";
+import StepMetrics from "./StepMetrics";
+import StepPhone from "./StepPhone";
+import ProgressBar from "./ProgressBar";
+import "./onbooarding-styles/OnboardingWizard.css";
 
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);

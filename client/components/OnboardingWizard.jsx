@@ -32,19 +32,15 @@ export default function OnboardingWizard() {
 
   useEffect(() => {
     const handleTooltipClick = (e) => {
-      if (e.target.classList.contains("tooltip")) {
+      const tooltip = e.target.closest(".tooltip");
+
+      const tooltips = document.querySelectorAll(".tooltip");
+      tooltips.forEach((el) => el.classList.remove("active"));
+    
+      if (tooltip) {
         e.preventDefault();
         e.stopPropagation();
-
-        document.querySelectorAll(".tooltip").forEach((tooltip) => {
-          tooltip.classList.remove("active");
-        });
-
-        e.target.classList.add("active");
-      } else {
-        document.querySelectorAll(".tooltip").forEach((tooltip) => {
-          tooltip.classList.remove("active");
-        });
+        tooltip.classList.add("active");
       }
     };
 

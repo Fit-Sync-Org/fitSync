@@ -5,11 +5,11 @@ const StepPhone = ({ value, setValue }) => {
       <div className="input-wrapper phone-number">
         <label className="step-label" htmlFor="phone-number">
           What is your phone number
-          <span className="tooltip">
+          <span className="tooltip" data-tooltip="Optional, but handy if you’d like SMS reminders or coach check-ins. We won't spam your number">
             <p>ⓘ</p>
           </span>
         </label>
-        
+
         <input id="phone-number" name="phoneNumber" type="tel" placeholder="e.g., +1 234 567 8901" value={value || ''}
         onChange={(e) => setValue(e.target.value)}
         />

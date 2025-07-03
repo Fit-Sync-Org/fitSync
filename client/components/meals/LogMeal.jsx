@@ -10,7 +10,7 @@ export default function LogMeal() {
 
   const [meals, setMeals] = useState({
     breakfast: [
-      { name: "Oatmea", calories: 320, carbs: 58, fat: 6, protein: 12, sodium: 180, sugar: 15 },
+      { name: "Oatmeal", calories: 320, carbs: 58, fat: 6, protein: 12, sodium: 180, sugar: 15 },
       { name: "Yogurt", calories: 150, carbs: 8, fat: 0, protein: 20, sodium: 65, sugar: 6 }
     ],
     lunch: [

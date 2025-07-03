@@ -1,9 +1,13 @@
 const StepPreference = ({ value, setValue }) => {
   return (
     <div className="step">
+      <h2 className="step-header"> Workout Structure </h2>
       <div className="input-wrapper preference">
-        <label htmlFor="preference">
-          How do you prefer to structure your workouts? <span className="tooltip">ⓘ</span>
+        <label className="step-label" htmlFor="preference">
+          How do you prefer to structure your workouts?
+          <span className="tooltip">
+            <p> ⓘ </p>
+          </span>
         </label>
         <div className="options">
           <button

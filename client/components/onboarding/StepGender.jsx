@@ -1,7 +1,15 @@
 const StepGender = ({ value, setValue }) => {
   return (
     <div className="step">
-        <label htmlFor="gender"> What is your gender? <span className="tooltip">ⓘ</span></label>
+      <h2 className="step-header">
+        Gender
+      </h2>
+        <label className="step-label" htmlFor="gender">
+          What is your gender?
+          <span className="tooltip">
+            <p> ⓘ </p>
+          </span>
+        </label>
         <div className="options">
             <button
             className={value === "MALE" ? "active" : ""}
@@ -25,7 +33,7 @@ const StepGender = ({ value, setValue }) => {
             </button>
 
             <button
-            className={value === "RATHER Not Say" ? "active" : ""}
+            className={value === "RATHER_NOT_SAY" ? "active" : ""}
             onClick={() => setValue("RATHER_NOT_SAY")}
             >
             Rather Not Say

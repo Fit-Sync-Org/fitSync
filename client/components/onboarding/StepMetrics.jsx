@@ -2,14 +2,12 @@ const StepMetrics = ({ value, setValue }) => {
   return (
     <div className="step">
       <div className="input-wrapper metrics">
-        <h2>
-          <label htmlFor="metrics">Your Metrics</label>
-        </h2>
+        <h2 className="step-header">  Your Metrics </h2>
       </div>
 
       <div className="metrics-inputs">
-        <div className="input-group">
-          <label htmlFor="height">Height (cm)</label>
+        <div className="input-wrapper">
+          <label className="step-label" htmlFor="height">Height (cm)</label>
           <input
             id="height"
             name="height"
@@ -22,8 +20,8 @@ const StepMetrics = ({ value, setValue }) => {
           />
         </div>
 
-        <div className="input-group">
-          <label htmlFor="weight">Weight (kg)</label>
+        <div className="input-wrapper">
+          <label className="step-label" htmlFor="weight">Weight (kg)</label>
           <input
             id="weight"
             name="weight"

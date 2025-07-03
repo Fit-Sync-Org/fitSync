@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import {auth} from "../src/firebase";
 
@@ -13,6 +13,7 @@ import StepDiet from "./onboarding/StepDiet";
 import StepMetrics from "./onboarding/StepMetrics";
 import StepPhone from "./onboarding/StepPhone";
 import ProgressBar from "./onboarding/ProgressBar";
+import "./onboarding/onbooarding-styles/OnboardingWizard.css";
 
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -29,6 +30,31 @@ export default function OnboardingWizard() {
     phone: "",
   });
 
+  useEffect(() => {
+    const handleTooltipClick = (e) => {
+      if (e.target.classList.contains("tooltip")) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        document.querySelectorAll(".tooltip").forEach((tooltip) => {
+          tooltip.classList.remove("active");
+        });
+
+        e.target.classList.add("active");
+      } else {
+        document.querySelectorAll(".tooltip").forEach((tooltip) => {
+          tooltip.classList.remove("active");
+        });
+      }
+    };
+
+    document.addEventListener("click", handleTooltipClick);
+    return () => {
+      document.removeEventListener("click", handleTooltipClick);
+    };
+  }, []);
+
+
   const steps = [
     { id: "name", required: true },
     { id: "age", required: true },
@@ -38,8 +64,8 @@ export default function OnboardingWizard() {
     { id: "availability", required: true },
     { id: "preference", required: false },
     { id: "diet", required: true },
-    { id: "metrics", required: true },
     { id: "phone", required: false },
+    { id: "metrics", required: true },
   ];
 
   const stepComponents = {
@@ -51,8 +77,8 @@ export default function OnboardingWizard() {
     availability: StepAvailability,
     preference: StepPreference,
     diet: StepDiet,
-    metrics: StepMetrics,
     phone: StepPhone,
+    metrics: StepMetrics,
   };
 
   const StepComponent = stepComponents[steps[currentStep].id];
@@ -139,7 +165,7 @@ export default function OnboardingWizard() {
 
   return (
     <div className="wizard-container">
-      Complete your FitSync registration here
+      <p className="wizard-container-header"> Complete your FitSync registration here </p>
 
       <ProgressBar
         currentStep={currentStep}
@@ -154,12 +180,15 @@ export default function OnboardingWizard() {
       )}
 
       <div className="wizard-nav">
-        <button onClick={prevStep} disabled={currentStep === 0}>
+        <button className="secondary" onClick={prevStep} disabled={currentStep === 0}>
           Previous
         </button>
-        {!steps[currentStep].required && (
-          <button onClick={skipStep}>Skip</button>
-        )}
+
+        <button className= {steps[currentStep].required ? "skip-disabled" : "secondary"}
+                onClick={skipStep} disabled={steps[currentStep].required}>
+          Skip
+        </button>
+
         {currentStep === steps.length - 1 ? (
           <button onClick={handleSubmit}>Finish</button>
         ) : (

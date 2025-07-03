@@ -1,0 +1,244 @@
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.step-header {
+  color: #adc97e;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.step-label {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #e0e0e0;
+}
+
+.input-wrapper.availability label{
+  display: block;
+  font-size: 1.5rem;
+}
+
+.step-span
+{
+  color: #d6e4bf;
+}
+/* tooltip */
+.tooltip {
+  position: relative;
+  margin-left: 1rem;
+  cursor: help;
+
+  display: inline-block;
+  border-radius: 50%;
+  color: #acd97e;
+  text-align: center;
+  line-height: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(173, 201, 126, 0.2);
+  color: #ffffff;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  font-weight: lighter;
+  line-height: 1.4;
+  max-width: 250px;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1a1f1c;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+
+/* Input wrappers */
+.input-wrapper {
+  margin-bottom: 2rem;
+}
+
+.input-wrapper.first-name,
+.input-wrapper.last-name {
+  margin-bottom: 1.5rem;
+}
+
+/* INPUTS */
+.step input[type="text"],
+.step input[type="number"],
+.step input[type="tel"] {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.6rem;
+  border: 2px solid #4a5d50;
+  border-radius: 8px;
+  background-color: #3a413d;
+  color: #ffffff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step input[type="text"]:focus,
+.step input[type="number"]:focus,
+.step input[type="tel"]:focus {
+  outline: none;
+  border-color: #adc97e;
+  box-shadow: 0 0 0 3px rgba(173, 201, 126, 0.2);
+}
+
+.step input[type="text"]::placeholder,
+.step input[type="number"]::placeholder,
+.step input[type="tel"]::placeholder {
+  color: #888;
+}
+
+/* BUTTONS */
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.options button {
+  padding: 1.2rem 1.5rem;
+  border: 2px solid #4a5d50;
+  border-radius: 8px;
+  background-color: #3a413d;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.options button:hover {
+  border-color: #adc97e;
+  background-color: #4a5d50;
+}
+
+.options button.active {
+  background-color: #adc97e;
+  border-color: #adc97e;
+  color: #2c332e;
+  font-weight: 600;
+}
+
+/* metrics */
+.metrics-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.metrics-inputs .input-wrapper{
+  display: flex;
+  flex-direction: column;
+}
+
+#height, #weight {
+  padding: 1rem;
+  font-size: 1.6rem;
+  border: 2px solid #4a5d50;
+  border-radius: 8px;
+  background-color: #3a413d;
+  color: #ffffff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#height:focus, #weight:focus {
+  outline: none;
+  border-color: #adc97e;
+  box-shadow: 0 0 0 3px rgba(173, 201, 126, 0.2);
+}
+
+
+/* responsiveness */
+@media (max-width: 768px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-inputs {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .tooltip::before {
+    max-width: 200px;
+    left: 0;
+    transform: none;
+  }
+
+  .tooltip::after {
+    left: 20px;
+    transform: none;
+  }
+}
+
+/* animations */
+.step {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* tooltip behaviour for mobile */
+@media (hover: hover) and (pointer: fine) {
+  .tooltip:hover::before,
+  .tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tooltip.active::before,
+  .tooltip.active::after {
+    opacity: 1;
+    visibility: visible;
+  }
+}

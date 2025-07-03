@@ -1,10 +1,13 @@
 const StepOccupation = ({ value, setValue }) => {
   return (
     <div className="step">
+      <h2 className="step-header"> Occupation </h2>
       <div className="input-wrapper occupation">
-        <label htmlFor="occupation">
+        <label className="step-label" htmlFor="occupation">
           What is your occupation?
-          <span className="tooltip">ⓘ</span>
+          <span className="tooltip">
+            <p> ⓘ </p>
+          </span>
         </label>
         <input
           id="occupation"

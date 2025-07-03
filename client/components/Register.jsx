@@ -1,61 +1,38 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { auth, googleProvider } from "../src/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { Link } from "react-router-dom";
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import "./Register.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const stashToken = (idToken) => sessionStorage.setItem("fitsyncTempToken", idToken);
 
-  async function authFirebaseLogin(idToken) {
-    const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
-    });
-    if (!resp.ok) {
-      const body = await resp.json();
-      throw new Error(body.error || resp.statusText);
-    }
-    return resp.json(); 
-  }
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      const idToken = await user.getIdToken(/* forceRefresh */ true);
-      const data = await authFirebaseLogin(idToken);
-
-      if (data.user.hasCompletedOnboarding) {
-        navigate("/dashboard");
-      } else {
-        navigate("/OnboardingWizard");
-      }
+      const idToken = await user.getIdToken(true);
+      stashToken(idToken);
+      navigate("/OnboardingWizard");
     } catch (err) {
       console.error("Register failed:", err);
-      alert(err.message);
+      alert(err.message || "Registration failed");
     }
   };
 
   const handleGoogleRegister = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken(/* forceRefresh */ true);
-      const data = await authFirebaseLogin(idToken);
-
-      if (data.user.hasCompletedOnboarding) {
-        navigate("/dashboard");
-      } else {
-        navigate("/OnboardingWizard");
-      }
+      const { user } = await signInWithPopup(auth, googleProvider);
+      const idToken = await user.getIdToken(true);
+      stashToken(idToken);
+      navigate("/OnboardingWizard");
     } catch (err) {
-      console.error("Google sign up failed:", err);
-      alert("Google sign up failed: " + err.message);
+      console.error("Register failed:", err);
+      alert(err.message || "Registration failed");
     }
   };
 
@@ -70,14 +47,14 @@ export default function Register() {
               type="email"
               placeholder="Email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Password (min 8 characters)"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               minLength={8}
               required
             />
@@ -87,12 +64,22 @@ export default function Register() {
           <div className="divider">or</div>
 
           <button className="social google-btn" onClick={handleGoogleRegister}>
-              <img className="google-icon" src="../icons8-google.svg" alt="" style={{marginRight: '8px'}} />
-              Sign up with Google
+            <img
+              className="google-icon"
+              src="../icons8-google.svg"
+              alt="Google icon"
+              style={{ marginRight: "8px" }}
+            />
+            Sign up with Google
           </button>
         </div>
       </div>
-      <p className="login-tag"> Already have an account? <Link to="/login" className="login-link">Log in</Link> </p>
-  </div>
+      <p className="login-tag">
+        Already have an account?{" "}
+        <Link to="/login" className="login-link">
+          Log in
+        </Link>
+      </p>
+    </div>
   );
 }

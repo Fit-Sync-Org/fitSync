@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {auth} from "../src/firebase";
 
 import StepName from "./onboarding/StepName";
 import StepAge from "./onboarding/StepAge";
@@ -16,15 +17,15 @@ import ProgressBar from "./onboarding/ProgressBar";
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: "",
+    name: { firstName: "", lastName: "", },
     age: "",
-    goal: "",
+    goal: [],
     gender: "",
     occupation: "",
     availability: "",
     preference: "",
     diet: "",
-    metrics: "",
+    metrics: { height: "", weight: "" },
     phone: "",
   });
 
@@ -59,7 +60,33 @@ export default function OnboardingWizard() {
   const updateFormData = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
+  const isStepValid = (stepId) => {
+    const value = formData[stepId];
+
+    switch (stepId) {
+      case "name":
+        return value.firstName && value.lastName;
+      case "age":
+        return value !== "" && !isNaN(value);
+      case "goal":
+        return Array.isArray(value) && value.length > 0;
+      case "gender":
+        return value !== "";
+      case "availability":
+        return value !== "" && !isNaN(value);
+      case "diet":
+        return value.trim() !== "";
+      case "metrics":
+        return value.height && value.weight;
+      default:
+        return true;
+    }
+  };
+
   const nextStep = () => {
+    const {id, required} = steps[currentStep];
+    if (required && !isStepValid(id)) {alert("Please fill required fields"); return; };
+
     if (currentStep < steps.length - 1) setCurrentStep((prev) => prev + 1);
   };
 
@@ -71,22 +98,44 @@ export default function OnboardingWizard() {
     if (!steps[currentStep].required) nextStep();
   };
 
+
+
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    console.log("Submitting formData:", formData);
+    for (const s of steps)
+      if (s.required && !isStepValid(s.id))
+        return alert(`Complete the ${s.id} step first`);
 
-    const resp = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/complete-onboarding`,
-      { method: "POST", credentials: "include" }
-    );
+    const sanitized = { ...formData, preference: formData.preference || null };
 
-    if (!resp.ok) {
-      console.error("Failed to mark onboarding complete");
-      return;
+    try {
+      const idToken = await auth.currentUser.getIdToken(true);
+      sessionStorage.setItem("fitsyncTempToken", idToken);
+
+        console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_URL}/onboarding/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify(sanitized),
+        }
+      );
+
+      if (!resp.ok) throw new Error("Server rejected onboarding");
+
+      sessionStorage.removeItem("fitbuddyTempToken");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Could not complete onboarding");
     }
-    navigate("/dashboard");
   };
+
 
   return (
     <div className="wizard-container">
@@ -100,7 +149,7 @@ export default function OnboardingWizard() {
       {StepComponent && (
         <StepComponent
           value={formData[steps[currentStep].id]}
-          setValue={(val) => updateFormData(steps[currentStep].id, val)}
+          setValue={(value) => updateFormData(steps[currentStep].id, value)}
         />
       )}
 

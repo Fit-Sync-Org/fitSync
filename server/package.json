@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "npm install && npx prisma migrate deploy && npx prisma db seed && npx prisma generate",
+    "postinstall": "npx prisma generate"
   },
   "repository": {
     "type": "git",

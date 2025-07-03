@@ -22,7 +22,7 @@ enum Gender {
   MALE
   FEMALE
   OTHER
-  PREFER_NOT_TO_SAY
+  RATHER_NOT_SAY
 }
 
 enum SessionPreference {
@@ -44,7 +44,7 @@ model User {
   createdAt               DateTime             @default(now())
   firstName               String?
   lastName                String?
-  ageRange                Int?
+  age                     Int?
   gender                  Gender?
   occupation              String?
   inspiration             String?
@@ -54,7 +54,7 @@ model User {
   dietaryRestrictions     String?
   heightCm                Float?
   weightKg                Float?
-  Goals                   FitnessGoal[]        @relation("UserGoals")
+  goals                   FitnessGoal[]        @relation("UserGoals")
   lastLogin               DateTime?
   streakCount             Int                  @default(0)
   meals                   Meal[]

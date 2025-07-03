@@ -3,6 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 
 module.exports = async function requireAuth(req, res, next) {
+  console.log("requireAuth hit!", req.path);
   try {
     const idToken = req.cookies.token;
     if (!idToken) {

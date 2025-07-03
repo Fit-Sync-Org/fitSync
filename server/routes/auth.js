@@ -6,6 +6,5 @@ const authController = require("../controllers/authController");
 router.post("/firebase-login", authController.firebaseLogin);
 router.post("/logout", authController.logout);
 router.get("/me", requireAuth, authController.me);
-router.post("/complete-onboarding", requireAuth, authController.completeOnboarding);
 
 module.exports = router;

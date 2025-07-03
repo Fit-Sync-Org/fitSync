@@ -1,0 +1,123 @@
+body{
+  margin-top: 30rem;
+}
+
+.log-meal-page {
+  min-height: 100vh;
+  color: #e6efd8;
+}
+
+
+.log-meal-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.log-meal-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.meal-table {
+  margin-bottom: 3rem;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+
+.nutrition-columns {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.totals-row, .goals-row, .remaining-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+
+.totals-values, .goals-values, .remaining-values {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.water-section h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: blue;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.water-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.water-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.water-btn:hover {
+  background: rgba(78, 205, 196, 0.2);
+  transform: translateY(-2px);
+}
+
+.custom-add-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+.custom-water-input:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+}
+
+.water-unit-label {
+  font-size: 1.3rem;
+  color: #b8c5a8;
+}
+
+.water-progress {
+  grid-column: 1 / -1;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.water-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(78, 205, 196, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.water-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecdc4, #6ee7d7);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.water-progress-text {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4ecdc4;
+}

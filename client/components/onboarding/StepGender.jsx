@@ -6,7 +6,7 @@ const StepGender = ({ value, setValue }) => {
       </h2>
         <label className="step-label" htmlFor="gender">
           What is your gender?
-          <span className="tooltip">
+          <span className="tooltip" data-tooltip="Male and female sex hormones affect metabolism. We calculate calorie needs differently depending on the sex you select.">
             <p> ⓘ </p>
           </span>
         </label>

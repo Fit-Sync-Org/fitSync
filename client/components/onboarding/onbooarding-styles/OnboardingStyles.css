@@ -53,14 +53,15 @@
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(173, 201, 126, 0.2);
-  color: #ffffff;
+  background-color: rgba(173, 201, 126, 0.8);
+  color: #2c332e;
   padding: 0.8rem 1rem;
   border-radius: 6px;
   font-size: 1.4rem;
   font-weight: lighter;
   line-height: 1.4;
-  max-width: 250px;
+  max-width: 55rem;
+  width: max-content;
   white-space: normal;
   text-align: left;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);

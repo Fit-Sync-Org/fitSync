@@ -24,6 +24,7 @@ export default function ProtectedRoute({ children }) {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           credentials: "include",
+          signal,
         });
 
         if (res.ok) {

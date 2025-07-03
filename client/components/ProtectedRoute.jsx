@@ -8,6 +8,8 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     async function refreshCookie(idToken) {
       await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
@@ -15,6 +17,7 @@ export default function ProtectedRoute({ children }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
+        signal,
       });
     }
 
@@ -22,6 +25,7 @@ export default function ProtectedRoute({ children }) {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           credentials: "include",
+          signal,
         });
 
         if (res.ok) {
@@ -36,6 +40,7 @@ export default function ProtectedRoute({ children }) {
           /* retry once */
           const retry = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
             credentials: "include",
+            signal,
           });
           if (!cancelled) setAuth(retry.ok);
           return;
@@ -51,7 +56,10 @@ export default function ProtectedRoute({ children }) {
     }
 
     check();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled.current = true;
+      controller.abort(); // abort any pending fetch
+    };
   }, []);
 
   if (loading) return <p>Checking authentication…</p>;

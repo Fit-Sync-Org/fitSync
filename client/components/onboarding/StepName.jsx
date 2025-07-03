@@ -10,7 +10,7 @@ const stepName = ({ value, setValue }) => {
       </div>
 
       <div className="input-wrapper last-name">
-        <label htmlFor="last-name">Last name </label>
+        <label htmlFor="last-name">Last name</label>
         <input className="name-input" id="last-name" name="lastName" type="text" placeholder="Last name" value = {value?.lastName || ''}
           onChange={(e) => setValue({...value, lastName: e.target.value})} />
       </div>

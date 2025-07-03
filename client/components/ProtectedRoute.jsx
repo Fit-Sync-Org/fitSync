@@ -17,6 +17,7 @@ export default function ProtectedRoute({ children }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
+        signal,
       });
     }
 

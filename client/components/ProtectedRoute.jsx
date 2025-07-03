@@ -40,6 +40,7 @@ export default function ProtectedRoute({ children }) {
           /* retry once */
           const retry = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
             credentials: "include",
+            signal,
           });
           if (!cancelled) setAuth(retry.ok);
           return;

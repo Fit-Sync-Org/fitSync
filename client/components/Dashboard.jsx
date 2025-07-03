@@ -72,7 +72,7 @@ export default function Dashboard() {
           <div
             className="progress"
             style={{
-              width: user.calorieGoal
+              width: typeof user.calorieGoal === 'number' && user.calorieGoal > 0
                 ? `${(user.dailyCaloriesIn / user.calorieGoal) * 100}%`
                 : "0%",
             }}

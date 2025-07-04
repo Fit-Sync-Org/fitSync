@@ -5,9 +5,10 @@ const cookieParser  = require("cookie-parser");
 const authRoutes    = require("./routes/auth");
 const requireAuth   = require("./middleware/requireAuth");
 const onboardingRouter = require("./routes/onboarding");
-const mealsRouter = require("./routes/meals");
+const mealsRouter = require("./routes/meals")
+const foodRoutes = require("./routes/foodRoutes");
 
-dotenv.config();
+require('dotenv').config();
 const app  = express();
 const port = process.env.PORT || 3001;
 
@@ -25,6 +26,7 @@ app.get("/", (_req, res) => {
 app.get("/healthz", (_req, res) => res.send("ok"));
 app.use("/auth", authRoutes);
 app.use("/onboarding", onboardingRouter);
+app.use("/api/foods", foodRoutes);
 
 app.use(requireAuth);
 app.use("/meals", mealsRouter);

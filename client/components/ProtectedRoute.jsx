@@ -56,10 +56,7 @@ export default function ProtectedRoute({ children }) {
     }
 
     check();
-    return () => {
-      cancelled.current = true;
-      controller.abort(); // abort any pending fetch
-    };
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) return <p>Checking authentication…</p>;

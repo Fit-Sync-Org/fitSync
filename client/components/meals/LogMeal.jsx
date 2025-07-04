@@ -213,7 +213,7 @@ export default function LogMeal() {
     }
 
     try {
-      const response = await apiCallWithRetry(`/api/meals/${meal.id}`, {
+      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals/${meal.id}`, {
         method: 'DELETE',
       });
 

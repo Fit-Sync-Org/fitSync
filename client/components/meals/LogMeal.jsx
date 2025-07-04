@@ -97,12 +97,8 @@ export default function LogMeal() {
       ...prev,
       [entry.mealType]: [...prev[entry.mealType], entry]
     }));
-    
-  const handleAddFood = (mealType) => {
-  // TODO: open “search & add food” modal for each mealType
-  console.log('add food to', mealType);
-
   };
+
 
 const handleQuickTools = (mealType) => {
   // TODO: make a dropdown(quick-actions) for each mealType

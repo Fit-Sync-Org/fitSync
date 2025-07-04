@@ -28,6 +28,7 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
             </div>
           ))
         ) : (
+
             <div className="empty-meal">
               <span className="empty-meal-text">No foods logged</span>
               <span className="food-calories">0</span>
@@ -39,7 +40,6 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
               <button className="remove-food-btn" onClick={() => onRemoveFood(index)}>×</button>
               
             </div>
-
         )}
       </div>
     </div>

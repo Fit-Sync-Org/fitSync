@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LogMeal.css";
 import MealSection from "./MealSection";
+
 import FoodSearch from "./FoodSearch";
+
 
 export default function LogMeal() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -12,7 +14,8 @@ export default function LogMeal() {
 
   const [meals, setMeals] = useState({
     breakfast: [
-      { name: "Oatmea", calories: 320, carbs: 58, fat: 6, protein: 12, sodium: 180, sugar: 15 },
+
+      { name: "Oatmeal", calories: 320, carbs: 58, fat: 6, protein: 12, sodium: 180, sugar: 15 },
       { name: "Yogurt", calories: 150, carbs: 8, fat: 0, protein: 20, sodium: 65, sugar: 6 }
     ],
     lunch: [
@@ -79,6 +82,7 @@ export default function LogMeal() {
     }
   };
 
+
   const [modal, setModal] = useState(null);
 
   const handleAddFood = (mealType) => {
@@ -93,6 +97,11 @@ export default function LogMeal() {
       ...prev,
       [entry.mealType]: [...prev[entry.mealType], entry]
     }));
+    
+  const handleAddFood = (mealType) => {
+  // TODO: open “search & add food” modal for each mealType
+  console.log('add food to', mealType);
+
   };
 
 const handleQuickTools = (mealType) => {
@@ -206,8 +215,6 @@ const handleRemoveFood = (mealType, idx) => {
           />
         )}
 
-
-
         <div>
           <div className="complete-entry-section">
             <p className="complete-text">
@@ -267,7 +274,7 @@ const handleRemoveFood = (mealType, idx) => {
                 ></div>
               </div>
               <span className="water-progress-text">
-                {waterIntake >= 8 ? "Goal achieved! 🎉" : `${Math.max(0, 8 - waterIntake)} cups remaining`}
+                {waterIntake >= 8 ? "Goal achieved! " : `${Math.max(0, 8 - waterIntake)} cups remaining`}
               </span>
             </div>
           </div>

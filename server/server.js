@@ -29,7 +29,7 @@ app.use("/onboarding", onboardingRouter);
 app.use("/api/foods", foodRoutes);
 
 app.use(requireAuth);
-app.use("/meals", mealsRouter);
+app.use("/api/meals", mealsRouter);
 
 
 app.listen(port, () => {

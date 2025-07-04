@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../src/firebase";
 import "./LogMeal.css";
 import MealSection from "./MealSection";
-
 import FoodSearch from "./FoodSearch";
 
 
@@ -10,21 +10,14 @@ export default function LogMeal() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [waterIntake, setWaterIntake] = useState(0);
   const [customWater, setCustomWater] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const [meals, setMeals] = useState({
-    breakfast: [
-
-      { name: "Oatmeal", calories: 320, carbs: 58, fat: 6, protein: 12, sodium: 180, sugar: 15 },
-      { name: "Yogurt", calories: 150, carbs: 8, fat: 0, protein: 20, sodium: 65, sugar: 6 }
-    ],
-    lunch: [
-      { name: "Chicken Salad", calories: 450, carbs: 15, fat: 22, protein: 48, sodium: 890, sugar: 8 }
-    ],
+    breakfast: [],
+    lunch: [],
     dinner: [],
-    snacks: [
-      { name: "Apple", calories: 280, carbs: 25, fat: 16, protein: 8, sodium: 150, sugar: 18 }
-    ]
+    snacks: []
   });
 
   const dailyGoals = {
@@ -35,6 +28,79 @@ export default function LogMeal() {
     sodium: 2300,
     sugar: 105
   };
+  // Helper function to refresh authentication token
+  const refreshAuthToken = async () => {
+    if (auth.currentUser) {
+      const freshToken = await auth.currentUser.getIdToken(true);
+      await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: freshToken }),
+      });
+    }
+  };
+
+  // Helper function to make API calls with token refresh retry logic
+  const apiCallWithRetry = async (url, options = {}) => {
+    try {
+      const response = await fetch(url, {
+        credentials: 'include',
+        ...options,
+      });
+
+      if (response.status === 401 && auth.currentUser) {
+        // Token expired, refresh and retry
+        await refreshAuthToken();
+        const retryResponse = await fetch(url, {
+          credentials: 'include',
+          ...options,
+        });
+        return retryResponse;
+      }
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Fetch meals when date changes
+  useEffect(() => {
+    const fetchMeals = async () => {
+      setLoading(true);
+      try {
+        const dateString = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals?date=${dateString}`);
+
+        if (response.ok) {
+          const mealsData = await response.json();
+          setMeals(mealsData);
+        } else {
+          console.error('Failed to fetch meals:', response.statusText);
+          // Reset to empty meals on error
+          setMeals({
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+            snacks: []
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching meals:', error);
+        setMeals({
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+          snacks: []
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeals();
+  }, [selectedDate]);
 
   const calculateTotals = () => {
     let totals = { calories: 0, carbs: 0, fat: 0, protein: 0, sodium: 0, sugar: 0 };
@@ -92,25 +158,95 @@ export default function LogMeal() {
   const closeModal = () => setModal(null);
 
 
-  const handleAddToState = (entry) => {
-    setMeals((prev) => ({
-      ...prev,
-      [entry.mealType]: [...prev[entry.mealType], entry]
-    }));
+  const handleAddToState = async (entry) => {
+    try {
+      const dateString = selectedDate.toISOString().split('T')[0];
+      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: entry.name,
+          calories: entry.calories,
+          carbs: entry.carbs,
+          fat: entry.fat,
+          protein: entry.protein,
+          sodium: entry.sodium,
+          sugar: entry.sugar,
+          quantity: 1,
+          mealType: entry.mealType,
+          date: dateString,
+        }),
+      });
+
+      if (response.ok) {
+        const savedMeal = await response.json();
+        setMeals((prev) => ({
+          ...prev,
+          [entry.mealType.toLowerCase()]: [...prev[entry.mealType.toLowerCase()], savedMeal]
+        }));
+      } else {
+        console.error('Failed to save meal:', response.statusText);
+        alert('Failed to save meal. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving meal:', error);
+      alert('Failed to save meal. Please try again.');
+    }
   };
 
-
-const handleQuickTools = (mealType) => {
-  // TODO: make a dropdown(quick-actions) for each mealType
-  console.log('quick tools for', mealType);
+  const handleQuickTools = (mealType) => {
+    // TODO: make a dropdown(quick-actions) for each mealType
+    console.log('quick tools for', mealType);
   };
 
-const handleRemoveFood = (mealType, idx) => {
-  setMeals(prev => ({
-    ...prev,
-    [mealType]: prev[mealType].filter((_, i) => i !== idx)
-  }));
+  const handleRemoveFood = async (mealType, idx) => {
+    const meal = meals[mealType][idx];
+
+    if (!meal || !meal.id) {
+      setMeals(prev => ({
+        ...prev,
+        [mealType]: prev[mealType].filter((_, i) => i !== idx)
+      }));
+      return;
+    }
+
+    try {
+      const response = await apiCallWithRetry(`/api/meals/${meal.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Remove from local state
+        setMeals(prev => ({
+          ...prev,
+          [mealType]: prev[mealType].filter((_, i) => i !== idx)
+        }));
+      } else {
+        console.error('Failed to delete meal:', response.statusText);
+        alert('Failed to delete meal. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      alert('Failed to delete meal. Please try again.');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="log-meal-page">
+        <button className="back-btn" onClick={() => navigate("/dashboard")}>
+          Back to Dashboard
+        </button>
+        <div className="log-meal-container">
+          <div className="loading-state">
+            <p>Loading your meals...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="log-meal-page">

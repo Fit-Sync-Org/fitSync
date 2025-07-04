@@ -71,6 +71,8 @@ model Meal {
   protein   Float
   carbs     Float
   fat       Float
+  sodium    Float
+  sugar     Float
   quantity  Float
   mealType  String
   date      DateTime @default(now())

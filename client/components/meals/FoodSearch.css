@@ -1,0 +1,345 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.food-search-modal {
+  background: #2a2a2a;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  color: #e6efd8;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(173, 201, 126, 0.1);
+}
+
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #b8c5a8;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(173, 201, 126, 0.1);
+  color: #e6efd8;
+}
+
+.search-section {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(173, 201, 126, 0.1);
+}
+
+.search-label {
+  display: block;
+  font-size: 1.1rem;
+  color: #b8c5a8;
+  margin-bottom: 0.8rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1.1rem;
+  background: #1a1a1a;
+  border: 2px solid rgba(173, 201, 126, 0.2);
+  border-radius: 8px;
+  color: #e6efd8;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: rgba(173, 201, 126, 0.5);
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.results-section {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(173, 201, 126, 0.1);
+}
+
+.results-header {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #e6efd8;
+  margin: 0 0 1rem 0;
+}
+
+.suggestions-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(173, 201, 126, 0.05);
+}
+
+.suggestion-item:hover {
+  background: rgba(173, 201, 126, 0.1);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item .food-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #e6efd8;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.suggestion-item .food-details {
+  font-size: 0.95rem;
+  color: #b8c5a8;
+}
+
+.no-results {
+    text-align: center;
+    color: #b8c5a8;
+    font-style: italic;
+    padding: 2rem;
+}
+
+.selected-food-section {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(173, 201, 126, 0.1);
+}
+
+
+.learn-more {
+  color: #4ecdc4;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.selected-food-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.selected-food-header h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e6efd8;
+  margin: 0;
+}
+
+
+.learn-more:hover {
+  color: #6ee7d7;
+  text-decoration: underline;
+}
+
+.quantity-section {
+  margin-bottom: 1.5rem;
+}
+
+.quantity-label {
+  display: block;
+  font-size: 1.1rem;
+  color: #b8c5a8;
+  margin-bottom: 0.8rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.meal-selection {
+  margin-bottom: 1.5rem;
+}
+
+.meal-label {
+  display: block;
+  font-size: 1.1rem;
+  color: #b8c5a8;
+  margin-bottom: 0.8rem;
+}
+
+.meal-select {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  background: #1a1a1a;
+  border: 2px solid rgba(173, 201, 126, 0.2);
+  border-radius: 6px;
+  color: #e6efd8;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 150px;
+}
+
+.meal-select:focus {
+  border-color: rgba(173, 201, 126, 0.5);
+}
+
+.nutrition-info {
+  margin-bottom: 1.5rem;
+}
+
+.nutrition-info h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #e6efd8;
+  margin: 0 0 1rem 0;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.8rem;
+}
+
+.nutrition-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(173, 201, 126, 0.05);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.nutrition-label {
+  font-size: 0.9rem;
+  color: #b8c5a8;
+  margin-bottom: 0.3rem;
+}
+
+.nutrition-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e6efd8;
+}
+
+
+.add-others-link {
+  padding: 1.5rem 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #b8c5a8;
+}
+
+.database-link {
+  color: #4ecdc4;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.database-link:hover {
+  color: #6ee7d7;
+  text-decoration: underline;
+}
+
+/* Scrollbar styling for webkit browsers */
+.suggestions-container::-webkit-scrollbar,
+.food-search-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.suggestions-container::-webkit-scrollbar-track,
+.food-search-modal::-webkit-scrollbar-track {
+  background: rgba(173, 201, 126, 0.1);
+  border-radius: 4px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb,
+.food-search-modal::-webkit-scrollbar-thumb {
+  background: rgba(173, 201, 126, 0.3);
+  border-radius: 4px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb:hover,
+.food-search-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(173, 201, 126, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .food-search-modal {
+    width: 98%;
+    max-height: 95vh;
+  }
+
+  .modal-header,
+  .search-section,
+  .results-section,
+  .selected-food-section,
+  .add-database-link {
+    padding: 1rem 1.5rem;
+  }
+
+  .quantity-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quantity-input,
+  .serving-select,
+  .meal-select {
+    width: 100%;
+  }
+}

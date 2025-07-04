@@ -28,12 +28,18 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
             </div>
           ))
         ) : (
-          <div className="empty-meal">
-            <span className="empty-meal-text">No foods logged</span>
-            <div className="empty-meal-values">
-              {[...Array(6)].map((_, i) => <span key={i}>0</span>)}
+            <div className="empty-meal">
+              <span className="empty-meal-text">No foods logged</span>
+              <span className="food-calories">0</span>
+              <span className="food-carbs">0</span>
+              <span className="food-fat">0</span>
+              <span className="food-protein">0</span>
+              <span className="food-sodium">0</span>
+              <span className="food-sugar">0</span>
+              <button className="remove-food-btn" onClick={() => onRemoveFood(index)}>×</button>
+              
             </div>
-          </div>
+
         )}
       </div>
     </div>

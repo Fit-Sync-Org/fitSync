@@ -36,13 +36,6 @@
   opacity: 0.6;
 }
 
-.empty-values {
-  display: flex;
-  justify-content: space-between;
-}
-
-.empty-values span {
-  text-align: center;
-  font-size: 1.3rem;
-  color: #b8c5a8;
+.empty-meal button {
+  cursor: not-allowed;
 }

@@ -45,6 +45,7 @@ export default function Dashboard() {
       <div className="dashboard-actions">
         <button className="btn primary" onClick={() => nav("/log-meal")}>Log Meal</button>
         <button className="btn primary">Log Workout</button>
+        <button className="btn secondary" onClick={logout}>Logout</button>
       </div>
 
       <div className="dashboard-summary">

@@ -18,7 +18,7 @@ export default function FoodSearch({ mealType, onClose, onAdd }) {
 
     const id = setTimeout(async () => {
       try {
-        const res = await axios.get('/api/foods/search', { params: { query } });
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/foods/search`, { params: { query } });
         console.log(res.data);
         setSuggs(Array.isArray(res.data) ? res.data.slice(0, 50) : []);
       } catch (err) {
@@ -32,7 +32,7 @@ export default function FoodSearch({ mealType, onClose, onAdd }) {
 
   const handlePick = async (food) => {
     try {
-      const res = await axios.post('/api/foods/nutrients', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/foods/nutrients`, {
         query: `${quantity} ${food.food_name}`
       });
       setSelected(res.data || null);

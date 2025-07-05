@@ -2,7 +2,6 @@
   margin-bottom: 2rem;
   border-bottom: 1px solid rgba(173, 201, 126, 0.1);
   padding-bottom: 1.5rem;
-  background: red;
 }
 
 .meal-header {
@@ -122,8 +121,24 @@
 }
 
 
-.empty-meal-text {
+.food-name.empty {
   font-size: 1.3rem;
   color: #b8c5a8;
   font-style: italic;
+}
+
+.remove-food-btn.empty {
+  cursor: not-allowed;
+}
+
+.remove-food-btn.empty {
+  cursor: not-allowed;
+  background: rgba(255, 107, 107, 0.1);
+  opacity: 0.4;
+}
+
+.remove-food-btn.empty:hover
+{
+  background:rgba(173, 201, 126, 0.05);
+  transform: none;
 }

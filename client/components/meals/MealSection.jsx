@@ -56,7 +56,7 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
                 </div>
               </div>
               <div className='item-remove-btn'>
-                <button className="remove-food-btn" onClick={() => onRemoveFood(index)}>×</button>
+                <button className="remove-food-btn empty" onClick={() => onRemoveFood(index)}>×</button>
               </div>
 
             </div>

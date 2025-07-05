@@ -1,4 +1,19 @@
+/* General / unclassified */
+.log-meal-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
+  color: #e6efd8;
+  padding: 2rem;
+}
 
+.log-meal-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #adc97e;
+  margin-bottom: 1rem;
+}
+
+/* back button */
 .back-btn {
   background: rgba(173, 201, 126, 0.1);
   border: 2px solid #adc97e;
@@ -16,22 +31,8 @@
   transform: translateX(-3px);
 }
 
-.log-meal-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
-  color: #e6efd8;
-  padding: 2rem;
-}
 
-
-.log-meal-header h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #adc97e;
-  margin-bottom: 1rem;
-}
-
-
+/* DATE slider */
 .date-selector {
   display: flex;
   align-items: center;
@@ -41,6 +42,7 @@
   padding: 1.5rem 2rem;
   border-radius: 16px;
   border: 1px solid rgba(173, 201, 126, 0.2);
+  margin-bottom: 3rem;
 }
 
 .date-nav-btn {
@@ -68,6 +70,7 @@
 }
 
 
+/* Meal table */
 .meal-table {
   background: rgba(44, 51, 46, 0.8);
   border-radius: 20px;
@@ -84,9 +87,8 @@
   padding: 1rem 0;
   border-bottom: 2px solid #adc97e;
   margin-bottom: 1.5rem;
+  padding-right: 20px;
 }
-
-
 
 .meal-column {
   font-size: 1.8rem;
@@ -112,8 +114,7 @@
   color: #b8c5a8;
 }
 
-
-
+/* meal table footer */
 .totals-section {
   margin-top: 2rem;
   padding-top: 2rem;
@@ -122,7 +123,7 @@
 
 .totals-row, .goals-row, .remaining-row {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 420px 1fr;
   gap: 2rem;
   align-items: center;
   padding: 1rem 0;
@@ -199,15 +200,14 @@
   font-weight: 700;
   color: #2c332e;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .complete-entry-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(173, 201, 126, 0.3);
+  background: #68794c;
 }
 
-
+/* water section */
 .water-section {
   background: rgba(44, 51, 46, 0.8);
   border-radius: 20px;
@@ -369,33 +369,4 @@
   font-size: 1.4rem;
   font-weight: 600;
   color: #4ecdc4;
-}
-
-
-.complete-entry-section {
-  text-align: center;
-  border: 5px solid rgba(173, 201, 126, 0.1);
-}
-
-.complete-text {
-  font-size: 1.4rem;
-  color: #b8c5a8;
-  margin-bottom: 1.5rem;
-}
-
-.complete-entry-btn {
-  background: linear-gradient(135deg, #adc97e, #c8e6a0);
-  border: none;
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #2c332e;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.complete-entry-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(173, 201, 126, 0.3);
 }

@@ -233,7 +233,7 @@ export default function LogMeal() {
   if (loading) {
     return (
       <div className="log-meal-page">
-        <button className="back-btn" onClick={() => navigate("/dashboard")}>
+        <button className="back-btn loading" onClick={() => navigate("/dashboard")}>
           Back to Dashboard
         </button>
         <div className="log-meal-container">
@@ -273,12 +273,13 @@ export default function LogMeal() {
             <div className="nutrition-columns">
               <span>Calories <br/>
                 <small>kcal</small>
-            </span>
+              </span>
               <span>Carbs<br/>  <small>g</small></span>
               <span>Fat<br/><small>g</small></span>
               <span>Protein<br/><small>g</small></span>
               <span>Sodium<br/><small>g</small></span>
               <span>Sugar<br/><small>g</small></span>
+              <span></span>
             </div>
           </div>
 
@@ -313,6 +314,7 @@ export default function LogMeal() {
                 <span className="total-value">{totals.protein}</span>
                 <span className="total-value">{totals.sodium}</span>
                 <span className="total-value">{totals.sugar}</span>
+                <span></span>
               </div>
             </div>
 
@@ -325,6 +327,7 @@ export default function LogMeal() {
                 <span className="goal-value">{dailyGoals.protein}</span>
                 <span className="goal-value">{dailyGoals.sodium.toLocaleString()}</span>
                 <span className="goal-value">{dailyGoals.sugar}</span>
+                <span></span>
               </div>
             </div>
 
@@ -339,6 +342,7 @@ export default function LogMeal() {
                 <span className="remaining-value">{remaining.protein}</span>
                 <span className="remaining-value">{remaining.sodium.toLocaleString()}</span>
                 <span className="remaining-value">{remaining.sugar}</span>
+                <span></span>
               </div>
             </div>
           </div>

@@ -285,6 +285,27 @@ export default function LogMeal() {
             </div>
           </div>
 
+           <div className="meal-section-wrapper">
+          {Object.entries(meals).map(([mealKey, foods]) => (
+            <MealSection
+            key={mealKey}
+            name={mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}
+            foods={foods}
+            onAddFood={() => handleAddFood(mealKey)}
+            onQuickTools={() => handleQuickTools(mealKey)}
+            onRemoveFood={(idx) => handleRemoveFood(mealKey, idx)}
+            />
+          ))}
+        </div>
+
+        {modal && (
+          <FoodSearch
+            mealType={modal.mealType}
+            onClose={closeModal}
+            onAdd={handleAddToState}
+          />
+        )}
+
           <div className="totals-section">
             <div className="totals-row">
               <span className="totals-label">Totals</span>
@@ -326,26 +347,7 @@ export default function LogMeal() {
           </div>
         </div>
 
-        <div className="meal-section-wrapper">
-          {Object.entries(meals).map(([mealKey, foods]) => (
-            <MealSection
-            key={mealKey}
-            name={mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}
-            foods={foods}
-            onAddFood={() => handleAddFood(mealKey)}
-            onQuickTools={() => handleQuickTools(mealKey)}
-            onRemoveFood={(idx) => handleRemoveFood(mealKey, idx)}
-            />
-          ))}
-        </div>
 
-        {modal && (
-          <FoodSearch
-            mealType={modal.mealType}
-            onClose={closeModal}
-            onAdd={handleAddToState}
-          />
-        )}
 
         <div>
           <div className="complete-entry-section">

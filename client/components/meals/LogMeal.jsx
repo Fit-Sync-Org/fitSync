@@ -41,7 +41,6 @@ export default function LogMeal() {
     }
   };
 
-  // Helper function to make API calls with token refresh retry logic
   const apiCallWithRetry = async (url, options = {}) => {
     try {
       const response = await fetch(url, {
@@ -50,7 +49,6 @@ export default function LogMeal() {
       });
 
       if (response.status === 401 && auth.currentUser) {
-        // Token expired, refresh and retry
         await refreshAuthToken();
         const retryResponse = await fetch(url, {
           credentials: 'include',
@@ -65,7 +63,6 @@ export default function LogMeal() {
     }
   };
 
-  // Fetch meals when date changes
   useEffect(() => {
     const fetchMeals = async () => {
       setLoading(true);
@@ -198,6 +195,7 @@ export default function LogMeal() {
 
   const handleQuickTools = (mealType) => {
     // TODO: make a dropdown(quick-actions) for each mealType
+    // TODO: not an MVP, dependent on time
     console.log('quick tools for', mealType);
   };
 
@@ -218,7 +216,6 @@ export default function LogMeal() {
       });
 
       if (response.ok) {
-        // Remove from local state
         setMeals(prev => ({
           ...prev,
           [mealType]: prev[mealType].filter((_, i) => i !== idx)

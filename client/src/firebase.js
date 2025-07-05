@@ -39,6 +39,12 @@ if (typeof window !== 'undefined') {
   ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
     document.addEventListener(event, updateLastActivity, true);
   });
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updateLastActivity();
+    }
+  });
 }
 
 onAuthStateChanged(auth, (user) => {

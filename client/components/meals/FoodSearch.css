@@ -268,6 +268,11 @@
   color: #b8c5a8;
 }
 
+/* todo */
+.others-link {
+  color: #4ecdc4;
+}
+
 .database-link {
   color: #4ecdc4;
   text-decoration: none;
@@ -342,4 +347,42 @@
   .meal-select {
     width: 100%;
   }
+}
+
+/* Quantity/Servings styling */
+.quantity-input {
+  width: 80px;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  background: #1a1a1a;
+  border: 2px solid rgba(173, 201, 126, 0.2);
+  border-radius: 6px;
+  color: #e6efd8;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.quantity-input:focus {
+  border-color: rgba(173, 201, 126, 0.5);
+}
+
+.servings-text {
+  color: #b8c5a8;
+  font-size: 1rem;
+}
+
+.serving-select {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  background: #1a1a1a;
+  border: 2px solid rgba(173, 201, 126, 0.2);
+  border-radius: 6px;
+  color: #e6efd8;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.serving-select:focus {
+  border-color: rgba(173, 201, 126, 0.5);
 }

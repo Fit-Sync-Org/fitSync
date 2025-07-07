@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../src/firebase";
 import "./LogWorkout.css";
+import axios from "axios";
+import WorkoutSection from "./WorkoutSection";
 
 
 export default function LogWorkout() {
@@ -21,6 +23,20 @@ export default function LogWorkout() {
         duration: 60, // will change depending on their onboarding choice
         exercises: 5,
     };
+    useEffect(() => {
+        setLoading(true);
+        axios
+            .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`)
+            .then(({ data }) => {
+                setWorkouts(data);
+            })
+            .catch(err => {
+                console.error("Failed to load workouts:", err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [selectedDate]);
 
     const calculateTotals = () => {
         let totals = { calories: 0, duration: 0, exercise: 0 };
@@ -62,9 +78,17 @@ export default function LogWorkout() {
     };
 
 
-    const handleRemoveWorkout = (workoutType, idx) => {
-        console.log("remove workout from", workoutType, "at index", idx);
-        // TODO: Add remove workout functionality
+
+    const handleRemoveWorkout = (id, type) => {
+        axios
+        .delete(`/api/exercises/${id}`)
+        .then(() => {
+            setWorkouts(prev => ({
+            ...prev,
+            [type]: prev[type].filter(w => w.id !== id)
+            }));
+        })
+        .catch(err => console.error("Delete workout failed:", err));
     };
 
 
@@ -156,18 +180,17 @@ export default function LogWorkout() {
             </div>
 
 
-            {/* <div className="workout-section-wrapper">
-                {Object.entries(workouts).map(([workoutKey, exercises]) => (
+            <div className="workout-section-wrapper">
+                {Object.entries(workouts).map(([type, list]) => (
                 <WorkoutSection
-                    key={workoutKey}
-                    name={workoutKey.charAt(0).toUpperCase() + workoutKey.slice(1)}
-                    exercises={exercises}
-                    onAddWorkout={() => handleAddWorkout(workoutKey)}
-                    onQuickTools={() => handleQuickTools(workoutKey)}
-                    onRemoveWorkout={(idx) => handleRemoveWorkout(workoutKey, idx)}
+                    key={type}
+                    name={type.charAt(0).toUpperCase() + type.slice(1)}
+                    items={list}
+                    onAddWorkout={() => handleAddWorkout(type)}
+                    onRemoveWorkout={(id) => handleRemoveWorkout(id, type)}
                 />
                 ))}
-            </div> */}
+            </div>
 
 
             <div className="totals-section">

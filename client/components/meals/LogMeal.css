@@ -4,6 +4,7 @@
   background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
   color: #e6efd8;
   padding: 2rem;
+  width: 100%; /* test */
 }
 
 .log-meal-header h1 {
@@ -226,9 +227,9 @@
 
 .water-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 3rem;
-  align-items: start;
+  align-items: center;
 }
 
 .water-info h3 {

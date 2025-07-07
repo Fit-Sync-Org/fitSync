@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 // import './WorkoutSection.css';
 
 export default function WorkoutSection({
-  name,    
-  items,   
-  onAdd,   
-  onRemove 
+  name,
+  items,
+  onAdd,
+  onRemove
 }) {
   return (
     <div className="workout-section">

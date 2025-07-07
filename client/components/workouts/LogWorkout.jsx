@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../src/firebase";
 import "./LogWorkout.css";
 import axios from "axios";
 import WorkoutSection from "./WorkoutSection";
+import WorkoutSearch from './WorkoutSearch';
+
 
 
 export default function LogWorkout() {
@@ -23,20 +24,51 @@ export default function LogWorkout() {
         duration: 60, // will change depending on their onboarding choice
         exercises: 5,
     };
+
+    const [modalOpen, setModalOpen]     = useState(false);
+    const [currentType, setCurrentType] = useState(null);
+
+
     useEffect(() => {
         setLoading(true);
         axios
-            .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`)
-            .then(({ data }) => {
-                setWorkouts(data);
-            })
-            .catch(err => {
-                console.error("Failed to load workouts:", err);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`)
+        .then(({ data }) => {
+            setWorkouts(data);
+        })
+        .catch(err => {
+            console.error("Failed to load workouts:", err);
+        })
+        .finally(() => {
+            setLoading(false);
+        });
     }, [selectedDate]);
+
+    const handleAddWorkout = type => {
+        setCurrentType(type);
+        setModalOpen(true);
+    }
+
+    const handleRemoveWorkout = (id, type) => {
+        axios
+        .delete(`/api/exercises/${id}`)
+        .then(() => {
+            setWorkouts(prev => ({
+            ...prev,
+            [type]: prev[type].filter(w => w.id !== id)
+            }));
+        })
+        .catch(err => console.error("Delete workout failed:", err));
+    };
+
+    const handleAddToState = async entry => {
+        const res = await axios.post('/api/exercises', entry);
+
+        setWorkouts(prev => ({
+            ...prev,
+            [entry.type]: [...prev[entry.type], res.data]
+        }));
+    };
 
     const calculateTotals = () => {
         let totals = { calories: 0, duration: 0, exercise: 0 };
@@ -66,30 +98,12 @@ export default function LogWorkout() {
         });
     };
 
-    const handleAddWorkout = (workoutType) => {
-        console.log("add workout to", workoutType);
-        // TODO: Add workout modal functionality
-    };
-
-
     const handleQuickTools = (workoutType) => {
         console.log("quick tools for", workoutType);
         // TODO: Add quick tools functionality
     };
 
 
-
-    const handleRemoveWorkout = (id, type) => {
-        axios
-        .delete(`/api/exercises/${id}`)
-        .then(() => {
-            setWorkouts(prev => ({
-            ...prev,
-            [type]: prev[type].filter(w => w.id !== id)
-            }));
-        })
-        .catch(err => console.error("Delete workout failed:", err));
-    };
 
 
     if (loading) {
@@ -186,11 +200,22 @@ export default function LogWorkout() {
                     key={type}
                     name={type.charAt(0).toUpperCase() + type.slice(1)}
                     items={list}
-                    onAddWorkout={() => handleAddWorkout(type)}
-                    onRemoveWorkout={(id) => handleRemoveWorkout(id, type)}
+                    onAdd={() => handleAddWorkout(type)}
+                    onRemove={(id) => handleRemoveWorkout(id, type)}
                 />
                 ))}
             </div>
+
+
+            {modalOpen && (
+            <WorkoutSearch
+                date={selectedDate.toISOString().slice(0,10)}
+                onClose={() => setModalOpen(false)}
+                onAdd={entry => handleAddToState({ ...entry, type: currentType ,
+                date: selectedDate.toISOString().slice(0,10)
+                })}
+            />
+            )}
 
 
             <div className="totals-section">

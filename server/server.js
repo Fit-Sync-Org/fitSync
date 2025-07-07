@@ -7,6 +7,7 @@ const requireAuth   = require("./middleware/requireAuth");
 const onboardingRouter = require("./routes/onboarding");
 const mealsRouter = require("./routes/meals")
 const foodRoutes = require("./routes/foodRoutes");
+const workoutRoutes = require("./routes/workoutRoutes");
 
 require('dotenv').config();
 const app  = express();
@@ -27,6 +28,7 @@ app.get("/healthz", (_req, res) => res.send("ok"));
 app.use("/auth", authRoutes);
 app.use("/onboarding", onboardingRouter);
 app.use("/api/foods", foodRoutes);
+app.use("/api/workouts", workoutRoutes);
 
 app.use(requireAuth);
 app.use("/api/meals", mealsRouter);

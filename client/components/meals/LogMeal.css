@@ -4,7 +4,7 @@
   background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
   color: #e6efd8;
   padding: 2rem;
-  width: 100%; /* test */
+   /* test */
 }
 
 .log-meal-header h1 {
@@ -269,14 +269,14 @@
   gap: 2rem;
 }
 
-.quick-add-section h4, .custom-add-section h4 {
+.quick-add-section.meal h4, .custom-add-section.meal h4 {
   font-size: 1.6rem;
   font-weight: 600;
   color: #e6efd8;
   margin-bottom: 1rem;
 }
 
-.quick-add-buttons {
+.quick-add-buttons.meal {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
@@ -299,8 +299,9 @@
   transform: translateY(-2px);
 }
 
-.custom-add-controls {
+.custom-add-controls.meal {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 1rem;
 }
@@ -316,7 +317,7 @@
   text-align: center;
 }
 
-.custom-water-input:focus {
+.custom-water-input.meal:focus {
   outline: none;
   border-color: #4ecdc4;
   box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
@@ -327,7 +328,7 @@
   color: #b8c5a8;
 }
 
-.add-custom-btn {
+.add-custom-btn.meal {
   background: linear-gradient(135deg, #4ecdc4, #6ee7d7);
   border: none;
   border-radius: 8px;
@@ -339,7 +340,7 @@
   transition: all 0.3s ease;
 }
 
-.add-custom-btn:hover {
+.add-custom-btn.meal:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
 }

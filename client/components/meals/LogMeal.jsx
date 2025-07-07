@@ -374,18 +374,18 @@ export default function LogMeal() {
             </div>
 
 
-            <div className="quick-add-section">
+            <div className="quick-add-section meal">
               <h4>Quick Add</h4>
-              <div className="quick-add-buttons">
+              <div className="quick-add-buttons meal">
                 <button className="water-btn" onClick={() => addWater(1)}>+1 cup</button>
                 <button className="water-btn" onClick={() => addWater(2)}>+2 cup</button>
                 <button className="water-btn" onClick={() => addWater(4)}>+4 cup</button>
               </div>
             </div>
 
-            <div className="custom-add-section">
+            <div className="custom-add-section meal">
               <h4>Add Custom</h4>
-              <div className="custom-add-controls">
+              <div className="custom-add-controls meal">
                 <input
                   type="number"
                   value={customWater}
@@ -396,7 +396,7 @@ export default function LogMeal() {
                   step="0.5"
                 />
                 <span>cups</span>
-                <button className="add-custom-btn" onClick={addCustomWater}>Add</button>
+                <button className="add-custom-btn meal" onClick={addCustomWater}>Add</button>
               </div>
             </div>
 

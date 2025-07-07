@@ -37,8 +37,8 @@ export default function LogWorkout() {
     const totals = calculateTotals();
     const remaining = {
         calories: Math.max(0, dailyGoals.calories - totals.calories),
-        carbs: Math.max(0, dailyGoals.duration - totals.duration),
-        fat: Math.max(0, dailyGoals.exercises - totals.exercises),
+        duration: Math.max(0, dailyGoals.duration - totals.duration),
+        exercises: Math.max(0, dailyGoals.exercises - totals.exercises),
     };
 
     const formatDate = (date) => {
@@ -232,7 +232,7 @@ export default function LogWorkout() {
             </div>
 
 
-            <div className="hydration-section">
+            <div className="recovery-section">
             <h2>Post-Workout Recovery</h2>
             <div className="recovery-content">
                 <div className="recovery-data">
@@ -247,9 +247,9 @@ export default function LogWorkout() {
 
 
                 <div className="recovery-controls">
-                <div className="quick-add-section">
+                <div className="quick-add-section workout">
                     <h4>Quick Status</h4>
-                    <div className="quick-add-buttons">
+                    <div className="quick-add-buttons workout">
                     <button className="recovery-btn"> Energized</button>
                     <button className="recovery-btn"> Good</button>
                     <button className="recovery-btn"> Tired</button>
@@ -258,15 +258,15 @@ export default function LogWorkout() {
                 </div>
 
 
-                <div className="custom-add-section">
+                <div className="custom-add-section workout">
                     <h4>Add Notes</h4>
-                    <div className="custom-add-controls">
+                    <div className="custom-add-controls workout">
                     <textarea
                         placeholder="How did you feel during/after the workout?"
                         className="custom-notes-input"
                         rows="3"
                     />
-                    <button className="add-custom-btn">Save Note</button>
+                    <button className="add-custom-btn workout">Save Note</button>
                     </div>
                 </div>
                 </div>

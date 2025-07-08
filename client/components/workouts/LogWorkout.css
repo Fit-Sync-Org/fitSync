@@ -1,18 +1,20 @@
 /* General / unclassified */
-.log-meal-page {
+.log-workout-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
   color: #e6efd8;
   padding: 2rem;
-   /* test */
+  width: 95%;
 }
 
-.log-meal-header h1 {
+
+.log-workout-header h1 {
   font-size: 3rem;
   font-weight: 700;
   color: #adc97e;
   margin-bottom: 1rem;
 }
+
 
 /* back button */
 .back-btn {
@@ -26,6 +28,7 @@
   transition: all 0.3s ease;
   margin-bottom: 2rem;
 }
+
 
 .back-btn:hover {
   background: rgba(173, 201, 126, 0.2);
@@ -46,6 +49,7 @@
   margin-bottom: 3rem;
 }
 
+
 .date-nav-btn {
   background: rgba(173, 201, 126, 0.1);
   border: 1px solid #adc97e;
@@ -57,10 +61,12 @@
   transition: all 0.3s ease;
 }
 
+
 .date-nav-btn:hover {
   background: rgba(173, 201, 126, 0.2);
   transform: scale(1.05);
 }
+
 
 .selected-date {
   font-size: 2rem;
@@ -71,8 +77,8 @@
 }
 
 
-/* Meal table */
-.meal-table {
+/* Workout table */
+.workout-table {
   background: rgba(44, 51, 46, 0.8);
   border-radius: 20px;
   padding: 2rem;
@@ -80,6 +86,7 @@
   backdrop-filter: blur(10px);
   margin-bottom: 3rem;
 }
+
 
 .table-header {
   display: grid;
@@ -91,39 +98,46 @@
   padding-right: 20px;
 }
 
-.meal-column {
+
+.workout-column {
   font-size: 1.8rem;
   font-weight: 700;
   color: #adc97e;
 }
 
-.nutrition-columns {
+
+.workout-stats-columns {
   display: grid;
-  grid-template-columns: repeat(6, 1fr) auto;
+  grid-template-columns: repeat(5, 1fr) auto;
   gap: 1rem;
   text-align: center;
 }
 
-.nutrition-columns span {
+
+.workout-stats-columns span {
   font-size: 1.4rem;
   font-weight: 600;
   color: #e6efd8;
 }
 
-.nutrition-columns small {
+
+.workout-stats-columns small {
   font-size: 1rem;
   color: #b8c5a8;
 }
 
-/* meal table footer */
-.totals-section {
+
+/* workout table footer */
+.totals-section.workout {
   margin-top: 2rem;
   padding-top: 2rem;
-  padding-right: 2.5rem;
   border-top: 2px solid #adc97e;
 }
 
-.totals-row, .goals-row, .remaining-row {
+
+.totals-row.workout,
+.goals-row.workout,
+.remaining-row.workout {
   display: grid;
   grid-template-columns: 420px 1fr;
   gap: 2rem;
@@ -131,54 +145,68 @@
   padding: 1rem 0;
 }
 
-.totals-label, .goals-label, .remaining-label {
+
+.totals-label.workout,
+.goals-label.workout,
+.remaining-label.workout {
   font-size: 1.6rem;
   font-weight: 700;
 }
 
-.totals-label {
+
+.totals-label.workout {
   color: #adc97e;
 }
 
-.goals-label {
-  color: #4ecdc4;
+
+.goals-label.workout {
+  color: #ff6b6b;
 }
 
-.remaining-label {
+
+.remaining-label.workout {
   color: #ffd93d;
 }
 
-.totals-values, .goals-values, .remaining-values {
+
+.totals-values.workout,
+.goals-values.workout,
+.remaining-values.workout {
   display: grid;
-  grid-template-columns: repeat(6, 1fr) auto;
-  gap: 1.2rem;
+  grid-template-columns: repeat(5, 1fr) auto;
+  gap: 1rem;
   text-align: center;
 }
 
-.total-value {
+
+.total-value.workout {
   font-size: 1.5rem;
   font-weight: 700;
   color: #adc97e;
 }
 
-.goal-value {
+
+.goal-value.workout {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #4ecdc4;
+  color: #ff6b6b;
 }
 
-.remaining-value {
+
+.remaining-value.workout {
   font-size: 1.4rem;
   font-weight: 600;
   color: #ffd93d;
 }
+
 
 .remaining-value.low {
   color: #ff6b6b;
   font-weight: 700;
 }
 
-.complete-entry-section {
+
+.complete-entry-section.workout {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem;
@@ -187,13 +215,15 @@
   border: 1px solid rgba(173, 201, 126, 0.1);
 }
 
-.complete-text {
+
+.complete-text.workout {
   font-size: 1.4rem;
   color: #b8c5a8;
   margin-bottom: 1.5rem;
 }
 
-.complete-entry-btn {
+
+.complete-entry-btn.workout {
   background: linear-gradient(135deg, #adc97e, #c8e6a0);
   border: none;
   border-radius: 12px;
@@ -202,15 +232,18 @@
   font-weight: 700;
   color: #2c332e;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.complete-entry-btn:hover {
-  background: #68794c;
+
+.complete-entry-btn.workout:hover {
+  background: linear-gradient(135deg, #c8e6a0, #adc97e);
+  transform: translateY(-2px);
 }
 
-/* water section */
-.water-section {
+
+/* recovery section */
+.recovery-section {
   background: rgba(44, 51, 46, 0.8);
   border-radius: 20px;
   padding: 2rem;
@@ -218,158 +251,150 @@
   backdrop-filter: blur(10px);
 }
 
-.water-section h2 {
+.recovery-section h2 {
   font-size: 2.4rem;
   font-weight: 700;
-  color: #4ecdc4;
+  color: #ff6b6b;
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.water-content {
+
+.recovery-content {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 3rem;
   align-items: center;
+  justify-items: center;
 }
 
-.water-info h3 {
+
+.recovery-data h3 {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #4ecdc4;
+  color: #ff6b6b;
   margin-bottom: 1rem;
 }
 
-.water-display {
+
+.recovery-display {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
 
-.water-amount {
-  font-size: 3rem;
+
+.recovery-status {
+  font-size: 2rem;
   font-weight: 700;
-  color: #4ecdc4;
+  color: #ff6b6b;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
-.water-unit {
-  font-size: 1.6rem;
-  color: #b8c5a8;
-}
 
-.water-goal {
+.recovery-goal {
   font-size: 1.3rem;
   color: #b8c5a8;
   line-height: 1.5;
 }
 
-.water-controls {
+
+.recovery-controls {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-.quick-add-section.meal h4, .custom-add-section.meal h4 {
+
+.quick-add-section.workout h4,
+.custom-add-section.workout h4 {
   font-size: 1.6rem;
   font-weight: 600;
   color: #e6efd8;
   margin-bottom: 1rem;
 }
 
-.quick-add-buttons.meal {
+
+.quick-add-buttons.workout {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.water-btn {
-  background: rgba(78, 205, 196, 0.1);
-  border: 1px solid #4ecdc4;
+
+.recovery-btn {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
   border-radius: 8px;
   padding: 0.8rem 1.2rem;
   font-size: 1.3rem;
   font-weight: 600;
-  color: #4ecdc4;
+  color: #ff6b6b;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.water-btn:hover {
-  background: rgba(78, 205, 196, 0.2);
+
+.recovery-btn:hover {
+  background: rgba(255, 107, 107, 0.2);
   transform: translateY(-2px);
 }
 
-.custom-add-controls.meal {
+
+.custom-add-controls.workout {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.custom-water-input {
+
+.custom-notes-input {
   background: rgba(173, 201, 126, 0.1);
   border: 1px solid rgba(173, 201, 126, 0.3);
   border-radius: 8px;
-  padding: 0.8rem;
+  padding: 1rem;
   font-size: 1.4rem;
   color: #e6efd8;
-  width: 80px;
-  text-align: center;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
 }
 
-.custom-water-input.meal:focus {
+
+.custom-notes-input:focus {
   outline: none;
-  border-color: #4ecdc4;
-  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
-.water-unit-label {
-  font-size: 1.3rem;
-  color: #b8c5a8;
-}
 
-.add-custom-btn.meal {
-  background: linear-gradient(135deg, #4ecdc4, #6ee7d7);
+.add-custom-btn.workout {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
   border: none;
   border-radius: 8px;
   padding: 0.8rem 1.2rem;
   font-size: 1.3rem;
   font-weight: 600;
-  color: #2c332e;
+  color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  align-self: flex-start;
 }
 
-.add-custom-btn.meal:hover {
+
+.add-custom-btn.workout:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
 }
 
-.water-progress {
-  grid-column: 1 / -1;
-  margin-top: 2rem;
+
+.loading-state {
   text-align: center;
-}
-
-.water-progress-bar {
-  width: 100%;
-  height: 12px;
-  background: rgba(78, 205, 196, 0.2);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.water-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4ecdc4, #6ee7d7);
-  border-radius: 6px;
-  transition: width 0.3s ease;
-}
-
-.water-progress-text {
+  padding: 3rem;
+  color: #b8c5a8;
   font-size: 1.4rem;
-  font-weight: 600;
-  color: #4ecdc4;
 }

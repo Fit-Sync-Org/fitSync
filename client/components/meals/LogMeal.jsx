@@ -314,7 +314,6 @@ export default function LogMeal() {
                 <span className="total-value">{totals.protein}</span>
                 <span className="total-value">{totals.sodium}</span>
                 <span className="total-value">{totals.sugar}</span>
-                <span></span>
               </div>
             </div>
 
@@ -327,7 +326,6 @@ export default function LogMeal() {
                 <span className="goal-value">{dailyGoals.protein}</span>
                 <span className="goal-value">{dailyGoals.sodium.toLocaleString()}</span>
                 <span className="goal-value">{dailyGoals.sugar}</span>
-                <span></span>
               </div>
             </div>
 
@@ -342,7 +340,6 @@ export default function LogMeal() {
                 <span className="remaining-value">{remaining.protein}</span>
                 <span className="remaining-value">{remaining.sodium.toLocaleString()}</span>
                 <span className="remaining-value">{remaining.sugar}</span>
-                <span></span>
               </div>
             </div>
           </div>
@@ -373,33 +370,33 @@ export default function LogMeal() {
               </p>
             </div>
 
-            <div className="water-controls">
-              <div className="quick-add-section">
-                <h4>Quick Add</h4>
-                <div className="quick-add-buttons">
-                  <button className="water-btn" onClick={() => addWater(1)}>+1 cup</button>
-                  <button className="water-btn" onClick={() => addWater(2)}>+2 cup</button>
-                  <button className="water-btn" onClick={() => addWater(4)}>+4 cup</button>
-                </div>
-              </div>
 
-              <div className="custom-add-section">
-                <h4>Add Custom</h4>
-                <div className="custom-add-controls">
-                  <input
-                    type="number"
-                    value={customWater}
-                    onChange={(e) => setCustomWater(e.target.value)}
-                    placeholder="0"
-                    className="custom-water-input"
-                    min="0"
-                    step="0.5"
-                  />
-                  <span>cups</span>
-                  <button className="add-custom-btn" onClick={addCustomWater}>Add</button>
-                </div>
+            <div className="quick-add-section meal">
+              <h4>Quick Add</h4>
+              <div className="quick-add-buttons meal">
+                <button className="water-btn" onClick={() => addWater(1)}>+1 cup</button>
+                <button className="water-btn" onClick={() => addWater(2)}>+2 cup</button>
+                <button className="water-btn" onClick={() => addWater(4)}>+4 cup</button>
               </div>
             </div>
+
+            <div className="custom-add-section meal">
+              <h4>Add Custom</h4>
+              <div className="custom-add-controls meal">
+                <input
+                  type="number"
+                  value={customWater}
+                  onChange={(e) => setCustomWater(e.target.value)}
+                  placeholder="0"
+                  className="custom-water-input"
+                  min="0"
+                  step="0.5"
+                />
+                <span>cups</span>
+                <button className="add-custom-btn meal" onClick={addCustomWater}>Add</button>
+              </div>
+            </div>
+
 
             <div className="water-progress">
               <div className="water-progress-bar">

@@ -6,6 +6,7 @@ import "./App.css";
 import Register from "../components/register/Register";
 import OnboardingWizard from "../components/onboarding/OnboardingWizard";
 import LogMeal from "../components/meals/LogMeal";
+import LogWorkout from "../components/workouts/LogWorkout";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
             <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
             <Route path="/log-meal" element={ <ProtectedRoute> <LogMeal /> </ProtectedRoute>}/>
+            <Route path="/log-workout" element = {<ProtectedRoute> <LogWorkout /> </ProtectedRoute>}/>
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         </BrowserRouter>

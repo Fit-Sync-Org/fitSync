@@ -1,4 +1,3 @@
-/* client/src/pages/Dashboard.jsx */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,16 +15,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // fetch user profile
     axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, { withCredentials: true })
       .then(({ data }) => setUser(data))
       .catch(() => {});
 
-    // date
     const now = new Date();
-    setToday(now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }));
-
-    // fetch today's meals and workouts
+    setToday(now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }))
     const dateStr = now.toISOString().slice(0,10);
     axios.get(`${import.meta.env.VITE_API_URL}/api/meals?date=${dateStr}`, { withCredentials: true })
       .then(({ data }) => setMeals(data))

@@ -62,8 +62,7 @@ export default function LogWorkout() {
     };
 
     const handleAddToState = async entry => {
-        const res = await axios.post('/api/exercises', entry);
-
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/exercises`, entry);
         setWorkouts(prev => ({
             ...prev,
             [entry.type]: [...prev[entry.type], res.data]
@@ -218,53 +217,53 @@ export default function LogWorkout() {
             )}
 
 
-            <div className="totals-section">
-                <div className="totals-row">
-                <span className="totals-label">Totals</span>
-                <div className="totals-values">
-                    <span className="total-value">{totals.duration}</span>
-                    <span className="total-value">{totals.calories}</span>
-                    <span className="total-value">-</span>
-                    <span className="total-value">-</span>
-                    <span className="total-value">-</span>
+            <div className="totals-section workout">
+                <div className="totals-row workout">
+                <span className="totals-label workout">Totals</span>
+                <div className="totals-values workout">
+                    <span className="total-value workout">{totals.duration}</span>
+                    <span className="total-value workout">{totals.calories}</span>
+                    <span className="total-value workout">-</span>
+                    <span className="total-value workout">-</span>
+                    <span className="total-value workout">-</span>
                     <span></span>
                 </div>
                 </div>
 
 
-                <div className="goals-row">
-                <span className="goals-label">Your Daily Goal</span>
-                <div className="goals-values">
-                    <span className="goal-value">{dailyGoals.duration}</span>
-                    <span className="goal-value">{dailyGoals.calories}</span>
-                    <span className="goal-value">-</span>
-                    <span className="goal-value">-</span>
-                    <span className="goal-value">-</span>
+                <div className="goals-row workout">
+                <span className="goals-label workout">Your Daily Goal</span>
+                <div className="goals-values workout">
+                    <span className="goal-value workout">{dailyGoals.duration}</span>
+                    <span className="goal-value workout">{dailyGoals.calories}</span>
+                    <span className="goal-value workout">-</span>
+                    <span className="goal-value workout">-</span>
+                    <span className="goal-value workout">-</span>
                     <span></span>
                 </div>
                 </div>
 
 
-                <div className="remaining-row">
-                <span className="remaining-label">Remaining</span>
-                <div className="remaining-values">
+                <div className="remaining-row workout">
+                <span className="remaining-label workout">Remaining</span>
+                <div className="remaining-values workout">
                     <span
-                    className={`remaining-value ${
+                    className={`remaining-value workout ${
                         remaining.duration <= 10 ? "low" : ""
                     }`}
                     >
                     {remaining.duration}
                     </span>
                     <span
-                    className={`remaining-value ${
+                    className={`remaining-value workout ${
                         remaining.calories <= 50 ? "low" : ""
                     }`}
                     >
                     {remaining.calories}
                     </span>
-                    <span className="remaining-value">-</span>
-                    <span className="remaining-value">-</span>
-                    <span className="remaining-value">-</span>
+                    <span className="remaining-value workout">-</span>
+                    <span className="remaining-value workout">-</span>
+                    <span className="remaining-value workout">-</span>
                     <span></span>
                 </div>
                 </div>
@@ -272,11 +271,11 @@ export default function LogWorkout() {
             </div>
 
 
-            <div className="complete-entry-section">
-            <p className="complete-text">
+            <div className="complete-entry-section workout">
+            <p className="complete-text workout">
                 When you're finished logging all workouts for this day, click here:
             </p>
-            <button className="complete-entry-btn">Complete This Entry</button>
+            <button className="complete-entry-btn workout">Complete This Entry</button>
             </div>
 
 

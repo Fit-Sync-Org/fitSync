@@ -119,6 +119,7 @@
 .totals-section {
   margin-top: 2rem;
   padding-top: 2rem;
+  padding-right: 2.5rem;
   border-top: 2px solid #adc97e;
 }
 
@@ -150,7 +151,7 @@
 .totals-values, .goals-values, .remaining-values {
   display: grid;
   grid-template-columns: repeat(6, 1fr) auto;
-  gap: 1rem;
+  gap: 1.2rem;
   text-align: center;
 }
 

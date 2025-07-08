@@ -314,7 +314,6 @@ export default function LogMeal() {
                 <span className="total-value">{totals.protein}</span>
                 <span className="total-value">{totals.sodium}</span>
                 <span className="total-value">{totals.sugar}</span>
-                <span></span>
               </div>
             </div>
 
@@ -327,7 +326,6 @@ export default function LogMeal() {
                 <span className="goal-value">{dailyGoals.protein}</span>
                 <span className="goal-value">{dailyGoals.sodium.toLocaleString()}</span>
                 <span className="goal-value">{dailyGoals.sugar}</span>
-                <span></span>
               </div>
             </div>
 
@@ -342,7 +340,6 @@ export default function LogMeal() {
                 <span className="remaining-value">{remaining.protein}</span>
                 <span className="remaining-value">{remaining.sodium.toLocaleString()}</span>
                 <span className="remaining-value">{remaining.sugar}</span>
-                <span></span>
               </div>
             </div>
           </div>

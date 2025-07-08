@@ -128,16 +128,16 @@
 
 
 /* workout table footer */
-.totals-section {
+.totals-section.workout {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 2px solid #adc97e;
 }
 
 
-.totals-row,
-.goals-row,
-.remaining-row {
+.totals-row.workout,
+.goals-row.workout,
+.remaining-row.workout {
   display: grid;
   grid-template-columns: 420px 1fr;
   gap: 2rem;
@@ -146,32 +146,32 @@
 }
 
 
-.totals-label,
-.goals-label,
-.remaining-label {
+.totals-label.workout,
+.goals-label.workout,
+.remaining-label.workout {
   font-size: 1.6rem;
   font-weight: 700;
 }
 
 
-.totals-label {
+.totals-label.workout {
   color: #adc97e;
 }
 
 
-.goals-label {
+.goals-label.workout {
   color: #ff6b6b;
 }
 
 
-.remaining-label {
+.remaining-label.workout {
   color: #ffd93d;
 }
 
 
-.totals-values,
-.goals-values,
-.remaining-values {
+.totals-values.workout,
+.goals-values.workout,
+.remaining-values.workout {
   display: grid;
   grid-template-columns: repeat(5, 1fr) auto;
   gap: 1rem;
@@ -179,21 +179,21 @@
 }
 
 
-.total-value {
+.total-value.workout {
   font-size: 1.5rem;
   font-weight: 700;
   color: #adc97e;
 }
 
 
-.goal-value {
+.goal-value.workout {
   font-size: 1.4rem;
   font-weight: 600;
   color: #ff6b6b;
 }
 
 
-.remaining-value {
+.remaining-value.workout {
   font-size: 1.4rem;
   font-weight: 600;
   color: #ffd93d;
@@ -206,7 +206,7 @@
 }
 
 
-.complete-entry-section {
+.complete-entry-section.workout {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem;
@@ -216,14 +216,14 @@
 }
 
 
-.complete-text {
+.complete-text.workout {
   font-size: 1.4rem;
   color: #b8c5a8;
   margin-bottom: 1.5rem;
 }
 
 
-.complete-entry-btn {
+.complete-entry-btn.workout {
   background: linear-gradient(135deg, #adc97e, #c8e6a0);
   border: none;
   border-radius: 12px;
@@ -236,7 +236,7 @@
 }
 
 
-.complete-entry-btn:hover {
+.complete-entry-btn.workout:hover {
   background: linear-gradient(135deg, #c8e6a0, #adc97e);
   transform: translateY(-2px);
 }

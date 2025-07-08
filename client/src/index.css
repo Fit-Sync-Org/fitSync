@@ -2,7 +2,7 @@
   font-family: "Montserrat", Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: #3a413d;
+  background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
 }
 
 *

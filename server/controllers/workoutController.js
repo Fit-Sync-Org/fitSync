@@ -4,7 +4,7 @@ const db = new PrismaClient();
 exports.getWorkoutByDate = async (req, res) => {
   try {
     const { date } = req.query;
-    const userId = req.user?.id || 18; // Use user ID 18 for testing if no auth
+    const userId = req.user?.id;
     if (!date) {
       return res.status(400).json({ error: 'Date parameter is required' });
     }
@@ -53,7 +53,7 @@ exports.getWorkoutByDate = async (req, res) => {
 
 exports.addWorkout = async (req, res) => {
   try {
-    const userId = req.user?.id || 18; // Use user ID 18 for testing if no auth
+    const userId = req.user?.id;
     const {
       workoutType,
       name,
@@ -109,7 +109,7 @@ exports.addWorkout = async (req, res) => {
 exports.updateWorkout = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user?.id || 18; // Use user ID 18 for testing if no auth
+    const userId = req.user?.id;
     const data = req.body;
 
     const existing = await db.workout.findFirst({
@@ -154,7 +154,7 @@ exports.updateWorkout = async (req, res) => {
 exports.deleteWorkout = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user?.id || 18; // Use user ID 18 for testing if no auth
+    const userId = req.user?.id;
 
     const existing = await db.workout.findFirst({
       where: { id: Number(id), userId }

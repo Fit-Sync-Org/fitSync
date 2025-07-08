@@ -20,13 +20,7 @@ export default function WorkoutSearch({ date, onClose, onAdd }) {
 
     const id = setTimeout(async () => {
       try {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/workouts/log`, {
-          query,
-          gender: "male",
-          weight_kg: 70,
-          age: 30,
-          height_cm: 175
-        });
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/workouts/log`, { params: { query } }, );
         console.log('Workout search results:', res.data);
         setSuggestions(Array.isArray(res.data) ? res.data.slice(0, 20) : []);
       } catch (err) {
@@ -48,10 +42,10 @@ export default function WorkoutSearch({ date, onClose, onAdd }) {
     if (!selected) return;
 
     onAdd({
-      workoutType: selected.tag_name || 'cardio',
+      type: selected.tag_name,
       name: selected.name,
-      durationMinutes: duration,
-      caloriesBurned: Math.round(selected.nf_calories * (duration / selected.duration_min)),
+      duration: duration,
+      calories: Math.round(selected.nf_calories * (duration / selected.duration_min)),
       sets: sets,
       reps: reps,
       weight: weight,

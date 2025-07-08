@@ -76,6 +76,8 @@ model Meal {
   quantity  Float
   mealType  String
   date      DateTime @default(now())
+
+  @@index([userId, date])
 }
 
 model Workout {
@@ -83,8 +85,13 @@ model Workout {
   userId          Int
   user            User     @relation(fields: [userId], references: [id])
   workoutType     String
+  name            String
   durationMinutes Float
-  intensity       String
   caloriesBurned  Float
+  sets            Int
+  reps            Int
+  weight          Float
+  notes           String
   date            DateTime @default(now())
+  @@index([userId, date])
 }

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-// import './WorkoutSection.css';
+import './WorkoutSection.css';
 
 export default function WorkoutSection({
   name,

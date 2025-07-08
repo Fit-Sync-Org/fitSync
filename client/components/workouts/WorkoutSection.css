@@ -4,7 +4,7 @@
   padding-bottom: 1.5rem;
 }
 
-.workout-header {
+.section-header {
   display: grid;
   grid-template-columns: 200px 1fr;
   gap: 2rem;
@@ -12,19 +12,14 @@
   margin-bottom: 1rem;
 }
 
-.meal-name {
+.section-header h3 {
   font-size: 1.8rem;
   font-weight: 600;
   color: #adc97e;
   margin: 0;
 }
 
-.meal-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.add-food-btn, .quick-tools-btn {
+.add-workout-btn {
   background: linear-gradient(135deg, #adc97e, #c8e6a0);
   border: none;
   border-radius: 8px;
@@ -34,40 +29,27 @@
   color: #2c332e;
   cursor: pointer;
   transition: all 0.35s ease;
+  justify-self: start;
 }
 
-.add-food-btn:hover {
+.add-workout-btn:hover {
   background: #8aa165;
 }
 
-.add-food-btn:active {
+.add-workout-btn:active {
   background: rgba(173, 201, 126, 0.1);
   color: #adc97e;
   border: 1px solid rgba(173, 201, 126, 0.3);
 }
 
-.quick-tools-btn {
-  background: rgba(173, 201, 126, 0.1);
-  color: #adc97e;
-  border: 1px solid rgba(173, 201, 126, 0.3);
-}
-
-.meal-foods {
+.workout-items {
   margin-left: 200px;
   padding-left: 2rem;
 }
-.food-item-row
-{
-  display: grid;
-  grid-template-columns: 1fr 20px;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-}
 
-.food-item-details {
+.workout-item {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 200px 80px 100px 80px 80px 30px;
   gap: 1rem;
   align-items: center;
   padding: 1rem;
@@ -77,30 +59,25 @@
   transition: all 0.3s ease;
 }
 
-.food-data
-{
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-}
-.food-item:hover {
+.workout-item:hover {
   background: rgba(173, 201, 126, 0.1);
   transform: translateX(5px);
 }
 
-.food-name {
+.wi-name {
   font-size: 1.4rem;
   font-weight: 500;
   color: #e6efd8;
 }
 
-.food-calories, .food-carbs, .food-fat, .food-protein, .food-sodium, .food-sugar {
+.wi-duration, .wi-cal, .wi-sets, .wi-weight {
   text-align: center;
   font-size: 1.3rem;
   color: #b8c5a8;
   font-weight: 500;
 }
 
-.remove-food-btn {
+.wi-remove {
   background: rgba(255, 107, 107, 0.1);
   border: 1px solid rgba(255, 107, 107, 0.3);
   border-radius: 50%;
@@ -115,30 +92,17 @@
   justify-content: center;
 }
 
-.remove-food-btn:hover {
+.wi-remove:hover {
   background: rgba(255, 107, 107, 0.2);
   transform: scale(1.1);
 }
 
-
-.food-name.empty {
+.empty-section {
   font-size: 1.3rem;
   color: #b8c5a8;
   font-style: italic;
-}
-
-.remove-food-btn.empty {
-  cursor: not-allowed;
-}
-
-.remove-food-btn.empty {
-  cursor: not-allowed;
-  background: rgba(255, 107, 107, 0.1);
-  opacity: 0.4;
-}
-
-.remove-food-btn.empty:hover
-{
-  background:rgba(173, 201, 126, 0.05);
-  transform: none;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(173, 201, 126, 0.05);
+  border-radius: 8px;
 }

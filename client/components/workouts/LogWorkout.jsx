@@ -23,7 +23,7 @@ export default function LogWorkout() {
     };
 
     const calculateTotals = () => {
-        let totals = { calories: 0, duration: 0, exercise: 0 };
+        let totals = { calories: 0, duration: 0, exercises: 0 };
 
         Object.values(workouts).flat().forEach(workout => {
             totals.calories += workout.calories || 0;

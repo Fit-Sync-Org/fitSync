@@ -163,13 +163,14 @@ FitSync is a personal fitness tracker that helps users log meals and workouts, v
 ## External APIs
 
 - Nutritionix API – For food search and nutrition data  
-- (Optional) Gemini/OpenAI API – For AI chat assistant features  
+- Gemini API – For AI chat assistant features  
 
 ---
 
 ## Authentication
 
-- JWT tokens stored in HTTP-only cookies  
+- JWT tokens stored in HTTP-only cookies
+- Firebase Auth 
 - Auth middleware for protected endpoints  
 - React Context to manage frontend auth state  
 - Auth routes: `/auth/register`, `/auth/login`, `/logout`  

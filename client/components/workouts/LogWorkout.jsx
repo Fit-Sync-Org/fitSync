@@ -4,6 +4,8 @@ import { auth } from "../../src/firebase";
 import "./LogWorkout.css";
 
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
 export default function LogWorkout() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
@@ -102,7 +104,7 @@ export default function LogWorkout() {
                 className="date-nav-btn"
                 onClick={() =>
                     setSelectedDate(
-                    new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000)
+                    new Date(selectedDate.getTime() - ONE_DAY_MS)
                     )
                 }
                 >
@@ -113,7 +115,7 @@ export default function LogWorkout() {
                 className="date-nav-btn"
                 onClick={() =>
                     setSelectedDate(
-                    new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000)
+                    new Date(selectedDate.getTime() + ONE_DAY_MS)
                     )
                 }
                 >

@@ -1,0 +1,374 @@
+/* General / unclassified */
+.log-meal-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
+  color: #e6efd8;
+  padding: 2rem;
+   /* test */
+}
+
+.log-meal-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #adc97e;
+  margin-bottom: 1rem;
+}
+
+/* back button */
+.back-btn {
+  background: rgba(173, 201, 126, 0.1);
+  border: 2px solid #adc97e;
+  border-radius: 12px;
+  padding: 0.8rem 1.6rem;
+  font-size: 1.4rem;
+  color: #adc97e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.back-btn:hover {
+  background: rgba(173, 201, 126, 0.2);
+  transform: translateX(-3px);
+}
+
+
+/* DATE slider */
+.date-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background: rgba(44, 51, 46, 0.8);
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(173, 201, 126, 0.2);
+  margin-bottom: 3rem;
+}
+
+.date-nav-btn {
+  background: rgba(173, 201, 126, 0.1);
+  border: 1px solid #adc97e;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.6rem;
+  color: #adc97e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.date-nav-btn:hover {
+  background: rgba(173, 201, 126, 0.2);
+  transform: scale(1.05);
+}
+
+.selected-date {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #e6efd8;
+  min-width: 300px;
+  text-align: center;
+}
+
+
+/* Meal table */
+.meal-table {
+  background: rgba(44, 51, 46, 0.8);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(173, 201, 126, 0.1);
+  backdrop-filter: blur(10px);
+  margin-bottom: 3rem;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 2rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid #adc97e;
+  margin-bottom: 1.5rem;
+  padding-right: 20px;
+}
+
+.meal-column {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #adc97e;
+}
+
+.nutrition-columns {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr) auto;
+  gap: 1rem;
+  text-align: center;
+}
+
+.nutrition-columns span {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e6efd8;
+}
+
+.nutrition-columns small {
+  font-size: 1rem;
+  color: #b8c5a8;
+}
+
+/* meal table footer */
+.totals-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #adc97e;
+}
+
+.totals-row, .goals-row, .remaining-row {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.totals-label, .goals-label, .remaining-label {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.totals-label {
+  color: #adc97e;
+}
+
+.goals-label {
+  color: #4ecdc4;
+}
+
+.remaining-label {
+  color: #ffd93d;
+}
+
+.totals-values, .goals-values, .remaining-values {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr) auto;
+  gap: 1rem;
+  text-align: center;
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #adc97e;
+}
+
+.goal-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4ecdc4;
+}
+
+.remaining-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ffd93d;
+}
+
+.remaining-value.low {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
+.complete-entry-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(44, 51, 46, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(173, 201, 126, 0.1);
+}
+
+.complete-text {
+  font-size: 1.4rem;
+  color: #b8c5a8;
+  margin-bottom: 1.5rem;
+}
+
+.complete-entry-btn {
+  background: linear-gradient(135deg, #adc97e, #c8e6a0);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c332e;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.complete-entry-btn:hover {
+  background: #68794c;
+}
+
+/* water section */
+.water-section {
+  background: rgba(44, 51, 46, 0.8);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(173, 201, 126, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.water-section h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #4ecdc4;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.water-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.water-info h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #4ecdc4;
+  margin-bottom: 1rem;
+}
+
+.water-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.water-amount {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #4ecdc4;
+}
+
+.water-unit {
+  font-size: 1.6rem;
+  color: #b8c5a8;
+}
+
+.water-goal {
+  font-size: 1.3rem;
+  color: #b8c5a8;
+  line-height: 1.5;
+}
+
+.water-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.quick-add-section.meal h4, .custom-add-section.meal h4 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #e6efd8;
+  margin-bottom: 1rem;
+}
+
+.quick-add-buttons.meal {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.water-btn {
+  background: rgba(78, 205, 196, 0.1);
+  border: 1px solid #4ecdc4;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #4ecdc4;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.water-btn:hover {
+  background: rgba(78, 205, 196, 0.2);
+  transform: translateY(-2px);
+}
+
+.custom-add-controls.meal {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.custom-water-input {
+  background: rgba(173, 201, 126, 0.1);
+  border: 1px solid rgba(173, 201, 126, 0.3);
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 1.4rem;
+  color: #e6efd8;
+  width: 80px;
+  text-align: center;
+}
+
+.custom-water-input.meal:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+}
+
+.water-unit-label {
+  font-size: 1.3rem;
+  color: #b8c5a8;
+}
+
+.add-custom-btn.meal {
+  background: linear-gradient(135deg, #4ecdc4, #6ee7d7);
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c332e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-custom-btn.meal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+}
+
+.water-progress {
+  grid-column: 1 / -1;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.water-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(78, 205, 196, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.water-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecdc4, #6ee7d7);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.water-progress-text {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4ecdc4;
+}

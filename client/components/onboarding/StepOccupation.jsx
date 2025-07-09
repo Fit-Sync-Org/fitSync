@@ -5,7 +5,7 @@ const StepOccupation = ({ value, setValue }) => {
       <div className="input-wrapper occupation">
         <label className="step-label" htmlFor="occupation">
           What is your occupation?
-          <span className="tooltip">
+          <span className="tooltip" data-tooltip="Your job’s demands (sitting, standing, shift work) help us tailor exercise timing and focus areas">
             <p> ⓘ </p>
           </span>
         </label>

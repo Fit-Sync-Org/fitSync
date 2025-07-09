@@ -5,7 +5,7 @@ const StepDiet = ({ value, setValue }) => {
       <div className="input-wrapper diet">
         <label className="step-label" htmlFor="diet">
           Do you have any dietary restrictions?
-          <span className="tooltip">
+          <span className="tooltip" data-tooltip="Any food/ingredients you must avoid or prefer to limit?">
             <p>ⓘ</p>
           </span>
         </label>

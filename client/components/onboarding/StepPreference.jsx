@@ -5,7 +5,7 @@ const StepPreference = ({ value, setValue }) => {
       <div className="input-wrapper preference">
         <label className="step-label" htmlFor="preference">
           How do you prefer to structure your workouts?
-          <span className="tooltip">
+          <span className="tooltip" data-tooltip="Choose the style that best fits your schedule and energy levels.">
             <p> ⓘ </p>
           </span>
         </label>

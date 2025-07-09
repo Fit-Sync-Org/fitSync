@@ -39,6 +39,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
+
       <Navbar />
       <header className="dashboard-header">
         <div className="welcome">
@@ -63,7 +64,6 @@ export default function Dashboard() {
       </section>
 
       <MacroSummary meals={meals} workouts={workouts} />
-
       <div className="dashboard-progress">
         <h2>Daily Calorie Goal</h2>
         <div className="progress-bar">

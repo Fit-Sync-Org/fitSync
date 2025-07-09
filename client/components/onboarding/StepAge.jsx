@@ -6,7 +6,7 @@ const StepAge = ({ value, setValue }) => {
       <div className="input-wrapper age">
         <label className="step-label" htmlFor="age">
           How old are you?
-          <span className="tooltip" data-tooltip="lorem ipsum">
+          <span className="tooltip" data-tooltip="Your age helps us calculate your daily calorie needs and workout intensity safely.">
             <p > ⓘ </p>
           </span>
         </label>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./WorkoutSearch.css";
 
-export default function WorkoutSearch({ date, onClose, onAdd }) {
+export default function WorkoutSearch({ date, workoutType, onClose, onAdd }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -20,7 +20,16 @@ export default function WorkoutSearch({ date, onClose, onAdd }) {
 
     const id = setTimeout(async () => {
       try {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/workouts/log`, { params: { query } }, );
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/workouts/log`,
+           {
+            query,
+            gender: "male",
+            weight_kg: 70,
+            age: 30,
+            height_cm: 175,
+          }
+         );
         console.log('Workout search results:', res.data);
         setSuggestions(Array.isArray(res.data) ? res.data.slice(0, 20) : []);
       } catch (err) {
@@ -42,7 +51,7 @@ export default function WorkoutSearch({ date, onClose, onAdd }) {
     if (!selected) return;
 
     onAdd({
-      type: selected.tag_name,
+      type: workoutType,
       name: selected.name,
       duration: duration,
       calories: Math.round(selected.nf_calories * (duration / selected.duration_min)),
@@ -50,7 +59,7 @@ export default function WorkoutSearch({ date, onClose, onAdd }) {
       reps: reps,
       weight: weight,
       notes: notes,
-      date
+      date,
     });
     onClose();
   };

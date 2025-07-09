@@ -30,9 +30,9 @@ app.use("/auth", authRoutes);
 app.use("/onboarding", onboardingRouter);
 app.use("/api/foods", foodRoutes);
 app.use("/api/workouts", workoutRoutes);
-app.use("/api/exercises", workoutsRouter);
 
 app.use(requireAuth);
+app.use("/api/exercises", workoutsRouter);
 app.use("/api/meals", mealsRouter);
 
 

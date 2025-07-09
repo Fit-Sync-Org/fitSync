@@ -18,7 +18,7 @@ exports.getWorkoutByDate = async (req, res) => {
     const list = await db.workout.findMany({
       where: {
         userId,
-        date: { gte: startOfDay, lte: endOfDay }
+        date: { gte: startOfDay, lte: endOfDay },
       },
       orderBy: { date: 'asc' }
     });
@@ -27,19 +27,19 @@ exports.getWorkoutByDate = async (req, res) => {
       cardio: [],
       strength: [],
       flexibility: [],
-      sports: []
+      sports: [],
     };
     list.forEach(w => {
       if (grouped[w.workoutType]) {
         grouped[w.workoutType].push({
           id: w.id,
           name: w.name,
-          durationMinutes: w.durationMinutes,
-          caloriesBurned: w.caloriesBurned,
+          duration: w.durationMinutes,
+          calories: w.caloriesBurned,
           sets: w.sets,
           reps: w.reps,
           weight: w.weight,
-          notes: w.notes
+          notes: w.notes,
         });
       }
     });
@@ -56,9 +56,12 @@ exports.addWorkout = async (req, res) => {
     const userId = req.user?.id;
     const {
       workoutType,
+      type,
       name,
       durationMinutes,
+      duration,
       caloriesBurned,
+      calories,
       sets,
       reps,
       weight,
@@ -66,20 +69,27 @@ exports.addWorkout = async (req, res) => {
       date
     } = req.body;
 
-    if (!workoutType || !name || durationMinutes == null || caloriesBurned == null) {
-      return res
-        .status(400)
-        .json({ error: 'WorkoutType, name, durationMinutes and caloriesBurned are required' });
+    const finalWorkoutType = type || workoutType;
+    const finalDuration = duration || durationMinutes;
+    const finalCalories = calories || caloriesBurned;
+
+    if (
+      !finalWorkoutType ||
+      !name ||
+      finalDuration == null ||
+      finalCalories == null
+    ) {
+      return res.status(400).json({ error: 'Workout type, name, duration, and calories are required' });
     }
 
     const workoutDate = date ? new Date(date) : new Date();
     const w = await db.workout.create({
       data: {
         userId,
-        workoutType,
+        workoutType: finalWorkoutType,
         name,
-        durationMinutes,
-        caloriesBurned,
+        durationMinutes: finalDuration,
+        caloriesBurned: finalCalories,
         sets: sets || 0,
         reps: reps || 0,
         weight: weight || 0,
@@ -90,15 +100,15 @@ exports.addWorkout = async (req, res) => {
 
     res.status(201).json({
       id: w.id,
-      workoutType: w.workoutType,
+      type : w.workoutType,
       name: w.name,
-      durationMinutes: w.durationMinutes,
-      caloriesBurned: w.caloriesBurned,
+      duration: w.durationMinutes,
+      calories: w.caloriesBurned,
       sets: w.sets,
       reps: w.reps,
       weight: w.weight,
       notes: w.notes,
-      date: w.date
+      date: w.date,
     });
   } catch (err) {
     console.error('addWorkout error:', err);
@@ -135,10 +145,10 @@ exports.updateWorkout = async (req, res) => {
 
     res.json({
       id: updated.id,
-      workoutType: updated.workoutType,
+      type: updated.workoutType,
       name: updated.name,
-      durationMinutes: updated.durationMinutes,
-      caloriesBurned: updated.caloriesBurned,
+      duration: updated.durationMinutes,
+      calories: updated.caloriesBurned,
       sets: updated.sets,
       reps: updated.reps,
       weight: updated.weight,

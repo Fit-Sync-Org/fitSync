@@ -18,7 +18,7 @@ export default function WorkoutSection({
 
       <div className="workout-items">
         {items.length > 0 ? (
-          items.map(w => (
+          items.map((w) => (
             <div key={w.id} className="workout-item">
               <span className="wi-name">{w.name}</span>
               <span className="wi-duration">{w.duration}m</span>
@@ -42,8 +42,8 @@ export default function WorkoutSection({
 }
 
 WorkoutSection.propTypes = {
-  name:      PropTypes.string.isRequired,
-  items:     PropTypes.array.isRequired,
-  onAdd:     PropTypes.func.isRequired,
-  onRemove:  PropTypes.func.isRequired,
+  name:PropTypes.string.isRequired,
+  items:PropTypes.array.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
 };

@@ -1,0 +1,10 @@
+.meal-history {
+    background:#fff;
+    padding:1rem;
+    border-radius:8px;
+    overflow-y:auto;
+    max-height:300px;
+}
+.meal-history h3 {
+    margin-top:0.5rem;
+}

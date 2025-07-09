@@ -1,0 +1,62 @@
+.dashboard-container {
+  padding: 1rem 2rem;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 2rem;
+  position: relative;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.welcome {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.subtext {
+  font-size: 0.9rem;
+  color: #666;
+}
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+.calorie-section {
+  display: flex;
+  gap: 1rem;
+}
+.calorie-card {
+  flex: 1;
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.history-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.chatbot-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+}
+.chatbot-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+}

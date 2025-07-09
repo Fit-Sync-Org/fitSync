@@ -7,6 +7,8 @@ import WorkoutSearch from './WorkoutSearch';
 
 
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
 export default function LogWorkout() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
@@ -70,7 +72,7 @@ export default function LogWorkout() {
     };
 
     const calculateTotals = () => {
-        let totals = { calories: 0, duration: 0, exercise: 0 };
+        let totals = { calories: 0, duration: 0, exercises: 0 };
 
         Object.values(workouts).flat().forEach(workout => {
             totals.calories += workout.calories || 0;
@@ -139,7 +141,7 @@ export default function LogWorkout() {
                 className="date-nav-btn"
                 onClick={() =>
                     setSelectedDate(
-                    new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000)
+                    new Date(selectedDate.getTime() - ONE_DAY_MS)
                     )
                 }
                 >
@@ -150,7 +152,7 @@ export default function LogWorkout() {
                 className="date-nav-btn"
                 onClick={() =>
                     setSelectedDate(
-                    new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000)
+                    new Date(selectedDate.getTime() + ONE_DAY_MS)
                     )
                 }
                 >

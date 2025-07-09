@@ -1,0 +1,40 @@
+.nav-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -240px;
+  width: 240px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+  transition: right 0.3s ease;
+  padding-top: 4rem;
+  z-index: 999;
+}
+.sidebar.open {
+  right: 0;
+}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar li {
+  margin: 1rem 0;
+  text-align: center;
+}
+.sidebar a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}

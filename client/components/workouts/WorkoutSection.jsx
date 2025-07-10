@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import './WorkoutSection.css';
 
 export default function WorkoutSection({
@@ -40,10 +39,3 @@ export default function WorkoutSection({
     </div>
   );
 }
-
-WorkoutSection.propTypes = {
-  name:PropTypes.string.isRequired,
-  items:PropTypes.array.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-};

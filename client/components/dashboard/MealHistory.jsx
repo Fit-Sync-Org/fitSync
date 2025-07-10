@@ -1,55 +1,38 @@
-import PropTypes from 'prop-types';
 import './MealHistory.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function MealHistory({ meals }) {
-  const [mealHistory, setMealHistory] = useState([]);
+export default function MealHistory() {
+  const [mealHistory, setMealHistory] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [allMealHistory, setAllMealHistory] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMealHistory = async () => {
       try {
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 7);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/meals/completed-entries`, {
+          withCredentials: true,
+          params: { days: 30 }
+        });
 
-
-        const mockMealHistory = [
-          {
-          id: 1,
-          date: new Date().toISOString().slice(0, 10),
-          summary: "Breakfast: Oatmeal with banana and peanut butter",
-          totalCalories: 500,
-          isCompleted: true,
-          },
-          {
-          id: 2,
-          date: new Date(Date.now()-864000000).toISOString().slice(0, 10),
-          summary: "Breakfast: Oatmeal with banana and peanut butter",
-          totalCalories: 500,
-          isCompleted: true,
-          },
-          {
-          id: 3,
-          date: new Date(Date.now()-172800000).toISOString().slice(0, 10),
-          summary: "Breakfast: Oatmeal with banana and peanut butter",
-          totalCalories: 500,
-          isCompleted: true,
-          },
-        ];
-        setMealHistory(mockMealHistory);
-        } catch (error) {
-          console.error('Error fetching meal history:', error);
+        if (response.data) {
+          setAllMealHistory(response.data);
+          setMealHistory(response.data.slice(0, 3));
         }
+      } catch (error) {
+        console.error('Error fetching meal history:', error);
+        setMealHistory([]);
+        setAllMealHistory([]);
+      }
     };
-    fetchMealHistory();
 
-    }, []);
+    fetchMealHistory();
+  }, []);
 
     const handleEdit = (date) => {
-      navigate(`/meal/${date}`);
+      navigate(`/log-meal?date=${date}`);
     };
 
     const handleDelete = async (id, date) => {
@@ -92,17 +75,17 @@ export default function MealHistory({ meals }) {
   return (
     <div className="meal-history">
       <div className="section-header">
-        <h3>Recent Meal History</h3>
-        <button className="view-all-btn" onClick={() => navigate("/log-meal")}>
-          Log New Meal
+        <h3>Meal History</h3>
+        <button className="view-all-btn" onClick={() => setShowModal(true)}>
+          View All
         </button>
       </div>
 
       {!mealHistory || mealHistory.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🍽️</div>
-          <p>No meal history yet</p>
-          <span>Start logging your meals to see your history here</span>
+          <p>No completed meal entries yet</p>
+          <span>Log meals and click "Complete This Entry" to see your history here</span>
         </div>
       ) : (
         <div className="history-list">
@@ -128,7 +111,7 @@ export default function MealHistory({ meals }) {
                         entry.isCompleted ? "completed" : "incomplete"
                       }`}
                     >
-                      {entry.isCompleted ? "✓ Complete" : ":hourglass_flowing_sand: In Progress"}
+                      {entry.isCompleted ? "✓ Complete" : "⏳ In Progress"}
                     </span>
                   </div>
                 </div>
@@ -153,10 +136,67 @@ export default function MealHistory({ meals }) {
           ))}
         </div>
       )}
+
+      {/* Modal meal history */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>All Meal History</h3>
+              <button className="modal-close" onClick={() => setShowModal(false)}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              {allMealHistory.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-icon">🍽️</div>
+                  <p>No meal history found</p>
+                </div>
+              ) : (
+                <div className="history-list modal-list">
+                  {allMealHistory.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="history-item clickable"
+                      onClick={() => {
+                        handleEdit(entry.date);
+                        setShowModal(false);
+                      }}
+                    >
+                      <div className="history-main">
+                        <div className="history-date">
+                          <span className="date-label">{formatDate(entry.date)}</span>
+                          <span className="full-date">
+                            {new Date(entry.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="history-content">
+                          <div className="meal-summary">
+                            <p>{entry.summary}</p>
+                          </div>
+                          <div className="meal-stats">
+                            <span className="calories-badge">
+                              {entry.totalCalories} kcal
+                            </span>
+                            <span
+                              className={`status-badge ${
+                                entry.isCompleted ? "completed" : "incomplete"
+                              }`}
+                            >
+                              {entry.isCompleted ? "Complete" : "In Progress"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-MealHistory.propTypes = {
-  meals: PropTypes.object.isRequired,
-};

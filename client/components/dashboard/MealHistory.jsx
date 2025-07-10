@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function MealHistory({ meals }) {
-  const [mealHistory, setMealHistory] = useState(null);
+  const [mealHistory, setMealHistory] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {

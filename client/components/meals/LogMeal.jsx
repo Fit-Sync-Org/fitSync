@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { auth } from "../../src/firebase";
 import "./LogMeal.css";
 import MealSection from "./MealSection";
@@ -11,6 +11,7 @@ export default function LogMeal() {
   const [waterIntake, setWaterIntake] = useState(0);
   const [customWater, setCustomWater] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const [meals, setMeals] = useState({
@@ -62,6 +63,16 @@ export default function LogMeal() {
       throw error;
     }
   };
+
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      const paramDate = new Date(dateParam);
+      if (!isNaN(paramDate.getTime())) {
+        setSelectedDate(paramDate);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -230,6 +241,47 @@ export default function LogMeal() {
     }
   };
 
+  const handleCompleteEntry = async () => {
+    try {
+      const dateString = selectedDate.toISOString().split('T')[0];
+      const totals = calculateTotals();
+
+      const mealSummary = Object.entries(meals)
+        .filter(([_, foods]) => foods.length > 0)
+        .map(([mealType, foods]) => `${mealType.charAt(0).toUpperCase() + mealType.slice(1)}: ${foods.length} items`)
+        .join(', ');
+
+      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals/complete-entry`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date: dateString,
+          summary: mealSummary || 'No meals logged',
+          totalCalories: Math.round(totals.calories),
+          totalCarbs: Math.round(totals.carbs),
+          totalFat: Math.round(totals.fat),
+          totalProtein: Math.round(totals.protein),
+          totalSodium: Math.round(totals.sodium),
+          totalSugar: Math.round(totals.sugar),
+          waterIntake: waterIntake
+        }),
+      });
+
+      if (response.ok) {
+        alert('Entry completed successfully! Your daily meal log has been saved.');
+        navigate('/dashboard');
+      } else {
+        console.error('Failed to complete entry:', response.statusText);
+        alert('Failed to complete entry. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error completing entry:', error);
+      alert('Failed to complete entry. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="log-meal-page">
@@ -352,7 +404,7 @@ export default function LogMeal() {
             <p className="complete-text">
               When you're finished logging all foods for this day, click here:
             </p>
-            <button className="complete-entry-btn">Complete This Entry</button>
+            <button className="complete-entry-btn" onClick={handleCompleteEntry}>Complete This Entry</button>
           </div>
         </div>
 

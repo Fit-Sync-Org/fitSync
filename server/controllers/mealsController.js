@@ -204,3 +204,100 @@ exports.deleteMeal = async (req, res) => {
     res.status(500).json({ error: "Failed to delete meal" });
   }
 };
+
+exports.completeEntry = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const {
+      date,
+      summary,
+      totalCalories,
+      totalCarbs,
+      totalFat,
+      totalProtein,
+      totalSodium,
+      totalSugar,
+      waterIntake
+    } = req.body;
+
+    if (!date) {
+      return res.status(400).json({ error: "Date is required" });
+    }
+
+    const entryDate = new Date(date);
+
+    const existingEntry = await db.completedMealEntry.findFirst({
+      where: {
+        userId: userId,
+        date: entryDate,
+      },
+    });
+
+    let completedEntry;
+    if (existingEntry) {
+      completedEntry = await db.completedMealEntry.update({
+        where: { id: existingEntry.id },
+        data: {
+          summary: summary || existingEntry.summary,
+          totalCalories: totalCalories || existingEntry.totalCalories,
+          totalCarbs: totalCarbs || existingEntry.totalCarbs,
+          totalFat: totalFat || existingEntry.totalFat,
+          totalProtein: totalProtein || existingEntry.totalProtein,
+          totalSodium: totalSodium || existingEntry.totalSodium,
+          totalSugar: totalSugar || existingEntry.totalSugar,
+          waterIntake: waterIntake || existingEntry.waterIntake,
+          isCompleted: true,
+        },
+      });
+    } else {
+      completedEntry = await db.completedMealEntry.create({
+        data: {
+          userId: userId,
+          date: entryDate,
+          summary: summary || 'No meals logged',
+          totalCalories: totalCalories || 0,
+          totalCarbs: totalCarbs || 0,
+          totalFat: totalFat || 0,
+          totalProtein: totalProtein || 0,
+          totalSodium: totalSodium || 0,
+          totalSugar: totalSugar || 0,
+          waterIntake: waterIntake || 0,
+          isCompleted: true,
+        },
+      });
+    }
+
+    res.status(201).json(completedEntry);
+  } catch (err) {
+    console.error("completeEntry error:", err);
+    res.status(500).json({ error: "Failed to complete meal entry" });
+  }
+};
+
+exports.getCompletedEntries = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { days = 30 } = req.query;
+
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+
+    const completedEntries = await db.completedMealEntry.findMany({
+      where: {
+        userId: userId,
+        date: {
+          gte: daysAgo,
+        },
+        isCompleted: true,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    });
+
+    res.json(completedEntries);
+  } catch (err) {
+    console.error("getCompletedEntries error:", err);
+    res.status(500).json({ error: "Failed to fetch completed entries" });
+  }
+};

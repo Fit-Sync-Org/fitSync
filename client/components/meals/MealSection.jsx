@@ -1,5 +1,3 @@
-import { React } from 'react';
-import PropTypes from 'prop-types';
 import './MealSection.css';
 
 export default function MealSection({ name, foods, onAddFood, onQuickTools, onRemoveFood }) {
@@ -65,21 +63,3 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
     </div>
   );
 }
-
-MealSection.propTypes = {
-  name: PropTypes.string.isRequired,
-  foods: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      calories: PropTypes.number,
-      carbs: PropTypes.number,
-      fat: PropTypes.number,
-      protein: PropTypes.number,
-      sodium: PropTypes.number,
-      sugar: PropTypes.number,
-    })
-  ).isRequired,
-  onAddFood: PropTypes.func.isRequired,
-  onQuickTools: PropTypes.func.isRequired,
-  onRemoveFood: PropTypes.func.isRequired,
-};

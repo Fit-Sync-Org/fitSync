@@ -1,5 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
 import "./onbooarding-styles/ProgressBar.css";
 
 export default function ProgressBar({ currentStep, totalSteps }) {
@@ -14,8 +12,3 @@ export default function ProgressBar({ currentStep, totalSteps }) {
     </div>
   );
 }
-
-ProgressBar.propTypes = {
-  currentStep: PropTypes.number.isRequired,
-  totalSteps: PropTypes.number.isRequired,
-};

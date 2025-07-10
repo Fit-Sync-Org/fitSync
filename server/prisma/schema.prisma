@@ -37,11 +37,11 @@ model FitnessGoal {
 }
 
 model User {
-  id                      Int                  @id @default(autoincrement())
-  firebaseUid             String               @unique
+  id                      Int                     @id @default(autoincrement())
+  firebaseUid             String                  @unique
   email                   String
-  username                String?              @unique
-  createdAt               DateTime             @default(now())
+  username                String?                 @unique
+  createdAt               DateTime                @default(now())
   firstName               String?
   lastName                String?
   age                     Int?
@@ -54,12 +54,14 @@ model User {
   dietaryRestrictions     String?
   heightCm                Float?
   weightKg                Float?
-  goals                   FitnessGoal[]        @relation("UserGoals")
+  goals                   FitnessGoal[]           @relation("UserGoals")
   lastLogin               DateTime?
-  streakCount             Int                  @default(0)
+  streakCount             Int                     @default(0)
   meals                   Meal[]
   workouts                Workout[]
-  hasCompletedOnboarding  Boolean              @default(false)
+  completedMealEntries    CompletedMealEntry[]
+  completedWorkoutEntries CompletedWorkoutEntry[]
+  hasCompletedOnboarding  Boolean                 @default(false)
 }
 
 model Meal {
@@ -93,5 +95,43 @@ model Workout {
   weight          Float
   notes           String
   date            DateTime @default(now())
+  @@index([userId, date])
+}
+
+model CompletedMealEntry {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  date          DateTime
+  summary       String
+  totalCalories Float    @default(0)
+  totalCarbs    Float    @default(0)
+  totalFat      Float    @default(0)
+  totalProtein  Float    @default(0)
+  totalSodium   Float    @default(0)
+  totalSugar    Float    @default(0)
+  waterIntake   Float    @default(0)
+  isCompleted   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model CompletedWorkoutEntry {
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  user                User     @relation(fields: [userId], references: [id])
+  date                DateTime
+  summary             String
+  totalCaloriesBurned Float    @default(0)
+  totalDuration       Float    @default(0)
+  totalExercises      Int      @default(0)
+  isCompleted         Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([userId, date])
   @@index([userId, date])
 }

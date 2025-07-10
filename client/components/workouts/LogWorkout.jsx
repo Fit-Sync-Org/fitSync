@@ -7,7 +7,7 @@ import WorkoutSearch from './WorkoutSearch';
 
 
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function LogWorkout() {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -34,7 +34,7 @@ export default function LogWorkout() {
     useEffect(() => {
         setLoading(true);
         axios
-        .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`)
+        .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`, {withCredentials: true})
         .then(({ data }) => {
             setWorkouts(data);
         })
@@ -53,7 +53,7 @@ export default function LogWorkout() {
 
     const handleRemoveWorkout = (id, type) => {
         axios
-        .delete(`/api/exercises/${id}`)
+        .delete(`/api/exercises/${id}`, {withCredentials: true})
         .then(() => {
             setWorkouts(prev => ({
             ...prev,
@@ -64,7 +64,7 @@ export default function LogWorkout() {
     };
 
     const handleAddToState = async entry => {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/exercises`, entry);
+        const res = await axios.post("/api/exercises", entry, {withCredentials: true});
         setWorkouts(prev => ({
             ...prev,
             [entry.type]: [...prev[entry.type], res.data]
@@ -324,4 +324,4 @@ export default function LogWorkout() {
         </div>
         </div>
     );
-    }
+}

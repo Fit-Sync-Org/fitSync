@@ -1,6 +1,0 @@
-.macro-summary { background: #fff; padding:1rem; border-radius:8px; }
-.macro-cards { display:flex; gap:1rem; }
-.macro-card { flex:1; text-align:center; padding:1rem; border-radius:6px; }
-.macro-card.carbs { background:#ffe0b2; }
-.macro-card.fat   { background:#c8e6c9; }
-.macro-card.protein { background:#bbdefb; }

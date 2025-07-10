@@ -71,7 +71,7 @@ export default function Dashboard() {
 
   const handleNavigation = (path) => {
     navigate(path);
-    setShowsSidebar(false);
+    setShowSidebar(false);
   };
 
   if (!user) {
@@ -290,12 +290,38 @@ export default function Dashboard() {
 
         {/* meal history section */}
         <section className="meal-history-section">
-          <MealHistory meals={meals} />
+          <MealHistory />
         </section>
 
         {/* workouthistory section */}
         <section className="workout-history-section">
-          <WorkoutHistory workouts={workouts} />
+          <WorkoutHistory />
+        </section>
+
+        {/* notes section */}
+        <section className="notes-section">
+          <div className="section-header">
+            <h3>Recent Workout Notes</h3>
+            <button className="view-all-btn" onClick={() => navigate("/log-workout")}>
+              Add Notes
+            </button>
+          </div>
+          <div className="notes-content">
+            <div className="notes-list">
+              <div className="note-item">
+                <div className="note-date">Today</div>
+                <div className="note-text">Great leg day! Increased squat weight by 10lbs.</div>
+              </div>
+              <div className="note-item">
+                <div className="note-date">Yesterday</div>
+                <div className="note-text">Cardio session felt easier today. Building endurance.</div>
+              </div>
+              <div className="note-item">
+                <div className="note-date">2 days ago</div>
+                <div className="note-text">Need to focus more on form during bench press.</div>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 

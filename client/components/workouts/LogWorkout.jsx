@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./LogWorkout.css";
 import axios from "axios";
 import WorkoutSection from "./WorkoutSection";
@@ -12,6 +12,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 export default function LogWorkout() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [workouts, setWorkouts] = useState({
@@ -30,6 +31,16 @@ export default function LogWorkout() {
     const [modalOpen, setModalOpen]     = useState(false);
     const [currentType, setCurrentType] = useState(null);
 
+
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        if (dateParam) {
+            const paramDate = new Date(dateParam);
+            if (!isNaN(paramDate.getTime())) {
+                setSelectedDate(paramDate);
+            }
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         setLoading(true);
@@ -102,6 +113,33 @@ export default function LogWorkout() {
     const handleQuickTools = (workoutType) => {
         console.log("quick tools for", workoutType);
         // TODO: Add quick tools functionality
+    };
+
+    const handleCompleteEntry = async () => {
+        try {
+            const dateString = selectedDate.toISOString().slice(0, 10);
+            const totals = calculateTotals();
+            const workoutSummary = Object.entries(workouts)
+                .filter(([_, exercises]) => exercises.length > 0)
+                .map(([workoutType, exercises]) => `${workoutType.charAt(0).toUpperCase() + workoutType.slice(1)}: ${exercises.length} exercises`)
+                .join(', ');
+
+            const response = await axios.post('/api/exercises/complete-entry', {
+                date: dateString,
+                summary: workoutSummary || 'No workouts logged',
+                totalCaloriesBurned: Math.round(totals.calories),
+                totalDuration: Math.round(totals.duration),
+                totalExercises: totals.exercises
+            }, { withCredentials: true });
+
+            if (response.status === 200) {
+                alert('Entry completed successfully! Your daily workout log has been saved.');
+                navigate('/dashboard');
+            }
+        } catch (error) {
+            console.error('Error completing entry:', error);
+            alert('Failed to complete entry. Please try again.');
+        }
     };
 
 
@@ -277,7 +315,7 @@ export default function LogWorkout() {
             <p className="complete-text workout">
                 When you're finished logging all workouts for this day, click here:
             </p>
-            <button className="complete-entry-btn workout">Complete This Entry</button>
+            <button className="complete-entry-btn workout" onClick={handleCompleteEntry}>Complete This Entry</button>
             </div>
 
 

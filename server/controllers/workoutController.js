@@ -180,3 +180,88 @@ exports.deleteWorkout = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete workout' });
   }
 };
+
+exports.completeEntry = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const {
+      date,
+      summary,
+      totalCaloriesBurned,
+      totalDuration,
+      totalExercises
+    } = req.body;
+
+    if (!date) {
+      return res.status(400).json({ error: "Date is required" });
+    }
+
+    const entryDate = new Date(date);
+
+    const existingEntry = await db.completedWorkoutEntry.findFirst({
+      where: {
+        userId: userId,
+        date: entryDate,
+      },
+    });
+
+    let completedEntry;
+    if (existingEntry) {
+      completedEntry = await db.completedWorkoutEntry.update({
+        where: { id: existingEntry.id },
+        data: {
+          summary: summary || existingEntry.summary,
+          totalCaloriesBurned: totalCaloriesBurned || existingEntry.totalCaloriesBurned,
+          totalDuration: totalDuration || existingEntry.totalDuration,
+          totalExercises: totalExercises || existingEntry.totalExercises,
+          isCompleted: true,
+        },
+      });
+    } else {
+      completedEntry = await db.completedWorkoutEntry.create({
+        data: {
+          userId: userId,
+          date: entryDate,
+          summary: summary || 'No workouts logged',
+          totalCaloriesBurned: totalCaloriesBurned || 0,
+          totalDuration: totalDuration || 0,
+          totalExercises: totalExercises || 0,
+          isCompleted: true,
+        },
+      });
+    }
+
+    res.status(201).json(completedEntry);
+  } catch (err) {
+    console.error("completeEntry error:", err);
+    res.status(500).json({ error: "Failed to complete workout entry" });
+  }
+};
+
+exports.getCompletedEntries = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { days = 30 } = req.query;
+
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+
+    const completedEntries = await db.completedWorkoutEntry.findMany({
+      where: {
+        userId: userId,
+        date: {
+          gte: daysAgo,
+        },
+        isCompleted: true,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    });
+
+    res.json(completedEntries);
+  } catch (err) {
+    console.error("getCompletedEntries error:", err);
+    res.status(500).json({ error: "Failed to fetch completed entries" });
+  }
+};

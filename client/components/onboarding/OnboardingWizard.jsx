@@ -36,7 +36,7 @@ export default function OnboardingWizard() {
 
       const tooltips = document.querySelectorAll(".tooltip");
       tooltips.forEach((el) => el.classList.remove("active"));
-    
+
       if (tooltip) {
         e.preventDefault();
         e.stopPropagation();
@@ -160,36 +160,38 @@ export default function OnboardingWizard() {
 
 
   return (
-    <div className="wizard-container">
-      <p className="wizard-container-header"> Complete your FitSync registration here </p>
+    <div className="wizard-wrapper">
+      <div className="wizard-container">
+        <p className="wizard-container-header"> Complete your FitSync registration here </p>
 
-      <ProgressBar
-        currentStep={currentStep}
-        totalSteps={steps.length}
-      />
-
-      {StepComponent && (
-        <StepComponent
-          value={formData[steps[currentStep].id]}
-          setValue={(value) => updateFormData(steps[currentStep].id, value)}
+        <ProgressBar
+          currentStep={currentStep}
+          totalSteps={steps.length}
         />
-      )}
 
-      <div className="wizard-nav">
-        <button className="secondary" onClick={prevStep} disabled={currentStep === 0}>
-          Previous
-        </button>
-
-        <button className= {steps[currentStep].required ? "skip-disabled" : "secondary"}
-                onClick={skipStep} disabled={steps[currentStep].required}>
-          Skip
-        </button>
-
-        {currentStep === steps.length - 1 ? (
-          <button onClick={handleSubmit}>Finish</button>
-        ) : (
-          <button onClick={nextStep}>Next</button>
+        {StepComponent && (
+          <StepComponent
+            value={formData[steps[currentStep].id]}
+            setValue={(value) => updateFormData(steps[currentStep].id, value)}
+          />
         )}
+
+        <div className="wizard-nav">
+          <button className="secondary" onClick={prevStep} disabled={currentStep === 0}>
+            Previous
+          </button>
+
+          <button className= {steps[currentStep].required ? "skip-disabled" : "secondary"}
+                  onClick={skipStep} disabled={steps[currentStep].required}>
+            Skip
+          </button>
+
+          {currentStep === steps.length - 1 ? (
+            <button onClick={handleSubmit}>Finish</button>
+          ) : (
+            <button onClick={nextStep}>Next</button>
+          )}
+        </div>
       </div>
     </div>
   );

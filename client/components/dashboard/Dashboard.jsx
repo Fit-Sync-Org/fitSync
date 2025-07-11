@@ -323,6 +323,7 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
+        <a href="../../src/chat.jsx"> chat </a>
       </main>
 
       <button

@@ -7,6 +7,7 @@ import Register from "../components/register/Register";
 import OnboardingWizard from "../components/onboarding/OnboardingWizard";
 import LogMeal from "../components/meals/LogMeal";
 import LogWorkout from "../components/workouts/LogWorkout";
+import Chat from "./chat";
 
 function App() {
   return (

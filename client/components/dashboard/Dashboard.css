@@ -453,6 +453,37 @@
   font-weight: 700;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #E0E0E0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.view-all-btn {
+  background: rgba(173, 201, 126, 0.2);
+  border: 1px solid rgba(173, 201, 126, 0.3);
+  color: #ADC97E;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+  background: rgba(173, 201, 126, 0.3);
+  transform: translateY(-2px);
+}
+
 .macro-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;

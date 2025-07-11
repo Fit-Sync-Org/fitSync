@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
+import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDgQOuu0TyRJr6s3zaYZI5g0lINAonjtBY",
@@ -14,6 +15,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 getAnalytics(app);
+
+// Initialize the Vertex AI Gemini API backend service
+const ai = getAI(app, { backend: new VertexAIBackend() });
+
+// Create a `GenerativeModel` instance with a model that supports your use case
+export const geminimodel = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
 const googleProvider = new GoogleAuthProvider();
 
 export const auth = getAuth(app);
@@ -39,7 +46,7 @@ if (typeof window !== 'undefined') {
   ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
     document.addEventListener(event, updateLastActivity, true);
   });
-  
+
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
       updateLastActivity();

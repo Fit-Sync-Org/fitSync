@@ -1,5 +1,19 @@
 const { PrismaClient } = require('@prisma/client');
+const { enqueueProgressCheck } = require("../utils/queueHelpers");
 const db = new PrismaClient();
+
+const triggerProgressCheck = async (userId, date) => {
+  try {
+    const dateStr = date.toISOString().split("T")[0];
+    await enqueueProgressCheck(userId, dateStr);
+    console.log(`Progress check queued for user ${userId} on ${dateStr}`);
+  } catch (error) {
+    console.error(
+      `Failed to queue progress check for user ${userId}:`,
+      error.message
+    );
+   }
+};
 
 exports.getWorkoutByDate = async (req, res) => {
   try {
@@ -98,6 +112,8 @@ exports.addWorkout = async (req, res) => {
       }
     });
 
+    await triggerProgressCheck(userId, workoutDate);
+
     res.status(201).json({
       id: w.id,
       type : w.workoutType,
@@ -142,6 +158,8 @@ exports.updateWorkout = async (req, res) => {
         notes: data.notes ?? existing.notes
       }
     });
+
+    await triggerProgressCheck(userId, existing.date);
 
     res.json({
       id: updated.id,

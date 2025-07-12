@@ -9,6 +9,8 @@ const mealsRouter = require("./routes/meals")
 const foodRoutes = require("./routes/foodRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
 const workoutsRouter = require("./routes/workouts");
+const plansRouter = require("./routes/plans");
+const notificationsRouter = require("./routes/notifications");
 
 require('dotenv').config();
 const app  = express();
@@ -35,6 +37,8 @@ app.use(requireAuth);
 app.use("/api/exercises", workoutsRouter);
 app.use("/api/meals", mealsRouter);
 
+app.use("/api/plans", plansRouter);
+app.use("/api/notifications", notificationsRouter);
 
 app.listen(port, () => {
   console.log(`FitSync server is running on port ${port}`);

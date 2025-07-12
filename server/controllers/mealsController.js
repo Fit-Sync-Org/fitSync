@@ -1,5 +1,20 @@
 const { PrismaClient } = require("@prisma/client");
+const { enqueueProgressCheck } = require("../utils/queueHelpers");
 const db = new PrismaClient();
+
+const triggerProgressCheck = async (userId, date) => {
+  try {
+    const dateStr = date.toISOString().split("T")[0];
+    await enqueueProgressCheck(userId, dateStr);
+    console.log(`Progress check queued for user ${userId} on ${dateStr}`);
+  } catch (error) {
+    console.error(
+      `Failed to queue progress check for user ${userId}:`,
+      error.message
+    );
+   }
+};
+
 
 exports.getMealsByDate = async (req, res) => {
   try {
@@ -98,6 +113,8 @@ exports.addMeal = async (req, res) => {
       },
     });
 
+    await triggerProgressCheck(userId, mealDate);
+
     res.status(201).json({
       id: meal.id,
       name: meal.foodName,
@@ -159,6 +176,8 @@ exports.updateMeal = async (req, res) => {
       },
     });
 
+    await triggerProgressCheck(userId, existingMeal.date);
+
     res.json({
       id: updatedMeal.id,
       name: updatedMeal.foodName,
@@ -197,6 +216,8 @@ exports.deleteMeal = async (req, res) => {
     await db.meal.delete({
       where: { id: parseInt(id) },
     });
+
+    await triggerProgressCheck(userId, existingMeal.date);
 
     res.json({ message: "Meal deleted successfully" });
   } catch (err) {

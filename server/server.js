@@ -16,6 +16,20 @@ require('dotenv').config();
 const app  = express();
 const port = process.env.PORT || 3001;
 
+// Set NODE_ENV to production if running on Render
+if (process.env.RENDER === 'true') {
+  process.env.NODE_ENV = 'production';
+  console.log('Running in production mode on Render');
+} else {
+  console.log(`Running in ${process.env.NODE_ENV || 'development'} mode`);
+}
+
+// Handle OPTIONS preflight requests
+app.options('*', cors({
+  origin: ["https://fitsync-5tf7.onrender.com", "http://localhost:5173"],
+  credentials: true,
+}));
+
 app.use(cors({
   origin: ["https://fitsync-5tf7.onrender.com", "http://localhost:5173"],
   credentials: true,

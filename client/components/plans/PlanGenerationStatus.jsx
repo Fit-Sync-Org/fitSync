@@ -1,45 +1,34 @@
 import { useState, useEffect } from "react";
 import { plansAPI } from "../../src/api/plans";
+import { generateAndSavePlan } from "../../src/utils/planGeneration";
 import "./PlanGenerationStatus.css";
 
 export default function PlanGenerationStatus({
   compact = false, onPlanGenerated,}) {
-  const [generationStatus, setGenerationStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationStep, setGenerationStep] = useState('');
   const [error, setError] = useState(null);
-  const [polling, setPolling] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [hasCurrentPlan, setHasCurrentPlan] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    checkGenerationStatus();
+    fetchUserProfile();
     checkCurrentPlan();
   }, []);
 
-  useEffect(() => {
-    let interval;
-    if (polling) {
-      interval = setInterval(() => {
-        checkGenerationStatus();
-      }, 2000);
-    }
-    return () => clearInterval(interval);
-  }, [polling]);
-
-  const checkGenerationStatus = async () => {
-    const result = await plansAPI.getGenerationStatus();
-    if (result.success) {
-      setGenerationStatus(result.data);
-      if (result.data.activeJobs && result.data.activeJobs.length > 0) {
-        setPolling(true);
-        updateProgress(result.data.activeJobs[0]);
-      } else {
-        setPolling(false);
-        setProgress(0);
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
       }
-    } else {
-      setError(result.error);
-      setPolling(false);
+    } catch (err) {
+      console.error('Failed to fetch user profile:', err);
     }
   };
 
@@ -52,118 +41,136 @@ export default function PlanGenerationStatus({
     }
   };
 
-  const updateProgress = (job) => {
-    if (job.status === "active") {
-      const startTime = new Date(job.processedOn || job.timestamp).getTime();
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTime;
-      const estimatedDuration = 30000;
-      const percent = Math.min((elapsed / estimatedDuration) * 100, 95);
-      setProgress(percent);
-    } else if (job.status === "completed") {
-      setProgress(100);
-      setPolling(false);
-      setHasCurrentPlan(true);
-      if (onPlanGenerated) onPlanGenerated();
-    } else if (job.status === "failed") {
-      setPolling(false);
-      setError("Plan generation failed");
+  const handleGeneratePlan = async () => {
+    if (!user) {
+      setError('User profile not loaded. Please refresh the page.');
+      return;
+    }
+
+    setIsGenerating(true);
+    setError(null);
+    setSuccess(false);
+    setGenerationProgress(0);
+    setGenerationStep('Initializing...');
+
+    try {
+      setGenerationStep('Analyzing your profile...');
+      setGenerationProgress(20);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setGenerationStep('Generating your personalized plan with AI...');
+      setGenerationProgress(40);
+
+      const result = await generateAndSavePlan(user);
+
+      if (result.success) {
+        setGenerationStep('Validating and optimizing your plan...');
+        setGenerationProgress(80);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setGenerationStep('Plan generated successfully!');
+        setGenerationProgress(100);
+        setSuccess(true);
+        setHasCurrentPlan(true);
+
+        if (onPlanGenerated) {
+          onPlanGenerated();
+        }
+
+        setTimeout(() => {
+          setIsGenerating(false);
+          setGenerationProgress(0);
+          setGenerationStep('');
+        }, 2000);
+
+      } else {
+        throw new Error(result.error || 'Failed to generate plan');
+      }
+
+    } catch (err) {
+      console.error('Plan generation failed:', err);
+      setError(err.message || 'Failed to generate plan');
+      setIsGenerating(false);
+      setGenerationProgress(0);
+      setGenerationStep('');
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-      case "waiting":
-        return "#FFC107";
-      case "completed":
-        return "#ADC97E";
-      case "failed":
-        return "#FF6B6B";
-      default:
-        return "#8A9A8A";
+  const handleRegeneratePlan = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ai-plans/regenerate`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setHasCurrentPlan(false);
+        await handleGeneratePlan();
+      } else {
+        throw new Error('Failed to clear existing plan');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to regenerate plan');
     }
   };
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "active":
-        return "Generating Plan...";
-      case "waiting":
-        return "Queued for Generation";
-      case "completed":
-        return "Plan Generated Successfully";
-      case "failed":
-        return "Generation Failed";
-      default:
-        return "Ready to Generate";
-    }
-  };
-
-  const hasActiveJob =
-    generationStatus?.activeJobs && generationStatus.activeJobs.length > 0;
-  const currentJob = hasActiveJob ? generationStatus.activeJobs[0] : null;
 
   if (compact) {
     return (
       <div className="plan-generation-status compact">
         <div className="status-header">
           <h3>AI Plan Generation</h3>
-          {hasActiveJob && (
-            <div
-              className="status-badge"
-              style={{ backgroundColor: getStatusColor(currentJob.status) }}
-            />
+          {isGenerating && (
+            <div className="status-badge generating" />
           )}
         </div>
-        {hasActiveJob ? (
+
+        {isGenerating ? (
           <div className="generation-progress">
             <div className="progress-info">
-              <span className="progress-label">
-                {getStatusLabel(currentJob.status)}
-              </span>
-              {currentJob.status === "active" && (
-                <span className="progress-percentage">
-                  {Math.round(progress)}%
-                </span>
-              )}
+              <span className="progress-label">{generationStep}</span>
+              <span className="progress-percentage">{Math.round(generationProgress)}%</span>
             </div>
-            {currentJob.status === "active" && (
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            )}
-            <div className="job-details">
-              <span className="job-type">{currentJob.name}</span>
-              <span className="job-time">
-                Started{" "}
-                {new Date(
-                  currentJob.processedOn || currentJob.timestamp
-                ).toLocaleTimeString()}
-              </span>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${generationProgress}%` }}
+              />
             </div>
           </div>
         ) : (
-          <div className="no-active-generation">
-            {error ? (
+          <div className="generation-controls">
+            {error && (
               <div className="generation-error">
                 <p>{error}</p>
-                <button onClick={checkGenerationStatus} className="retry-btn">
-                  Refresh Status
-                </button>
               </div>
-            ) : hasCurrentPlan ? (
+            )}
+
+            {success && (
+              <div className="generation-success">
+                <p>✅ Plan generated successfully!</p>
+              </div>
+            )}
+
+            {hasCurrentPlan ? (
               <div className="plan-exists">
                 <p>✅ You have an active plan for this week</p>
-                <p className="plan-note">Plans are automatically generated after onboarding</p>
+                <button
+                  onClick={handleRegeneratePlan}
+                  className="regenerate-btn secondary"
+                  disabled={isGenerating}
+                >
+                  Generate New Plan
+                </button>
               </div>
             ) : (
               <div className="no-plan">
                 <p>No active plan found</p>
-                <p className="plan-note">Complete your onboarding to get your first AI-generated plan</p>
+                <button
+                  onClick={handleGeneratePlan}
+                  className="generate-btn primary"
+                  disabled={isGenerating || !user}
+                >
+                  Generate AI Plan
+                </button>
               </div>
             )}
           </div>
@@ -177,99 +184,57 @@ export default function PlanGenerationStatus({
       <div className="status-header">
         <div className="header-left">
           <h2>AI Plan Generation</h2>
-          <p>Powered by Gemini AI for personalized fitness plans</p>
+          <p>Powered by Firebase Vertex AI for personalized fitness plans</p>
         </div>
         <div className="header-actions">
           <button
-            onClick={checkGenerationStatus}
+            onClick={checkCurrentPlan}
             className="refresh-btn"
-            disabled={polling}
+            disabled={isGenerating}
           >
             Refresh
           </button>
         </div>
       </div>
-      {generationStatus && (
-        <div className="generation-overview">
-          <div className="overview-stats">
-            <div className="stat">
-              <span className="stat-number">
-                {generationStatus.totalJobs || 0}
-              </span>
-              <span className="stat-label">Total Plans Generated</span>
-            </div>
-            <div className="stat">
-              <span className="stat-number">
-                {generationStatus.activeJobs?.length || 0}
-              </span>
-              <span className="stat-label">Active Jobs</span>
-            </div>
-            <div className="stat">
-              <span className="stat-number">
-                {generationStatus.completedJobs || 0}
-              </span>
-              <span className="stat-label">Completed Today</span>
-            </div>
-          </div>
-        </div>
-      )}
-      {hasActiveJob ? (
+
+      {isGenerating ? (
         <div className="active-generation">
-          <h3>Current Generation</h3>
-          <div className="job-card">
-            <div className="job-header">
-              <div className="job-info">
-                <div
-                  className="job-icon"
-                  style={{ color: getStatusColor(currentJob.status) }}
-                />
-                <div className="job-details">
-                  <h4>{currentJob.name}</h4>
-                  <p>{getStatusLabel(currentJob.status)}</p>
-                </div>
-              </div>
-              <div className="job-meta">
-                <span className="job-id">Job #{currentJob.id}</span>
-                <span className="job-time">
-                  {new Date(
-                    currentJob.processedOn || currentJob.timestamp
-                  ).toLocaleString()}
-                </span>
+          <h3>Generating Your Plan</h3>
+          <div className="generation-card">
+            <div className="generation-header">
+              <div className="generation-icon">🤖</div>
+              <div className="generation-details">
+                <h4>AI Plan Generation</h4>
+                <p>{generationStep}</p>
               </div>
             </div>
-            {currentJob.status === "active" && (
-              <div className="job-progress">
-                <div className="progress-header">
-                  <span>Generation Progress</span>
-                  <span>{Math.round(progress)}%</span>
+
+            <div className="generation-progress-full">
+              <div className="progress-header">
+                <span>Generation Progress</span>
+                <span>{Math.round(generationProgress)}%</span>
+              </div>
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${generationProgress}%` }}
+                />
+              </div>
+              <div className="progress-steps">
+                <div className={`step ${generationProgress >= 20 ? 'completed' : ''}`}>
+                  <span className="step-label">Analyzing Profile</span>
                 </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${progress}%` }}
-                  />
+                <div className={`step ${generationProgress >= 40 ? 'completed' : generationProgress >= 20 ? 'active' : ''}`}>
+                  <span className="step-label">AI Generation</span>
                 </div>
-                <div className="progress-steps">
-                  <div className="step completed">
-                    <span className="step-label">Analyzing Profile</span>
-                  </div>
-                  <div className="step active">
-                    <span className="step-label">AI Generation</span>
-                  </div>
-                  <div className="step">
-                    <span className="step-label">Validation</span>
-                  </div>
-                  <div className="step">
-                    <span className="step-label">Saving Plan</span>
-                  </div>
+                <div className={`step ${generationProgress >= 80 ? 'completed' : generationProgress >= 40 ? 'active' : ''}`}>
+                  <span className="step-label">Validation</span>
+                </div>
+                <div className={`step ${generationProgress >= 100 ? 'completed' : generationProgress >= 80 ? 'active' : ''}`}>
+                  <span className="step-label">Saving Plan</span>
                 </div>
               </div>
-            )}
-            {currentJob.status === "failed" && currentJob.failedReason && (
-              <div className="job-error">
-                <p>{currentJob.failedReason}</p>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (
@@ -278,48 +243,44 @@ export default function PlanGenerationStatus({
             <div className="generation-error">
               <h3>Generation Error</h3>
               <p>{error}</p>
-              <button onClick={checkGenerationStatus} className="retry-btn">
-                Refresh Status
+              <button onClick={() => setError(null)} className="retry-btn">
+                Clear Error
               </button>
+            </div>
+          ) : success ? (
+            <div className="generation-success">
+              <h3>✅ Plan Generated Successfully!</h3>
+              <p>Your personalized AI plan has been created and saved.</p>
+              <div className="success-actions">
+                <button onClick={handleRegeneratePlan} className="regenerate-btn secondary">
+                  Generate New Plan
+                </button>
+              </div>
             </div>
           ) : hasCurrentPlan ? (
             <div className="plan-exists">
-              <p>✅ You have an active plan for this week</p>
-              <p className="plan-note">Plans are automatically generated after onboarding</p>
+              <h3>✅ Active Plan Found</h3>
+              <p>You have an active plan for this week</p>
+              <div className="plan-actions">
+                <button onClick={handleRegeneratePlan} className="regenerate-btn secondary" disabled={!user}>
+                  Generate New Plan
+                </button>
+              </div>
             </div>
           ) : (
             <div className="no-plan">
-              <p>No active plan found</p>
-              <p className="plan-note">Complete your onboarding to get your first AI-generated plan</p>
+              <h3>No Active Plan</h3>
+              <p>Generate your personalized AI fitness and meal plan</p>
+              <div className="generation-actions">
+                <button onClick={handleGeneratePlan} className="generate-btn primary" disabled={!user}>
+                  Generate AI Plan
+                </button>
+              </div>
+              {!user && (
+                <p className="loading-note">Loading user profile...</p>
+              )}
             </div>
           )}
-        </div>
-      )}
-      {generationStatus?.recentJobs?.length > 0 && (
-        <div className="recent-generations">
-          <h3>Recent Generations</h3>
-          <div className="jobs-list">
-            {generationStatus.recentJobs.map((job) => (
-              <div key={job.id} className="job-item">
-                <div
-                  className="job-icon"
-                  style={{ color: getStatusColor(job.status) }}
-                />
-                <div className="job-content">
-                  <div className="job-name">{job.name}</div>
-                  <div className="job-timestamp">
-                    {new Date(job.timestamp).toLocaleString()}
-                  </div>
-                </div>
-                <div
-                  className="job-status"
-                  style={{ color: getStatusColor(job.status) }}
-                >
-                  {getStatusLabel(job.status)}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>

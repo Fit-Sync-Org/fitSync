@@ -16,7 +16,11 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
       fetchCurrentPlan();
     } else {
       setPlan(propPlan);
-      setWeekDates(planHelpers.getWeekDates(propPlan.weekStart));
+      const dates = planHelpers.getWeekDates(propPlan.weekStart);
+      setWeekDates(dates);
+
+      const todayIndex = dates.findIndex(date => date.isToday);
+      setSelectedDay(todayIndex >= 0 ? todayIndex : 0);
     }
   }, [propPlan]);
 
@@ -25,7 +29,11 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
     const result = await plansAPI.getCurrentPlan();
     if (result.success) {
       setPlan(result.data);
-      setWeekDates(planHelpers.getWeekDates(result.data.weekStart));
+      const dates = planHelpers.getWeekDates(result.data.weekStart);
+      setWeekDates(dates);
+
+      const todayIndex = dates.findIndex(date => date.isToday);
+      setSelectedDay(todayIndex >= 0 ? todayIndex : 0);
     } else {
       setError(result.error);
     }
@@ -259,14 +267,6 @@ function DayPlan({ day, dateInfo }) {
     );
   }
 
-  const formatMacros = (macros) => {
-    if (!macros) return null;
-    return {
-      protein: Math.round(macros.protein || 0),
-      carbs: Math.round(macros.carbs || 0),
-      fat: Math.round(macros.fat || 0),
-    };
-  };
 
   return (
     <div className="day-plan">
@@ -286,36 +286,55 @@ function DayPlan({ day, dateInfo }) {
           <span className="label">Workouts</span>
         </div>
         <div className="overview-stat">
-          <span className="number">{day.meals?.length || 0}</span>
+          <span className="number">
+            {day.meals ?
+              (day.meals.breakfast ? 1 : 0) +
+              (day.meals.lunch ? 1 : 0) +
+              (day.meals.dinner ? 1 : 0) +
+              (day.meals.snacks?.length || 0)
+              : 0}
+          </span>
           <span className="label">Meals</span>
         </div>
       </div>
       <div className="day-content">
         {day.workouts && day.workouts.length > 0 && (
-          <div className="workouts-section">
+          <div className="workouts-section wp">
             <h4>Workouts</h4>
-            <div className="workout-list">
+            <div className="workout-list wp">
               {day.workouts.map((workout, index) => (
-                <div key={index} className="workout-item">
-                  <div className="workout-header">
+                <div key={index} className="workout-item wp">
+                  <div className="workout-header wp">
                     <span className="workout-name">{workout.name}</span>
-                    {workout.calories_burned && (
-                      <span className="workout-calories">
-                        {workout.calories_burned} kcal
-                      </span>
-                    )}
+                    <div className="workout-meta">
+                      {workout.duration && (
+                        <span className="workout-duration">{workout.duration} min</span>
+                      )}
+                      {workout.caloriesBurned && (
+                        <span className="workout-calories">{workout.caloriesBurned} kcal</span>
+                      )}
+                    </div>
                   </div>
-                  {workout.sets && workout.reps && (
-                    <div className="workout-details">
-                      <span>
-                        {workout.sets} sets × {workout.reps} reps
-                      </span>
-                      {workout.weight && workout.weight !== "bodyweight" && (
-                        <span> • {workout.weight}</span>
-                      )}
-                      {workout.rest_seconds && (
-                        <span> • {workout.rest_seconds}s rest</span>
-                      )}
+                  {workout.exercises && workout.exercises.length > 0 && (
+                    <div className="workout-exercises">
+                      {workout.exercises.map((exercise, idx) => (
+                        <div key={idx} className="exercise-item">
+                          <span className="exercise-name">{exercise.name}</span>
+                          <div className="exercise-details">
+                            {exercise.sets && exercise.reps ? (
+                              <span>
+                                {exercise.sets} sets × {exercise.reps} reps
+                                {exercise.weight && ` @ ${exercise.weight}lbs`}
+                              </span>
+                            ) : exercise.duration ? (
+                              <span>{exercise.duration} minutes</span>
+                            ) : null}
+                            {exercise.notes && (
+                              <div className="exercise-notes">{exercise.notes}</div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -323,33 +342,78 @@ function DayPlan({ day, dateInfo }) {
             </div>
           </div>
         )}
-        {day.meals && day.meals.length > 0 && (
+        {day.meals && (
           <div className="meals-section">
             <h4>Meals</h4>
             <div className="meal-list">
-              {day.meals.map((meal, index) => {
-                const macros = formatMacros(meal.macros);
-                return (
-                  <div key={index} className="meal-item">
-                    <div className="meal-header">
-                      <span className="meal-name">{meal.name}</span>
-                      <span className="meal-calories">
-                        {meal.calories} kcal
-                      </span>
-                    </div>
-                    {meal.foods && (
-                      <div className="meal-foods">{meal.foods.join(", ")}</div>
-                    )}
-                    {macros && (
-                      <div className="meal-macros">
-                        <span>P: {macros.protein}g</span>
-                        <span>C: {macros.carbs}g</span>
-                        <span>F: {macros.fat}g</span>
-                      </div>
-                    )}
+              {day.meals.breakfast && (
+                <div className="meal-item wp">
+                  <div className="meal-header">
+                    <span className="meal-name">Breakfast: {day.meals.breakfast.name}</span>
+                    <span className="meal-calories">
+                      {day.meals.breakfast.calories} kcal
+                    </span>
                   </div>
-                );
-              })}
+                  {day.meals.breakfast.description && (
+                    <div className="meal-description">{day.meals.breakfast.description}</div>
+                  )}
+                  {day.meals.breakfast.ingredients && (
+                    <div className="meal-foods">{day.meals.breakfast.ingredients.join(", ")}</div>
+                  )}
+                </div>
+              )}
+
+              {day.meals.lunch && (
+                <div className="meal-item">
+                  <div className="meal-header">
+                    <span className="meal-name">Lunch: {day.meals.lunch.name}</span>
+                    <span className="meal-calories">
+                      {day.meals.lunch.calories} kcal
+                    </span>
+                  </div>
+                  {day.meals.lunch.description && (
+                    <div className="meal-description">{day.meals.lunch.description}</div>
+                  )}
+                  {day.meals.lunch.ingredients && (
+                    <div className="meal-foods">{day.meals.lunch.ingredients.join(", ")}</div>
+                  )}
+                </div>
+              )}
+
+              {day.meals.dinner && (
+                <div className="meal-item">
+                  <div className="meal-header">
+                    <span className="meal-name">Dinner: {day.meals.dinner.name}</span>
+                    <span className="meal-calories">
+                      {day.meals.dinner.calories} kcal
+                    </span>
+                  </div>
+                  {day.meals.dinner.description && (
+                    <div className="meal-description">{day.meals.dinner.description}</div>
+                  )}
+                  {day.meals.dinner.ingredients && (
+                    <div className="meal-foods">{day.meals.dinner.ingredients.join(", ")}</div>
+                  )}
+                </div>
+              )}
+
+              {day.meals.snacks && day.meals.snacks.length > 0 && (
+                <>
+                  {day.meals.snacks.map((snack, index) => (
+                    <div key={index} className="meal-item">
+                      <div className="meal-header">
+                        <span className="meal-name">Snack: {snack.name}</span>
+                        <span className="meal-calories">
+                          {snack.calories} kcal
+                        </span>
+                      </div>
+                      {snack.description && (
+                        <div className="meal-description">{snack.description}</div>
+                      )}
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
         )}

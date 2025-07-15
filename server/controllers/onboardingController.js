@@ -40,30 +40,10 @@ exports.registerNewUser = async (req, res) => {
   });
 
 
-  try {
-    const planJob = await enqueuePlanGeneration(user.id);
-    console.log(
-      `Plan generation job ${planJob.id} queued for new user ${user.id}`
-    );
-
-    res.json({
-      message: "Onboarding complete",
-      userId: user.id,
-      planGenerationQueued: true,
-    });
-  } catch (queueError) {
-    console.warn(
-      `Failed to queue plan generation for user ${user.id}:`,
-      queueError.message
-    );
-
-    res.json({
-      message: "Onboarding complete",
-      userId: user.id,
-      planGenerationQueued: false,
-      planGenerationError: "Plan generation will be available later",
-    });
-  }
+  res.json({
+    message: "Onboarding complete",
+    userId: user.id,
+  });
 };
 
 exports.completeOnboarding = async (req, res) => {

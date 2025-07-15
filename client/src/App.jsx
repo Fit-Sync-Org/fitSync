@@ -8,6 +8,8 @@ import OnboardingWizard from "../components/onboarding/OnboardingWizard";
 import LogMeal from "../components/meals/LogMeal";
 import LogWorkout from "../components/workouts/LogWorkout";
 import Profile from "../components/profile/Profile";
+import WeeklyPlan from "../components/plans/WeeklyPlan";
+import NotificationCenter from "../components/notifications/NotificationCenter";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
             <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute>}/>
             <Route path="/log-meal" element={ <ProtectedRoute> <LogMeal /> </ProtectedRoute>}/>
             <Route path="/log-workout" element = {<ProtectedRoute> <LogWorkout /> </ProtectedRoute>}/>
+            <Route path="/plans" element={ <ProtectedRoute> <WeeklyPlan /> </ProtectedRoute>}/>
+            <Route path="/notifications" element={ <ProtectedRoute> <NotificationCenter /> </ProtectedRoute>}/>
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         </BrowserRouter>

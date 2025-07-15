@@ -5,7 +5,15 @@ const db = new PrismaClient();
 module.exports = async function requireAuth(req, res, next) {
   console.log("requireAuth hit!", req.path);
   try {
-    const idToken = req.cookies.token;
+    let idToken = req.cookies.token;
+
+    if (!idToken) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        idToken = authHeader.substring(7);
+      }
+    }
+
     if (!idToken) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -15,6 +23,7 @@ module.exports = async function requireAuth(req, res, next) {
 
     const user = await db.user.findUnique({
       where: { firebaseUid: uid },
+      include: { goals: true }
     });
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });

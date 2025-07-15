@@ -6,6 +6,8 @@ import WorkoutHistory from "./WorkoutHistory";
 import "./Dashboard.css";
 import Charts from "./Charts";
 import { geminimodel } from "../../src/firebase";
+import APITester from "../debug/APITester";
+import NotificationBell from "../notifications/NotificationBell";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -38,61 +40,6 @@ export default function Dashboard() {
       .then(() => navigate('/login'));
   };
 
-  const testGeminiPlan = async () => {
-    const userProfile = {
-      name: user?.firstName || "User",
-      age: user?.age || 30,
-      weight: user?.weight || 170,
-      height: user?.height || 70,
-      goal: user?.goal || "weight_loss",
-      activityLevel: user?.activityLevel || "moderate",
-      dietaryPreferences: user?.dietaryPreferences || ["balanced"],
-      fitnessLevel: user?.fitnessLevel || "intermediate"
-    };
-
-    try {
-      console.log("Generating plan for:", userProfile);
-      const result = await geminimodel.generateContent([
-        `Generate a 7-day fitness plan for the following user profile:
-         ${JSON.stringify(userProfile)}
-
-         The plan should include:
-         - Daily workouts with exercises, sets, reps
-         - Meal plans with macros
-         - Rest periods
-
-         IMPORTANT: Return ONLY the raw JSON object with no markdown formatting, no code blocks, no backticks, and no additional text. The response should start with { and end with } and be valid JSON that can be directly parsed with JSON.parse().`
-      ]);
-
-      const rawText = result.response.text();
-      console.log("Raw response:", rawText);
-
-      let jsonText = rawText;
-      if (rawText.includes("```")) {
-        const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-        if (jsonMatch && jsonMatch[1]) {
-          jsonText = jsonMatch[1].trim();
-        }
-      }
-
-      jsonText = jsonText.replace(/^`+|`+$/g, "").trim();
-      const firstBrace = jsonText.indexOf("{");
-      const lastBrace = jsonText.lastIndexOf("}");
-
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-      }
-
-      console.log("Cleaned JSON text:", jsonText);
-
-      const plan = JSON.parse(jsonText);
-      console.log("Generated plan:", plan);
-      alert("Plan generated! Check console for details.");
-    } catch (error) {
-      console.error("Error generating fitness plan:", error);
-      alert("Error generating plan. See console for details.");
-    }
-  };
   const calculateDailyCalories = () => {
     let caloriesIn = 0;
     let caloriesOut = 0;
@@ -181,13 +128,13 @@ export default function Dashboard() {
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/ai-history")}>
-                  <span>AI History</span>
+                <button onClick={() => handleNavigation("/plans")}>
+                  <span>My Plans</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/notes")}>
-                  <span>Notes</span>
+                <button onClick={() => handleNavigation("/notifications")}>
+                  <span>Notifications</span>
                 </button>
               </li>
               <li>
@@ -218,9 +165,12 @@ export default function Dashboard() {
           <span></span>
         </button>
         <h1 className="dashboard-title">FitSync Dashboard</h1>
-        <button className="logout-btn" onClick={logout}>
-          <span>←</span> Logout
-        </button>
+        <div className="header-actions">
+          <NotificationBell />
+          <button className="logout-btn" onClick={logout}>
+            <span>←</span> Logout
+          </button>
+        </div>
       </header>
 
       <main className="dashboard-main">
@@ -380,24 +330,7 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-        <a href="#" onClick={(e) => { e.preventDefault(); navigate("/chat"); }}> chat </a>
-
-        <button
-          onClick={testGeminiPlan}
-          style={{
-            padding: '10px 15px',
-            background: '#ADC97E',
-            color: '#2C332E',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            marginTop: '20px',
-            display: 'block',
-            width: '100%'
-          }}
-        >
-          Test AI Plan Generation
-        </button>
+        <APITester />
       </main>
 
       <button

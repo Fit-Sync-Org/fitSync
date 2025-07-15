@@ -1,6 +1,7 @@
 import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import {auth} from "../../src/firebase";
+import { generateAndSavePlan } from "../../src/utils/planGeneration";
 
 import StepName from "./StepName";
 import StepAge from "./StepAge";
@@ -58,8 +59,8 @@ export default function OnboardingWizard() {
     { id: "gender", required: true },
     { id: "occupation", required: false },
     { id: "availability", required: true },
-    { id: "preference", required: false },
-    { id: "diet", required: true },
+    { id: "preference", required: true },
+    { id: "diet", required: false },
     { id: "phone", required: false },
     { id: "metrics", required: true },
   ];
@@ -135,7 +136,7 @@ export default function OnboardingWizard() {
       const idToken = await auth.currentUser.getIdToken(true);
       sessionStorage.setItem("fitsyncTempToken", idToken);
 
-        console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
+      console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
       const resp = await fetch(
         `${import.meta.env.VITE_API_URL}/onboarding/register`,
         {
@@ -148,9 +149,35 @@ export default function OnboardingWizard() {
         }
       );
 
-      if (!resp.ok) throw new Error("Server rejected onboarding");
+      const registrationResult = await resp.json();
+      console.log("Registration completed successfully:", registrationResult);
 
-      sessionStorage.removeItem("fitbuddyTempToken");
+      const userResp = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+        credentials: 'include'
+      });
+
+      if (userResp.ok) {
+        const userProfile = await userResp.json();
+        console.log("Starting AI plan generation for new user...");
+
+        const planResult = await generateAndSavePlan(userProfile);
+
+        if (planResult.success) {
+          console.log("Plan generated successfully:", planResult);
+          alert("Welcome to FitSync! Your personalized plan has been generated and is ready to use.");
+        } else {
+          console.error("Plan generation failed:", planResult.error);
+          alert("Registration completed, but plan generation failed. You can generate a plan later from the My Plans section.");
+        }
+      } else {
+        console.error("Failed to fetch user profile for plan generation");
+        alert("Registration completed, but couldn't generate your initial plan. You can generate one later from the Plans section.");
+      }
+
+      sessionStorage.removeItem("fitsyncTempToken");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);

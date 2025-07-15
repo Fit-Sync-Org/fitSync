@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { enqueuePlanGeneration } = require("../utils/queueHelpers");
 const db = new PrismaClient();
 
 exports.registerNewUser = async (req, res) => {
@@ -40,25 +39,10 @@ exports.registerNewUser = async (req, res) => {
     domain  : isProd ? ".onrender.com" : "localhost",
   });
 
-  res.json({ message: "Onboarding complete", userId: user.id });
-
-    try {
-    const planJob = await enqueuePlanGeneration(user.id);
-    console.log(
-      `plan generation job ${planJob.id} queued for new user ${user.id}`
-    );
-  } catch (queueError) {
-    console.error(
-      `Failed to queue plan generation for user ${user.id}:`,
-      queueError.message
-    );
-  }
-
 
   res.json({
     message: "Onboarding complete",
     userId: user.id,
-    planGenerationQueued: true,
   });
 };
 

@@ -1,10 +1,5 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const {
-  enqueuePlanGeneration,
-  getUserPlanJobs,
-  getJobStatus,
-} = require("../utils/queueHelpers");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -161,16 +156,7 @@ router.get("/generation/status", async (req, res) => {
   try {
     const userId = req.user.id;
 
-    let jobs = [];
-    let generatingPlans = [];
-
-    try {
-      jobs = await getUserPlanJobs(userId);
-    } catch {
-      console.warn("Queue system unavailable for status check");
-    }
-
-    generatingPlans = await prisma.userPlan.findMany({
+    const generatingPlans = await prisma.userPlan.findMany({
       where: {
         userId: userId,
         status: "GENERATING",
@@ -182,40 +168,12 @@ router.get("/generation/status", async (req, res) => {
     });
 
     res.json({
-      activeJobs: jobs.filter(
-        job => job.status === "active" || job.status === "waiting"
-      ),
-      recentJobs: jobs.slice(0, 5),
-      totalJobs: jobs.length,
-      completedJobs: jobs.filter(job => job.status === "completed").length,
       generatingPlans,
-      queueAvailable: jobs.length > 0,
+      queueAvailable: false,
     });
   } catch (error) {
     console.error("Get generation status error:", error);
     res.status(500).json({ error: "Failed to fetch generation status" });
-  }
-});
-
-router.get("/jobs/:jobId", async (req, res) => {
-  try {
-    const { jobId } = req.params;
-    try {
-      const status = await getJobStatus(jobId, "plan");
-      if (status.status === "not_found") {
-        return res.status(404).json({ error: "Job not found" });
-      }
-      res.json(status);
-    } catch {
-      console.warn("Queue system unavailable for job status");
-      res.status(503).json({
-        error: "Queue system unavailable",
-        queueAvailable: false,
-      });
-    }
-  } catch (error) {
-    console.error("Get job status error:", error);
-    res.status(500).json({ error: "Failed to fetch job status" });
   }
 });
 

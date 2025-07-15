@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { enqueuePlanGeneration } = require("../utils/queueHelpers");
 const db = new PrismaClient();
 
 exports.registerNewUser = async (req, res) => {

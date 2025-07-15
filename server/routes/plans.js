@@ -1,172 +1,222 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const { enqueuePlanGeneration, getUserPlanJobs, getJobStatus } = require("../utils/queueHelpers");
+const {
+  enqueuePlanGeneration,
+  getUserPlanJobs,
+  getJobStatus,
+} = require("../utils/queueHelpers");
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
 
 router.get("/current", async (req, res) => {
-  const userId = req.user.id;
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() - daysFromMonday);
-  weekStart.setHours(0, 0, 0, 0);
-
-  const plan = await prisma.userPlan.findFirst({
-    where: { userId, weekStart, status: "ACTIVE" },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (!plan) {
-    return res.status(404).json({
-      error: "No active plan found for this week",
-      weekStart: weekStart.toISOString().split("T")[0],
-    });
-  }
-
-  res.json({
-    id: plan.id,
-    weekStart: plan.weekStart,
-    status: plan.status,
-    plan: plan.planJson,
-    createdAt: plan.createdAt,
-    updatedAt: plan.updatedAt,
-  });
-});
-
-router.get("/history", async (req, res) => {
-  const userId = req.user.id;
-  const { page = 1, limit = 10 } = req.query;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
-
-  const [plans, total] = await Promise.all([
-    prisma.userPlan.findMany({
-      where: { userId },
-      orderBy: { weekStart: "desc" },
-      skip,
-      take: parseInt(limit),
-      select: {
-        id: true,
-        weekStart: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    }),
-    prisma.userPlan.count({ where: { userId } }),
-  ]);
-
-  res.json({
-    plans,
-    pagination: {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      total,
-      pages: Math.ceil(total / parseInt(limit)),
-    },
-  });
-});
-
-router.get("/:planId", async (req, res) => {
-  const userId = req.user.id;
-  const planId = parseInt(req.params.planId);
-
-  const plan = await prisma.userPlan.findFirst({
-    where: { id: planId, userId },
-  });
-
-  if (!plan) {
-    return res.status(404).json({ error: "Plan not found" });
-  }
-
-  res.json({
-    id: plan.id,
-    weekStart: plan.weekStart,
-    status: plan.status,
-    plan: plan.planJson,
-    createdAt: plan.createdAt,
-    updatedAt: plan.updatedAt,
-  });
-});
-
-router.post("/generate", async (req, res) => {
-  const userId = req.user.id;
-  const { weekStart } = req.body;
-  let targetWeekStart;
-
-  if (weekStart) {
-    targetWeekStart = new Date(weekStart);
-  } else {
+  try {
+    const userId = req.user.id;
     const today = new Date();
     const dayOfWeek = today.getDay();
     const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    targetWeekStart = new Date(today);
-    targetWeekStart.setDate(today.getDate() - daysFromMonday);
-  }
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - daysFromMonday);
+    weekStart.setHours(0, 0, 0, 0);
 
-  targetWeekStart.setHours(0, 0, 0, 0);
+    console.log(`Looking for plan for user ${userId}, calculated weekStart: ${weekStart.toISOString()}`);
 
-  const existingPlan = await prisma.userPlan.findFirst({
-    where: { userId, weekStart: targetWeekStart },
-  });
-
-  if (existingPlan && existingPlan.status === "ACTIVE") {
-    return res.status(409).json({
-      error: "An active plan already exists for this week",
-      existingPlan: {
-        id: existingPlan.id,
-        status: existingPlan.status,
-        weekStart: existingPlan.weekStart,
+    let plan = await prisma.userPlan.findFirst({
+      where: {
+        userId: userId,
+        weekStart: weekStart,
+        status: "ACTIVE",
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
+
+    if (!plan) {
+      console.log("No exact match found, looking for any active plan...");
+      plan = await prisma.userPlan.findFirst({
+        where: {
+          userId: userId,
+          status: "ACTIVE",
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (plan) {
+        console.log(`Found active plan with weekStart: ${plan.weekStart.toISOString()}`);
+      }
+    }
+
+    if (!plan) {
+      const allPlans = await prisma.userPlan.findMany({
+        where: { userId: userId },
+        select: { id: true, weekStart: true, status: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+        take: 5
+      });
+
+      console.log(`No active plan found. User has ${allPlans.length} total plans:`, allPlans);
+
+      return res.status(404).json({
+        error: "No active plan found for this week",
+        weekStart: weekStart.toISOString().split("T")[0],
+        debug: {
+          calculatedWeekStart: weekStart.toISOString(),
+          userPlans: allPlans
+        }
+      });
+    }
+
+    res.json({
+      id: plan.id,
+      weekStart: plan.weekStart,
+      status: plan.status,
+      plan: plan.planJson,
+      createdAt: plan.createdAt,
+      updatedAt: plan.updatedAt,
+    });
+  } catch (error) {
+    console.error("Get current plan error:", error);
+    res.status(500).json({ error: "Failed to fetch current plan" });
   }
-
-  const generatingPlan = await prisma.userPlan.create({
-    data: {
-      userId,
-      weekStart: targetWeekStart,
-      planJson: {},
-      status: "GENERATING",
-    },
-  });
-
-  const job = await enqueuePlanGeneration(userId, { priority: 1 });
-
-  res.status(202).json({
-    message: "Plan generation started",
-    planId: generatingPlan.id,
-    jobId: job.id,
-    weekStart: targetWeekStart.toISOString().split("T")[0],
-    status: "GENERATING",
-  });
 });
 
-router.get("/generation/status", async (req, res) => {
-  const userId = req.user.id;
-  const jobs = await getUserPlanJobs(userId);
-  const generatingPlans = await prisma.userPlan.findMany({
-    where: { userId, status: "GENERATING" },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
+router.get("/history", async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10 } = req.query;
 
-  res.json({
-    jobs: jobs.slice(0, 5),
-    generatingPlans,
-  });
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [plans, total] = await Promise.all([
+      prisma.userPlan.findMany({
+        where: { userId: userId },
+        orderBy: { weekStart: "desc" },
+        skip: skip,
+        take: parseInt(limit),
+        select: {
+          id: true,
+          weekStart: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      prisma.userPlan.count({
+        where: { userId: userId },
+      }),
+    ]);
+
+    res.json({
+      plans,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit)),
+      },
+    });
+  } catch (error) {
+    console.error("Get plan history error:", error);
+    res.status(500).json({ error: "Failed to fetch plan history" });
+  }
+});
+
+router.get("/:planId", async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { planId } = req.params;
+
+    const plan = await prisma.userPlan.findFirst({
+      where: {
+        id: parseInt(planId),
+        userId: userId,
+      },
+    });
+
+    if (!plan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+
+    res.json({
+      id: plan.id,
+      weekStart: plan.weekStart,
+      status: plan.status,
+      plan: plan.planJson,
+      createdAt: plan.createdAt,
+      updatedAt: plan.updatedAt,
+    });
+  } catch (error) {
+    console.error("Get plan by ID error:", error);
+    res.status(500).json({ error: "Failed to fetch plan" });
+  }
+});
+
+// Remove the generate endpoint since plans are now auto-generated after onboarding
+
+router.get("/generation/status", async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    let jobs = [];
+    let generatingPlans = [];
+
+    try {
+      jobs = await getUserPlanJobs(userId);
+    } catch {
+      console.warn("Queue system unavailable for status check");
+    }
+
+    generatingPlans = await prisma.userPlan.findMany({
+      where: {
+        userId: userId,
+        status: "GENERATING",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5,
+    });
+
+    res.json({
+      activeJobs: jobs.filter(
+        job => job.status === "active" || job.status === "waiting"
+      ),
+      recentJobs: jobs.slice(0, 5),
+      totalJobs: jobs.length,
+      completedJobs: jobs.filter(job => job.status === "completed").length,
+      generatingPlans,
+      queueAvailable: jobs.length > 0,
+    });
+  } catch (error) {
+    console.error("Get generation status error:", error);
+    res.status(500).json({ error: "Failed to fetch generation status" });
+  }
 });
 
 router.get("/jobs/:jobId", async (req, res) => {
-  const jobId = req.params.jobId;
-  const status = await getJobStatus(jobId, "plan");
-
-  if (status.status === "not_found") {
-    return res.status(404).json({ error: "Job not found" });
+  try {
+    const { jobId } = req.params;
+    try {
+      const status = await getJobStatus(jobId, "plan");
+      if (status.status === "not_found") {
+        return res.status(404).json({ error: "Job not found" });
+      }
+      res.json(status);
+    } catch {
+      console.warn("Queue system unavailable for job status");
+      res.status(503).json({
+        error: "Queue system unavailable",
+        queueAvailable: false,
+      });
+    }
+  } catch (error) {
+    console.error("Get job status error:", error);
+    res.status(500).json({ error: "Failed to fetch job status" });
   }
-
-  res.json(status);
 });
 
 module.exports = router;

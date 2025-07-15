@@ -40,26 +40,31 @@ exports.registerNewUser = async (req, res) => {
     domain  : isProd ? ".onrender.com" : "localhost",
   });
 
-  res.json({ message: "Onboarding complete", userId: user.id });
 
-    try {
+  try {
     const planJob = await enqueuePlanGeneration(user.id);
     console.log(
-      `plan generation job ${planJob.id} queued for new user ${user.id}`
+      `Plan generation job ${planJob.id} queued for new user ${user.id}`
     );
+
+    res.json({
+      message: "Onboarding complete",
+      userId: user.id,
+      planGenerationQueued: true,
+    });
   } catch (queueError) {
-    console.error(
+    console.warn(
       `Failed to queue plan generation for user ${user.id}:`,
       queueError.message
     );
+
+    res.json({
+      message: "Onboarding complete",
+      userId: user.id,
+      planGenerationQueued: false,
+      planGenerationError: "Plan generation will be available later",
+    });
   }
-
-
-  res.json({
-    message: "Onboarding complete",
-    userId: user.id,
-    planGenerationQueued: true,
-  });
 };
 
 exports.completeOnboarding = async (req, res) => {

@@ -38,6 +38,7 @@ app.use("/api/exercises", workoutsRouter);
 app.use("/api/meals", mealsRouter);
 
 app.use("/api/plans", plansRouter);
+app.use("/api/ai-plans", require("./routes/ai-plans"));
 app.use("/api/notifications", notificationsRouter);
 
 app.listen(port, () => {

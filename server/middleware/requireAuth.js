@@ -15,6 +15,7 @@ module.exports = async function requireAuth(req, res, next) {
 
     const user = await db.user.findUnique({
       where: { firebaseUid: uid },
+      include: { goals: true }
     });
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });

@@ -159,21 +159,21 @@ export default function Profile() {
                 </button>
               </li>
               <li>
+                <button onClick={() => handleNavigation("/plans")}>
+                  <span>My Plans</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavigation("/notifications")}>
+                  <span>Notifications</span>
+                </button>
+              </li>
+              <li>
                 <button
                   onClick={() => handleNavigation("/profile")}
                   className="active"
                 >
                   <span>Profile</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNavigation("/ai-history")}>
-                  <span>AI History</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNavigation("/notes")}>
-                  <span>Notes</span>
                 </button>
               </li>
             </ul>
@@ -350,6 +350,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
-

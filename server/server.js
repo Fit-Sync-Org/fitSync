@@ -17,7 +17,7 @@ const app  = express();
 const port = process.env.PORT || 3001;
 
 // Set NODE_ENV to production if running on Render
-if (process.env.RENDER === 'true') {
+if (process.env.RENDER) {
   process.env.NODE_ENV = 'production';
   console.log('Running in production mode on Render');
 } else {

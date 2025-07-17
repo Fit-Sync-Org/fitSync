@@ -2,6 +2,7 @@ const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const router = express.Router();
 const prisma = new PrismaClient();
+const { checkInactivity } = require("../utils/simpleProgressTracking");
 
 router.get("/", async (req, res) => {
   try {
@@ -231,6 +232,11 @@ router.post("/test", async (req, res) => {
     console.error("Create test notification error:", error);
     res.status(500).json({ error: "Failed to create test notification" });
   }
+});
+
+router.post('/check-inactivity', async (req, res) => {
+  await checkInactivity();
+  res.json({ success: true });
 });
 
 module.exports = router;

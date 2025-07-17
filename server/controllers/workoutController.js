@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const db = new PrismaClient();
+const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
 
 exports.getWorkoutByDate = async (req, res) => {
   try {
@@ -98,6 +99,7 @@ exports.addWorkout = async (req, res) => {
       }
     });
 
+    await checkProgressAndNotify(userId);
 
     res.status(201).json({
       id: w.id,

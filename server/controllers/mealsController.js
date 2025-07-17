@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
-
+const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
 
 exports.getMealsByDate = async (req, res) => {
   try {
@@ -99,6 +99,7 @@ exports.addMeal = async (req, res) => {
       },
     });
 
+    await checkProgressAndNotify(userId);
 
     res.status(201).json({
       id: meal.id,

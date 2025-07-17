@@ -1,5 +1,105 @@
 import { geminimodel } from '../firebase';
 
+// BMI calculation function
+export const calculateBMI = (weightKg, heightCm) => {
+  if (!weightKg || !heightCm) return null;
+  const heightM = heightCm / 100;
+  return (weightKg / (heightM * heightM)).toFixed(1);
+};
+
+export const getBMICategory = (bmi) => {
+  if (!bmi) return 'Unknown';
+  if (bmi < 18.5) return 'Underweight';
+  if (bmi < 25) return 'Normal weight';
+  if (bmi < 30) return 'Overweight';
+  return 'Obese';
+};
+
+export const getAgeBasedApproach = (age) => {
+  if (!age) return 'general';
+  if (age < 30) return 'high_activity';
+  if (age < 40) return 'moderate_activity';
+  if (age < 50) return 'balanced';
+  if (age < 60) return 'gentle';
+ return 'senior';
+};
+
+//age-appropriate prompt section
+export const generateAgeBasedPrompt = (age, approach) => {
+ const basePrompts = {
+   high_activity: `
+**Fitness Approach for Young Adults (Under30**
+- Focus on high-intensity workouts and strength training
+- Include advanced exercises like HIIT, plyometrics, and heavy lifting
+- Emphasize muscle building and athletic performance
+- Allow for more aggressive calorie deficits or surpluses
+- Include recovery days but maintain high overall activity level
+- Target 5-6 workout sessions per week with varying intensity`,
+
+   moderate_activity: `
+**Fitness Approach for Adults (30
+- Balance between high-intensity and moderate workouts
+- Focus on functional fitness and injury prevention
+- Include strength training with moderate weights
+- Emphasize sustainable habits and lifestyle changes
+- Include flexibility and mobility work
+- Target 4-5 workout sessions per week with good recovery`,
+
+   balanced: `
+**Fitness Approach for Adults (40-49Moderate intensity workouts with focus on form
+- Emphasize functional movements and core strength
+- Include low-impact cardio options
+- Focus on injury prevention and joint health
+- Include stretching and flexibility work
+- Target 3-4 workout sessions per week with adequate rest`,
+
+   gentle: `
+**Fitness Approach for Adults (50
+- Low to moderate intensity workouts
+- Focus on mobility, flexibility, and balance
+- Include walking, swimming, and gentle strength training
+- Emphasize consistency over intensity
+- Include regular stretching and recovery
+- Target 3-4 workout sessions per week`,
+
+   senior: `
+**Fitness Approach for Seniors (60+):**
+- Very gentle, low-impact exercises
+- Focus on balance, flexibility, and mobility
+- Include walking, gentle yoga, and light resistance training
+- Emphasize safety and injury prevention
+- Include regular stretching and rest days
+- Target 2-3 gentle sessions per week with plenty of recovery`,
+
+   general: `
+**General Fitness Approach:**
+- Balanced mix of cardio, strength, and flexibility
+- Moderate intensity suitable for most fitness levels
+- Focus on sustainable habits and gradual progress
+- Include variety in workout types
+- Emphasize proper form and safety
+- Target 3-4 workout sessions per week`
+ };
+
+
+ return basePrompts[approach] || basePrompts.general;
+};
+// Check for significant changes that warrant regeneration
+export const shouldRegeneratePlan = (currentPlan, userProfile) => {
+  if (!currentPlan || !userProfile) return false;
+  const planData = currentPlan.plan;
+  if (!planData || !planData.userProfile) return true;
+
+  const storedProfile = planData.userProfile
+
+  const ageChanged = Math.abs((storedProfile.age || 0) - (userProfile.age || 0)) >= 5;
+  const weightChanged = Math.abs((storedProfile.weightKg || 0) - (userProfile.weightKg || 0)) >= 5;
+  const heightChanged = Math.abs((storedProfile.heightCm || 0) - (userProfile.heightCm || 0)) >= 3;
+  const goalsChanged = JSON.stringify(storedProfile.goals) !== JSON.stringify(userProfile.goals);
+  const dietaryChanged = storedProfile.dietaryRestrictions !== userProfile.dietaryRestrictions;
+  return ageChanged || weightChanged || heightChanged || goalsChanged || dietaryChanged;
+};
+
 export const generateAIPlan = async (userProfile) => {
   try {
     console.log('Starting AI plan generation for user:', userProfile.id);
@@ -10,11 +110,15 @@ export const generateAIPlan = async (userProfile) => {
     const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - daysFromMonday);
-    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setHours(0, 0, 0);
 
     const weekStartStr = weekStart.toISOString().split('T')[0];
 
-    // AI promt
+    const bmi = calculateBMI(userProfile.weightKg, userProfile.heightCm);
+    const bmiCategory = getBMICategory(bmi);
+    const ageApproach = getAgeBasedApproach(userProfile.age);
+    const ageBasedPrompt = generateAgeBasedPrompt(userProfile.age, ageApproach);
+
     const prompt = `
 You are a professional fitness and nutrition coach. Create a comprehensive 7-day fitness and meal plan for the following user profile:
 
@@ -24,11 +128,21 @@ You are a professional fitness and nutrition coach. Create a comprehensive 7-day
 - Gender: ${userProfile.gender}
 - Height: ${userProfile.heightCm}cm
 - Weight: ${userProfile.weightKg}kg
+- BMI: ${bmi} (${bmiCategory})
 - Goals: ${userProfile.goals?.map(g => g.name).join(', ') || 'General fitness'}
 - Weekly Workout Hours Available: ${userProfile.weeklyWorkoutHours || 'Not specified'}
 - Session Preference: ${userProfile.sessionPreference || 'Not specified'}
 - Dietary Restrictions: ${userProfile.dietaryRestrictions || 'None'}
 - Occupation: ${userProfile.occupation || 'Not specified'}
+
+${ageBasedPrompt}
+
+**BMI Considerations:**
+- Current BMI: ${bmi} (${bmiCategory})
+- ${bmiCategory === 'Underweight' ? 'Focus on healthy weight gain with nutrient-dense foods and strength training' : ''}
+- ${bmiCategory === 'Normal weight' ? 'Maintain healthy habits with balanced nutrition and regular exercise' : ''}
+- ${bmiCategory === 'Overweight' ? 'Focus on sustainable weight loss with moderate calorie deficit and regular cardio' : ''}
+- ${bmiCategory === 'Obese' ? 'Prioritize gradual weight loss with low-impact exercises and balanced nutrition' : ''}
 
 **Requirements:**
 1. Create exactly 7 days of plans (Monday to Sunday)
@@ -144,7 +258,10 @@ Generate the complete 7-day plan now:`;
     return {
       success: true,
       planData,
-      weekStart: weekStartStr
+      weekStart: weekStartStr,
+      bmi,
+      bmiCategory,
+      ageApproach
     };
 
   } catch (error) {
@@ -222,7 +339,10 @@ export const generateAndSavePlan = async (userProfile) => {
       success: true,
       planId: saveResult.data.planId,
       weekStart: generationResult.weekStart,
-      message: 'Plan generated and saved successfully'
+      message: 'Plan generated and saved successfully',
+      bmi: generationResult.bmi,
+      bmiCategory: generationResult.bmiCategory,
+      ageApproach: generationResult.ageApproach
     };
 
   } catch (error) {
@@ -230,6 +350,37 @@ export const generateAndSavePlan = async (userProfile) => {
     return {
       success: false,
       error: error.message || 'Failed to generate and save plan'
+    };
+  }
+};
+
+// Enhanced plan regeneration function
+export const regeneratePlanIfNeeded = async (currentPlan, userProfile) => {
+  try {
+    if (shouldRegeneratePlan(currentPlan, userProfile)) {
+      console.log('Profile changes detected, regenerating plan...');
+      const clearResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/ai-plans/regenerate`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (!clearResponse.ok) {
+        throw new Error('Failed to clear existing plan');
+      }
+      return await generateAndSavePlan(userProfile);
+    }
+
+    return {
+      success: true,
+      message: 'No significant profile changes detected, keeping current plan',
+      planId: currentPlan.id
+    };
+
+  } catch (error) {
+    console.error('Error in regeneratePlanIfNeeded:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to regenerate plan'
     };
   }
 };

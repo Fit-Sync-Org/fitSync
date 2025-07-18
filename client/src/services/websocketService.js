@@ -10,6 +10,7 @@ class WebSocketService {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.reconnectDelay = 1000; // Start with 1 second
+    this.tokenRefreshTimeout = null;
   }
 
   async connect() {
@@ -19,8 +20,8 @@ class WebSocketService {
     }
 
     if (!auth.currentUser) {
-        console.error("No authenticated user found");
-        return;
+      console.error("No authenticated Firebase user found");
+      return;
     }
 
     this.socket = io(import.meta.env.VITE_API_URL || "http://localhost:3001", {
@@ -73,10 +74,26 @@ class WebSocketService {
       console.log("WebSocket authenticated:", data);
       this.userId = data.userId;
       this.user = data.user;
+
+      if (data.tokenExpiresIn) {
+        this.scheduleTokenRefresh(data.tokenExpiresIn);
+      }
     });
 
     this.socket.on("auth_error", (error) => {
       console.error("WebSocket authentication error:", error);
+      this.handleAuthError(error);
+    });
+
+    this.socket.on("auth_warning", (warning) => {
+      console.warn("WebSocket authentication warning:", warning);
+      if (warning.code === "TOKEN_EXPIRING") {
+        this.refreshAuthentication();
+      }
+    });
+
+    this.socket.on("pong", (data) => {
+      console.log("Received pong:", data);
     });
 
     this.socket.on("meal_updated", (mealData) => {
@@ -90,20 +107,85 @@ class WebSocketService {
     });
   }
 
-  authenticate() {
-    if (this.socket && this.userId) {
-      this.socket.emit("authenticate", { userId: this.userId });
+  async authenticate() {
+    if (this.socket && auth.currentUser) {
+      try {
+        const token = await auth.currentUser.getIdToken(true);
+        this.socket.emit("authenticate", { token });
+      } catch (error) {
+        console.error(
+          "Failed to get Firebase token for WebSocket auth:",
+          error
+        );
+        this.handleAuthError({
+          code: "TOKEN_FETCH_FAILED",
+          message: "Failed to get authentication token",
+          error: error.message,
+        });
+      }
     }
   }
 
-  async authenticate()  {
-    if (this.socket || auth.currentUser) {
-        try {
-            const token = await auth.currentUser.getIdToken();
-            this.socket.emit("authenticate", { token });
-        } catch (error) {
-            console.error("Error getting Firebse ID token:", error);
+  async refreshAuthentication() {
+    if (this.socket && auth.currentUser) {
+      try {
+        console.log("Refreshing WebSocket authentication...");
+        const token = await auth.currentUser.getIdToken(true);
+        this.socket.emit("reauthenticate", { token });
+      } catch (error) {
+        console.error("Failed to refresh WebSocket authentication:", error);
+        this.handleAuthError({
+          code: "TOKEN_REFRESH_FAILED",
+          message: "Failed to refresh authentication token",
+          error: error.message,
+        });
+      }
+    }
+  }
+
+  scheduleTokenRefresh(expiresIn) {
+    if (this.tokenRefreshTimeout) {
+      clearTimeout(this.tokenRefreshTimeout);
+    }
+
+    const refreshTime = Math.max(expiresIn - 2 * 60 * 1000, 30000);
+
+    this.tokenRefreshTimeout = setTimeout(() => {
+      console.log("Scheduled token refresh triggered");
+      this.refreshAuthentication();
+    }, refreshTime);
+  }
+
+  handleAuthError(error) {
+    console.error("WebSocket auth error:", error);
+
+    switch (error.code) {
+      case "TOKEN_EXPIRED":
+      case "TOKEN_REVOKED":
+        this.refreshAuthentication();
+        break;
+
+      case "ONBOARDING_INCOMPLETE":
+        if (typeof window !== "undefined") {
+          window.location.href = "/OnboardingWizard";
         }
+        break;
+
+      case "USER_NOT_FOUND":
+        if (typeof window !== "undefined") {
+          window.location.href = "/register";
+        }
+        break;
+
+      default:
+        this.disconnect();
+        break;
+    }
+  }
+
+  ping() {
+    if (this.socket && this.isConnected) {
+      this.socket.emit("ping");
     }
   }
 
@@ -114,6 +196,11 @@ class WebSocketService {
       this.isConnected = false;
       this.userId = null;
       this.user = null;
+    }
+
+    if (this.tokenRefreshTimeout) {
+      clearTimeout(this.tokenRefreshTimeout);
+      this.tokenRefreshTimeout = null;
     }
   }
 
@@ -152,8 +239,19 @@ class WebSocketService {
   isAuthenticated() {
     return this.isConnected && this.userId && this.user;
   }
+
+  getConnectionHealth() {
+    return {
+      isConnected: this.isConnected,
+      isAuthenticated: this.isAuthenticated(),
+      socketId: this.getSocketId(),
+      userId: this.userId,
+      user: this.user,
+      reconnectAttempts: this.reconnectAttempts,
+      hasTokenRefresh: !!this.tokenRefreshTimeout,
+    };
+  }
 }
 
-// Create a singleton instance
 const websocketService = new WebSocketService();
 export default websocketService;

@@ -32,12 +32,21 @@ class WebSocketService {
         this.handleAuthentication(socket, data);
       });
 
+      socket.on("reauthenticate", (data) => {
+        console.log(`Re-authentication request from socket ${socket.id}`);
+        this.handleAuthentication(socket, data);
+      });
+
       socket.on("disconnect", () => {
         this.handleDisconnection(socket);
       });
 
       socket.on("error", (error) => {
         console.error(`Socket error for ${socket.id}:`, error);
+      });
+
+      socket.on("ping", () => {
+        socket.emit("pong", { timestamp: Date.now() });
       });
     });
   }
@@ -46,23 +55,62 @@ class WebSocketService {
     const { token } = data;
 
     if (!token) {
-      socket.emit("auth_error", { message: "Firebase token is required" });
+      socket.emit("auth_error", {
+        message: "Firebase token is required",
+        code: "MISSING_TOKEN",
+      });
       return;
     }
 
     try {
-      const decoded = await admin.auth().verifyIdToken(token);
-      const { uid } = decoded;
+      const decoded = await admin.auth().verifyIdToken(token, true); // checkRevoked = true
+      const { uid, exp } = decoded;
+
+      const expirationTime = exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      const timeUntilExpiration = expirationTime - currentTime;
+      const fiveMinutes = 5 * 60 * 1000;
+
+      if (timeUntilExpiration < fiveMinutes) {
+        socket.emit("auth_warning", {
+          message: "Token expires soon",
+          expiresIn: timeUntilExpiration,
+          code: "TOKEN_EXPIRING",
+        });
+      }
 
       const user = await this.db.user.findUnique({
         where: { firebaseUid: uid },
-        select: { id: true, email: true, firstName: true, lastName: true },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          lastLogin: true,
+          hasCompletedOnboarding: true,
+        },
       });
 
       if (!user) {
-        socket.emit("auth_error", { message: "User not found" });
+        socket.emit("auth_error", {
+          message: "User not found in database",
+          code: "USER_NOT_FOUND",
+        });
         return;
       }
+
+      if (!user.hasCompletedOnboarding) {
+        socket.emit("auth_error", {
+          message: "User onboarding not completed",
+          code: "ONBOARDING_INCOMPLETE",
+        });
+        return;
+      }
+
+      await this.db.user.update({
+        where: { id: user.id },
+        data: { lastLogin: new Date() },
+      });
 
       this.socketUsers.set(socket.id, user.id);
 
@@ -79,17 +127,35 @@ class WebSocketService {
       socket.emit("authenticated", {
         userId: user.id,
         socketId: socket.id,
+        tokenExpiresIn: timeUntilExpiration,
         user: {
           id: user.id,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          lastLogin: user.lastLogin,
         },
       });
     } catch (error) {
       console.error("WebSocket authentication error:", error);
+
+      let errorCode = "AUTH_FAILED";
+      let errorMessage = "Authentication failed";
+
+      if (error.code === "auth/id-token-expired") {
+        errorCode = "TOKEN_EXPIRED";
+        errorMessage = "Token has expired, please refresh";
+      } else if (error.code === "auth/id-token-revoked") {
+        errorCode = "TOKEN_REVOKED";
+        errorMessage = "Token has been revoked, please sign in again";
+      } else if (error.code === "auth/invalid-id-token") {
+        errorCode = "TOKEN_INVALID";
+        errorMessage = "Invalid token format";
+      }
+
       socket.emit("auth_error", {
-        message: "Authentication failed",
+        message: errorMessage,
+        code: errorCode,
         error: error.message,
       });
     }

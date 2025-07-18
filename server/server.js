@@ -2,6 +2,7 @@ const express       = require("express");
 const cors          = require("cors");
 const dotenv        = require("dotenv");
 const cookieParser  = require("cookie-parser");
+const http = require("http");
 const authRoutes    = require("./routes/auth");
 const requireAuth   = require("./middleware/requireAuth");
 const onboardingRouter = require("./routes/onboarding");
@@ -11,9 +12,12 @@ const workoutRoutes = require("./routes/workoutRoutes");
 const workoutsRouter = require("./routes/workouts");
 const plansRouter = require("./routes/plans");
 const notificationsRouter = require("./routes/notifications");
+const websocketStatusRouter = require("./routes/websocketStatus");
+const webSocketService = require("./services/webSocketService")
 
 require('dotenv').config();
 const app  = express();
+const server = http.createServer(app);
 const port = process.env.PORT || 3001;
 
 // Set NODE_ENV to production if running on Render
@@ -37,6 +41,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(express.static(__dirname));
 
 app.get("/", (_req, res) => {
   res.send("FitSync server is running");
@@ -54,7 +59,11 @@ app.use("/api/meals", mealsRouter);
 app.use("/api/plans", plansRouter);
 app.use("/api/ai-plans", require("./routes/ai-plans"));
 app.use("/api/notifications", notificationsRouter);
+app.use("/api/websocket", websocketStatusRouter);
 
-app.listen(port, () => {
+webSocketService.initialize(server);
+
+server.listen(port, () => {
   console.log(`FitSync server is running on port ${port}`);
+  console.log(`Websocket server is ready for connection`)
 });

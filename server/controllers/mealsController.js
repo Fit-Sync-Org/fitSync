@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
+const webSocketService = require("../services/webSocketService");
 
 exports.getMealsByDate = async (req, res) => {
   try {
@@ -101,7 +102,7 @@ exports.addMeal = async (req, res) => {
 
     await checkProgressAndNotify(userId);
 
-    res.status(201).json({
+    const mealData = {
       id: meal.id,
       name: meal.foodName,
       calories: meal.calories,
@@ -113,7 +114,13 @@ exports.addMeal = async (req, res) => {
       quantity: meal.quantity,
       mealType: meal.mealType,
       date: meal.date,
-    });
+      action: 'added',
+      timestamp: new Date().toISOString()
+    };
+
+    webSocketService.broadcastMealUpdate(userId, mealData);
+    res.status(201).json(mealData);
+
   } catch (err) {
     console.error("addMeal error:", err);
     res.status(500).json({ error: "Failed to add meal" });
@@ -163,7 +170,7 @@ exports.updateMeal = async (req, res) => {
     });
 
 
-    res.json({
+    const mealData = {
       id: updatedMeal.id,
       name: updatedMeal.foodName,
       calories: updatedMeal.calories,
@@ -175,7 +182,12 @@ exports.updateMeal = async (req, res) => {
       quantity: updatedMeal.quantity,
       mealType: updatedMeal.mealType,
       date: updatedMeal.date,
-    });
+      action: 'updated',
+      timestamp: new Date().toISOString()
+    };
+
+    webSocketService.broadcastMealUpdate(userId, mealData);
+    res.json(mealData);
   } catch (err) {
     console.error("updateMeal error:", err);
     res.status(500).json({ error: "Failed to update meal" });
@@ -202,8 +214,17 @@ exports.deleteMeal = async (req, res) => {
       where: { id: parseInt(id) },
     });
 
+    const deleteData = {
+      id: existingMeal.id,
+      name: existingMeal.foodName,
+      mealType: existingMeal.mealType,
+      date: existingMeal.date,
+      action: 'deleted',
+      timestamp: new Date().toISOString()
+    };
 
-    res.json({ message: "Meal deleted successfully" });
+    webSocketService.broadcastMealUpdate(userId, deleteData);
+    res.json({ message: "Meal deleted successfully", deleredMeal: deleteData });
   } catch (err) {
     console.error("deleteMeal error:", err);
     res.status(500).json({ error: "Failed to delete meal" });

@@ -41,7 +41,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(exppress.static(__dirname));
+app.use(express.static(__dirname));
 
 app.get("/", (_req, res) => {
   res.send("FitSync server is running");

@@ -147,6 +147,68 @@
   gap: 1rem;
 }
 
+.ws-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+
+.ws-status.connected {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+
+.ws-status.disconnected {
+  background: rgba(255, 152, 0, 0.2);
+  color: #FF9800;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+
+.ws-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+
+.ws-status.connected .ws-indicator {
+  background: #4CAF50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+  animation: pulse 2s infinite;
+}
+
+
+.ws-status.disconnected .ws-indicator {
+  background: #FF9800;
+}
+
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 .menu-toggle {
   background: none;
@@ -216,6 +278,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -514,12 +577,15 @@
 .macro-card.carbs {
   border-color: #FFD93D;
 }
+
 .macro-card.protein {
   border-color: #FF6B6B;
 }
+
 .macro-card.fat {
   border-color: #4ECDC4;
 }
+
 .macro-card.sodium {
   border-color: #A8E6CF;
 }
@@ -536,7 +602,8 @@
 .macro-amount {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #3A413D; /* Change this to a more suitable colour later*/
+  color: #3A413D;
+  /* Change this to a more suitable colour later*/
   line-height: 1;
 }
 
@@ -914,7 +981,9 @@
   margin-bottom: 1rem;
 }
 
-.ai-plan-section, .progress-section, .notifications-section {
+.ai-plan-section,
+.progress-section,
+.notifications-section {
   background: rgba(26, 31, 28, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 20px;

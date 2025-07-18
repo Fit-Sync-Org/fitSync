@@ -1,10 +1,13 @@
 const { Server } = require("socket.io");
+const admin = require("../firebase");
+const { PrismaClient } = require("@prisma/client");
 
 class WebSocketService {
   constructor() {
     this.io = null;
     this.userSockets = new Map();
     this.socketUsers = new Map();
+    this.db = new PrismaClient();
   }
 
   initialize(server) {
@@ -39,25 +42,57 @@ class WebSocketService {
     });
   }
 
-  handleAuthentication(socket, data) {
-    const { userId, token } = data;
+  async handleAuthentication(socket, data) {
+    const { token } = data;
 
-    if (!userId) {
-      socket.emit("auth_error", { message: "User ID is required" });
+    if (!token) {
+      socket.emit("auth_error", { message: "Firebase token is required" });
       return;
     }
 
-    this.socketUsers.set(socket.id, userId);
+    try {
+      const decoded = await admin.auth().verifyIdToken(token);
+      const { uid } = decoded;
 
-    if (!this.userSockets.has(userId)) {
-      this.userSockets.set(userId, []);
+      const user = await this.db.user.findUnique({
+        where: { firebaseUid: uid },
+        select: { id: true, email: true, firstName: true, lastName: true },
+      });
+
+      if (!user) {
+        socket.emit("auth_error", { message: "User not found" });
+        return;
+      }
+
+      this.socketUsers.set(socket.id, user.id);
+
+      if (!this.userSockets.has(user.id)) {
+        this.userSockets.set(user.id, []);
+      }
+      this.userSockets.get(user.id).push(socket.id);
+
+      socket.join(`user_${user.id}`);
+
+      console.log(
+        `User ${user.id} (${user.email}) authenticated on socket ${socket.id}`
+      );
+      socket.emit("authenticated", {
+        userId: user.id,
+        socketId: socket.id,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      });
+    } catch (error) {
+      console.error("WebSocket authentication error:", error);
+      socket.emit("auth_error", {
+        message: "Authentication failed",
+        error: error.message,
+      });
     }
-    this.userSockets.get(userId).push(socket.id);
-
-    socket.join(`user_${userId}`);
-
-    console.log(`User ${userId} authenticated on socket ${socket.id}`);
-    socket.emit("authenticated", { userId, socketId: socket.id });
   }
 
   handleDisconnection(socket) {
@@ -106,6 +141,32 @@ class WebSocketService {
 
   getUserConnections(userId) {
     return this.userSockets.get(userId) || [];
+  }
+
+  isUserConnected(userId) {
+    return (
+      this.userSockets.has(userId) && this.userSockets.get(userId).length > 0
+    );
+  }
+
+  getConnectedUsers() {
+    return Array.from(this.userSockets.keys());
+  }
+
+  getConnectionStatus() {
+    const users = Array.from(this.userSockets.entries()).map(
+      ([userId, sockets]) => ({
+        userId,
+        connectionCount: sockets.length,
+        socketIds: sockets,
+      })
+    );
+
+    return {
+      totalUsers: this.userSockets.size,
+      totalConnections: this.socketUsers.size,
+      users,
+    };
   }
 }
 

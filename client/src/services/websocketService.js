@@ -1,22 +1,27 @@
 import { io } from "socket.io-client";
+import { auth } from "../firebase";
 
 class WebSocketService {
   constructor() {
     this.socket = null;
     this.isConnected = false;
     this.userId = null;
+    this.user = null;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.reconnectDelay = 1000; // Start with 1 second
   }
 
-  connect(userId) {
+  async connect() {
     if (this.socket && this.isConnected) {
       console.log("WebSocket already connected");
       return;
     }
 
-    this.userId = userId;
+    if (!auth.currentUser) {
+        console.error("No authenticated user found");
+        return;
+    }
 
     this.socket = io(import.meta.env.VITE_API_URL || "http://localhost:3001", {
       transports: ["websocket", "polling"],
@@ -67,6 +72,7 @@ class WebSocketService {
     this.socket.on("authenticated", (data) => {
       console.log("WebSocket authenticated:", data);
       this.userId = data.userId;
+      this.user = data.user;
     });
 
     this.socket.on("auth_error", (error) => {
@@ -90,12 +96,24 @@ class WebSocketService {
     }
   }
 
+  async authenticate()  {
+    if (this.socket || auth.currentUser) {
+        try {
+            const token = await auth.currentUser.getIdToken();
+            this.socket.emit("authenticate", { token });
+        } catch (error) {
+            console.error("Error getting Firebse ID token:", error);
+        }
+    }
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;
       this.userId = null;
+      this.user = null;
     }
   }
 
@@ -121,6 +139,18 @@ class WebSocketService {
 
   getSocketId() {
     return this.socket ? this.socket.id : null;
+  }
+
+  getCurrentUser() {
+    return this.user;
+  }
+
+  getCurrentUserId() {
+    return this.userId;
+  }
+
+  isAuthenticated() {
+    return this.isConnected && this.userId && this.user;
   }
 }
 

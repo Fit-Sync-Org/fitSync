@@ -12,6 +12,7 @@ const workoutRoutes = require("./routes/workoutRoutes");
 const workoutsRouter = require("./routes/workouts");
 const plansRouter = require("./routes/plans");
 const notificationsRouter = require("./routes/notifications");
+const websocketStatusRouter = require("./routes/websocketStatus");
 const webSocketService = require("./services/webSocketService")
 
 require('dotenv').config();
@@ -40,6 +41,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(exppress.static(__dirname));
 
 app.get("/", (_req, res) => {
   res.send("FitSync server is running");
@@ -57,6 +59,7 @@ app.use("/api/meals", mealsRouter);
 app.use("/api/plans", plansRouter);
 app.use("/api/ai-plans", require("./routes/ai-plans"));
 app.use("/api/notifications", notificationsRouter);
+app.use("/api/websocket", websocketStatusRouter);
 
 webSocketService.initialize(server);
 

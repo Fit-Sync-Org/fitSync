@@ -161,25 +161,63 @@ class WebSocketService {
     }
   }
 
-  handleDisconnection(socket) {
+  async handleDisconnection(socket) {
     const userId = this.socketUsers.get(socket.id);
 
     if (userId) {
-      const userSocketList = this.userSockets.get(userId);
-      if (userSocketList) {
-        const index = userSocketList.indexOf(socket.id);
-        if (index > -1) {
-          userSocketList.splice(index, 1);
+      try {
+        await this.db.user.update({
+          where: { id: userId },
+          data: { lastLogin: new Date() },
+        });
+
+        const userSocketList = this.userSockets.get(userId);
+        if (userSocketList) {
+          const index = userSocketList.indexOf(socket.id);
+          if (index > -1) {
+            userSocketList.splice(index, 1);
+          }
+
+          if (userSocketList.length === 0) {
+            this.userSockets.delete(userId);
+            console.log(
+              `User ${userId} fully disconnected - all devices offline`
+            );
+
+            this.io.emit("user_offline", { userId, timestamp: new Date() });
+          } else {
+            console.log(
+              `User ${userId} still has ${userSocketList.length} active connection(s)`
+            );
+          }
         }
 
-        if (userSocketList.length === 0) {
-          this.userSockets.delete(userId);
+        socket.leave(`user_${userId}`);
+
+        this.socketUsers.delete(socket.id);
+
+        console.log(`Socket ${socket.id} disconnected for user ${userId}`);
+      } catch (error) {
+        console.error(
+          `Error during disconnect cleanup for user ${userId}:`,
+          error
+        );
+
+        const userSocketList = this.userSockets.get(userId);
+        if (userSocketList) {
+          const index = userSocketList.indexOf(socket.id);
+          if (index > -1) {
+            userSocketList.splice(index, 1);
+          }
+          if (userSocketList.length === 0) {
+            this.userSockets.delete(userId);
+          }
         }
+        socket.leave(`user_${userId}`);
+        this.socketUsers.delete(socket.id);
       }
-
-      this.socketUsers.delete(socket.id);
-
-      console.log(`User ${userId} disconnected from socket ${socket.id}`);
+    } else {
+      console.log(`Socket ${socket.id} disconnected (no associated user)`);
     }
   }
 
@@ -233,6 +271,86 @@ class WebSocketService {
       totalConnections: this.socketUsers.size,
       users,
     };
+  }
+
+  async forceDisconnectUser(userId) {
+    const userSockets = this.userSockets.get(userId);
+    if (userSockets) {
+      const socketsCopy = [...userSockets]; // this copy is to avoid modification during iteration
+
+      for (const socketId of socketsCopy) {
+        const socket = this.io.sockets.sockets.get(socketId);
+        if (socket) {
+          socket.emit("force_disconnect", {
+            reason: "Administrative disconnect",
+            timestamp: new Date(),
+          });
+          socket.disconnect(true);
+        }
+      }
+
+      console.log(
+        `Force disconnected user ${userId} from ${socketsCopy.length} socket(s)`
+      );
+      return true;
+    }
+    return false;
+  }
+
+  cleanupOrphanedConnections() {
+    let cleanedCount = 0;
+
+    // Check each socket in our mapping
+    for (const [socketId, userId] of this.socketUsers.entries()) {
+      const socket = this.io.sockets.sockets.get(socketId);
+      if (!socket) {
+        this.socketUsers.delete(socketId);
+
+        const userSocketList = this.userSockets.get(userId);
+        if (userSocketList) {
+          const index = userSocketList.indexOf(socketId);
+          if (index > -1) {
+            userSocketList.splice(index, 1);
+          }
+          if (userSocketList.length === 0) {
+            this.userSockets.delete(userId);
+          }
+        }
+
+        cleanedCount++;
+      }
+    }
+
+    if (cleanedCount > 0) {
+      console.log(`Cleaned up ${cleanedCount} orphaned connection(s)`);
+    }
+
+    return cleanedCount;
+  }
+
+  async gracefulShutdown() {
+    console.log("Starting graceful WebSocket shutdown...");
+
+    const connectedUserIds = Array.from(this.userSockets.keys());
+
+    this.io.emit("server_shutdown", {
+      message:
+        "Server is shutting down. You will be automatically reconnected.",
+      timestamp: new Date(),
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    this.io.disconnectSockets(true);
+
+    this.userSockets.clear();
+    this.socketUsers.clear();
+
+    console.log(`Gracefully disconnected ${connectedUserIds.length} user(s)`);
+
+    await this.db.$disconnect();
+
+    console.log("WebSocket service shutdown complete");
   }
 }
 

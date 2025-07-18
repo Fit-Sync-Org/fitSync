@@ -105,6 +105,30 @@ class WebSocketService {
       console.log("Received workout update:", workoutData);
       this.handleWorkoutUpdate(workoutData);
     });
+
+    this.socket.on("force_disconnect", (data) => {
+      console.warn("Forced disconnect from server:", data);
+      if (window.showNotification) {
+        window.showNotification(
+          "Connection terminated by server: " + data.reason,
+          "warning"
+        );
+      }
+      this.disconnect();
+    });
+
+    this.socket.on("server_shutdown", (data) => {
+      console.warn("Server shutting down:", data);
+      if (window.showNotification) {
+        window.showNotification(data.message, "info");
+      }
+    });
+
+    this.socket.on("user_offline", (data) => {
+      console.log("User went offline:", data);
+      // This might be used for presence indicators in the UI
+      // Just logging it for now
+    });
   }
 
   async authenticate() {
@@ -249,6 +273,54 @@ class WebSocketService {
       user: this.user,
       reconnectAttempts: this.reconnectAttempts,
       hasTokenRefresh: !!this.tokenRefreshTimeout,
+    };
+  }
+
+  cleanup() {
+    console.log("Cleaning up WebSocket service...");
+
+    if (this.tokenRefreshTimeout) {
+      clearTimeout(this.tokenRefreshTimeout);
+      this.tokenRefreshTimeout = null;
+    }
+
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    this.isConnected = false;
+    this.userId = null;
+    this.user = null;
+    this.reconnectAttempts = 0;
+
+    console.log("WebSocket service cleanup complete");
+  }
+
+  setupPageUnloadHandler() {
+    const handlePageUnload = () => {
+      // Quick disconnect without waiting for cleanup
+      if (this.socket && this.isConnected) {
+        this.socket.disconnect();
+      }
+    };
+
+    window.addEventListener("beforeunload", handlePageUnload);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        console.log("Page hidden - WebSocket connection remains active");
+      } else if (document.visibilityState === "visible") {
+        if (this.socket && !this.isConnected) {
+          console.log("Page visible - attempting to reconnect WebSocket");
+          this.connect();
+        }
+      }
+    });
+
+    return () => {
+      window.removeEventListener("beforeunload", handlePageUnload);
     };
   }
 }

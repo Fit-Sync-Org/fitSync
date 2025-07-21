@@ -61,26 +61,15 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const initializeWebSocket = async () => {
-      try {
-        await webSocketService.connect();
-        setWsConnected(webSocketService.isSocketConnected());
+    websocketService.onMealUpdate(handleMealUpdate);
+    websocketService.onWorkoutUpdate(handleWorkoutUpdate);
 
-        websocketService.onMealUpdate(handleMealUpdate);
-        websocketService.onWorkoutUpdate(handleWorkoutUpdate);
-
-        console.log("Dashboard WebSocket initialized");
-      } catch (error) {
-        console.error("Failed to initialize WebSocket:", error);
-      }
-    };
+    setWsConnected(websocketService.isConnected());
 
     axios
       .get(`${import.meta.env.VITE_API_URL}/auth/me`, { withCredentials: true })
       .then(({ data }) => {
         setUser(data);
-
-        initializeWebSocket();
       })
       .catch(() => {});
 

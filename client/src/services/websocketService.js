@@ -7,10 +7,29 @@ class WebSocketService {
     this.isConnected = false;
     this.userId = null;
     this.user = null;
+
     this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 5;
-    this.reconnectDelay = 1000; // Start with 1 second
+    this.maxReconnectAttempts = 10;
+    this.baseReconnectDelay = 1000;
+    this.maxReconnectDelay = 30000;
+    this.currentReconnectDelay = 1000;
     this.tokenRefreshTimeout = null;
+
+    this.connectionQuality = "good";
+    this.lastConnectionTime = null;
+    this.connectionAttemptHistory = [];
+    this.networkChangeDetection = true;
+    this.reconnectTimeout = null;
+    this.healthCheckInterval = null;
+    this.lastPongTime = null;
+    this.isManualDisconnect = false;
+
+    this.connectionMetrics = {
+      successfulConnections: 0,
+      failedConnections: 0,
+      avgConnectionTime: 0,
+      lastDisconnectReason: null,
+    };
   }
 
   async connect() {
@@ -129,6 +148,228 @@ class WebSocketService {
       // This might be used for presence indicators in the UI
       // Just logging it for now
     });
+
+    this.socket.on("pong", (data) => {
+      this.lastPongTime = Date.now();
+      console.log("Received pong - connection healthy");
+    });
+  }
+
+  handleSmartReconnection(reason, error = null) {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+
+    this.reconnectAttempts++;
+
+    if (this.reconnectAttempts > this.maxReconnectAttempts) {
+      console.error("Max reconnection attempts reached. Giving up.");
+      this.updateConnectionQuality("failed");
+      return;
+    }
+
+    const delay = this.calculateReconnectionDelay(reason);
+
+    console.log(
+      `Smart reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms (reason: ${reason})`
+    );
+
+    this.reconnectTimeout = setTimeout(() => {
+      this.attemptReconnection();
+    }, delay);
+  }
+
+  // Calculate intelligent reconnection delay
+  calculateReconnectionDelay(reason) {
+    let baseDelay = this.baseReconnectDelay;
+
+    switch (reason) {
+      case "transport close":
+      case "transport error":
+        baseDelay = Math.min(
+          baseDelay * Math.pow(2, this.reconnectAttempts),
+          this.maxReconnectDelay
+        );
+        break;
+      case "io server disconnect":
+        baseDelay = Math.min(baseDelay * 1.5, 10000);
+        break;
+      case "connect_error":
+        baseDelay = Math.min(
+          baseDelay * Math.pow(1.8, this.reconnectAttempts),
+          this.maxReconnectDelay
+        );
+        break;
+      default:
+        baseDelay = Math.min(
+          baseDelay * Math.pow(2, this.reconnectAttempts),
+          this.maxReconnectDelay
+        );
+    }
+
+    const jitter = Math.random() * 1000;
+    return baseDelay + jitter;
+  }
+
+  async attemptReconnection() {
+    console.log("Attempting smart reconnection...");
+
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    this.isConnected = false;
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    try {
+      await this.connect();
+    } catch (error) {
+      console.error("Reconnection attempt failed:", error);
+      this.handleSmartReconnection("reconnection_failed", error);
+    }
+  }
+
+  resetReconnectionState() {
+    this.reconnectAttempts = 0;
+    this.currentReconnectDelay = this.baseReconnectDelay;
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+  }
+
+  updateConnectionQuality(event, details = null) {
+    this.connectionAttemptHistory.push({
+      event,
+      details,
+      timestamp: Date.now(),
+    });
+
+    if (this.connectionAttemptHistory.length > 20) {
+      this.connectionAttemptHistory.shift();
+    }
+
+    const recentEvents = this.connectionAttemptHistory.slice(-10);
+    const failureRate =
+      recentEvents.filter(
+        (e) => e.event === "error" || e.event === "disconnect"
+      ).length / recentEvents.length;
+
+    if (failureRate > 0.7) {
+      this.connectionQuality = "poor";
+    } else if (failureRate > 0.4) {
+      this.connectionQuality = "unstable";
+    } else {
+      this.connectionQuality = "good";
+    }
+
+    console.log(
+      `Connection quality updated to: ${
+        this.connectionQuality
+      } (failure rate: ${Math.round(failureRate * 100)}%)`
+    );
+  }
+
+  updateAvgConnectionTime(newTime) {
+    const count = this.connectionMetrics.successfulConnections;
+    this.connectionMetrics.avgConnectionTime =
+      (this.connectionMetrics.avgConnectionTime * (count - 1) + newTime) /
+      count;
+  }
+
+  setupNetworkChangeDetection() {
+    if (!this.networkChangeDetection || typeof window === "undefined") return;
+
+    window.addEventListener("online", () => {
+      console.log("Network came back online - attempting reconnection");
+      if (!this.isConnected && !this.isManualDisconnect) {
+        this.reconnectAttempts = 0;
+        this.attemptReconnection();
+      }
+    });
+
+    window.addEventListener("offline", () => {
+      console.log("Network went offline");
+      this.updateConnectionQuality("network_offline");
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (
+        document.visibilityState === "visible" &&
+        this.socket &&
+        !this.isConnected
+      ) {
+        console.log("Tab became visible - checking connection status");
+        this.checkConnectionHealth();
+      }
+    });
+  }
+
+  startHealthCheck() {
+    // Clear existing interval
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval);
+    }
+
+    this.healthCheckInterval = setInterval(() => {
+      if (this.socket && this.isConnected) {
+        this.socket.emit("ping", { timestamp: Date.now() });
+
+        if (this.lastPongTime && Date.now() - this.lastPongTime > 60000) {
+          console.warn(
+            "Connection appears unhealthy - no pong received in 60s"
+          );
+          this.updateConnectionQuality("health_check_failed");
+
+          if (Date.now() - this.lastPongTime > 120000) {
+            console.error("Connection is dead - forcing reconnection");
+            this.handleSmartReconnection("health_check_timeout");
+          }
+        }
+      }
+    }, 30000);
+  }
+
+  async checkConnectionHealth() {
+    if (!this.socket || !this.isConnected) {
+      console.log("Connection health check: Not connected");
+      return false;
+    }
+
+    try {
+      // Send ping and wait for pong
+      const pingTime = Date.now();
+      this.socket.emit("ping", { timestamp: pingTime });
+
+      // Wait for pong response (with timeout)
+      const pongReceived = await new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(false), 5000);
+
+        const pongHandler = () => {
+          clearTimeout(timeout);
+          this.socket.off("pong", pongHandler);
+          resolve(true);
+        };
+
+        this.socket.once("pong", pongHandler);
+      });
+
+      if (pongReceived) {
+        console.log("Connection health check: Healthy");
+        return true;
+      } else {
+        console.warn("Connection health check: No pong received");
+        this.updateConnectionQuality("health_check_failed");
+        return false;
+      }
+    } catch (error) {
+      console.error("Connection health check failed:", error);
+      return false;
+    }
   }
 
   async authenticate() {
@@ -214,18 +455,35 @@ class WebSocketService {
   }
 
   disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-      this.isConnected = false;
-      this.userId = null;
-      this.user = null;
+    console.log("Manual disconnect initiated");
+    this.isManualDisconnect = true;
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval);
+      this.healthCheckInterval = null;
     }
 
     if (this.tokenRefreshTimeout) {
       clearTimeout(this.tokenRefreshTimeout);
       this.tokenRefreshTimeout = null;
     }
+
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    this.isConnected = false;
+    this.userId = null;
+    this.user = null;
+
+    console.log("WebSocket manually disconnected");
   }
 
   handleMealUpdate(mealData) {
@@ -273,15 +531,69 @@ class WebSocketService {
       user: this.user,
       reconnectAttempts: this.reconnectAttempts,
       hasTokenRefresh: !!this.tokenRefreshTimeout,
+      connectionQuality: this.connectionQuality,
+      lastPongTime: this.lastPongTime,
+      connectionMetrics: this.connectionMetrics,
+      isManualDisconnect: this.isManualDisconnect,
     };
+  }
+
+  getConnectionMetrics() {
+    return {
+      ...this.connectionMetrics,
+      connectionQuality: this.connectionQuality,
+      recentHistory: this.connectionAttemptHistory.slice(-5),
+      currentReconnectDelay: this.currentReconnectDelay,
+      timeSinceLastPong: this.lastPongTime
+        ? Date.now() - this.lastPongTime
+        : null,
+      hasActiveReconnectTimeout: !!this.reconnectTimeout,
+      hasActiveHealthCheck: !!this.healthCheckInterval,
+    };
+  }
+
+  resetConnectionQuality() {
+    this.connectionQuality = "good";
+    this.connectionAttemptHistory = [];
+    this.connectionMetrics = {
+      successfulConnections: 0,
+      failedConnections: 0,
+      avgConnectionTime: 0,
+      lastDisconnectReason: null,
+    };
+    console.log("Connection quality and metrics reset");
+  }
+
+  async forceReconnect() {
+    console.log("Force reconnection requested");
+    this.isManualDisconnect = false;
+    this.reconnectAttempts = 0;
+
+    if (this.socket && this.isConnected) {
+      this.disconnect();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    await this.connect();
   }
 
   cleanup() {
     console.log("Cleaning up WebSocket service...");
 
+    this.isManualDisconnect = true;
+
     if (this.tokenRefreshTimeout) {
       clearTimeout(this.tokenRefreshTimeout);
       this.tokenRefreshTimeout = null;
+    }
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval);
+      this.healthCheckInterval = null;
     }
 
     if (this.socket) {
@@ -294,6 +606,8 @@ class WebSocketService {
     this.userId = null;
     this.user = null;
     this.reconnectAttempts = 0;
+    this.connectionQuality = "good";
+    this.connectionAttemptHistory = [];
 
     console.log("WebSocket service cleanup complete");
   }

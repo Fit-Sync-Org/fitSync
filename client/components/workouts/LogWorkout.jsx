@@ -4,6 +4,7 @@ import "./LogWorkout.css";
 import axios from "axios";
 import WorkoutSection from "./WorkoutSection";
 import WorkoutSearch from './WorkoutSearch';
+import websocketService from "../../src/services/websocketService";
 
 
 
@@ -42,20 +43,56 @@ export default function LogWorkout() {
         }
     }, [searchParams]);
 
-    useEffect(() => {
-        setLoading(true);
-        axios
-        .get(`/api/exercises?date=${selectedDate.toISOString().slice(0, 10)}`, {withCredentials: true})
-        .then(({ data }) => {
-            setWorkouts(data);
-        })
-        .catch(err => {
-            console.error("Failed to load workouts:", err);
-        })
-        .finally(() => {
-            setLoading(false);
-        });
-    }, [selectedDate]);
+    const fetchWorkouts = (date = selectedDate) => {
+       setLoading(true);
+       axios
+       .get(`/api/exercises?date=${date.toISOString().slice(0, 10)}`, {withCredentials: true})
+       .then(({ data }) => {
+           setWorkouts(data);
+       })
+       .catch(err => {
+           console.error("Failed to load workouts:", err);
+       })
+       .finally(() => {
+           setLoading(false);
+       });
+   };
+
+   // Handle real-time workout updates from WebSocket
+   const handleWorkoutUpdate = (workoutData) => {
+       console.log('LogWorkout received workout update:', workoutData);
+
+       // Check if the update is for the currently selected date
+       const updateDate = new Date(workoutData.date).toISOString().slice(0, 10);
+       const selectedDateString = selectedDate.toISOString().slice(0, 10);
+
+       if (updateDate === selectedDateString) {
+           // Refresh workouts for the current date
+           fetchWorkouts();
+       }
+   };
+
+
+   useEffect(() => {
+       fetchWorkouts();
+   }, [selectedDate]);
+
+
+   // Set up WebSocket event handler
+   useEffect(() => {
+       // Set up event handler for real-time updates
+       websocketService.onWorkoutUpdate(handleWorkoutUpdate);
+
+       // Cleanup function
+       return () => {
+           // Reset event handler to prevent memory leaks
+           websocketService.onWorkoutUpdate(() => {});
+       };
+   }, [selectedDate]); // Re-setup when selected date changes
+
+
+
+
 
     const handleAddWorkout = type => {
         setCurrentType(type);

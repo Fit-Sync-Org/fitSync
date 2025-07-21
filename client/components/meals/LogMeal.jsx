@@ -4,7 +4,7 @@ import { auth } from "../../src/firebase";
 import "./LogMeal.css";
 import MealSection from "./MealSection";
 import FoodSearch from "./FoodSearch";
-
+import websocketService from "../../src/services/websocketService";
 
 export default function LogMeal() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,7 +18,7 @@ export default function LogMeal() {
     breakfast: [],
     lunch: [],
     dinner: [],
-    snacks: []
+    snacks: [],
   });
 
   const dailyGoals = {
@@ -27,7 +27,7 @@ export default function LogMeal() {
     fat: 93,
     protein: 140,
     sodium: 2300,
-    sugar: 105
+    sugar: 105,
   };
   // Helper function to refresh authentication token
   const refreshAuthToken = async () => {
@@ -45,14 +45,14 @@ export default function LogMeal() {
   const apiCallWithRetry = async (url, options = {}) => {
     try {
       const response = await fetch(url, {
-        credentials: 'include',
+        credentials: "include",
         ...options,
       });
 
       if (response.status === 401 && auth.currentUser) {
         await refreshAuthToken();
         const retryResponse = await fetch(url, {
-          credentials: 'include',
+          credentials: "include",
           ...options,
         });
         return retryResponse;
@@ -65,7 +65,7 @@ export default function LogMeal() {
   };
 
   useEffect(() => {
-    const dateParam = searchParams.get('date');
+    const dateParam = searchParams.get("date");
     if (dateParam) {
       const paramDate = new Date(dateParam);
       if (!isNaN(paramDate.getTime())) {
@@ -74,53 +74,89 @@ export default function LogMeal() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      setLoading(true);
-      try {
-        const dateString = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD format
-        const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals?date=${dateString}`);
-
-        if (response.ok) {
-          const mealsData = await response.json();
-          setMeals(mealsData);
-        } else {
-          console.error('Failed to fetch meals:', response.statusText);
-          // Reset to empty meals on error
-          setMeals({
-            breakfast: [],
-            lunch: [],
-            dinner: [],
-            snacks: []
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching meals:', error);
+  const fetchMeals = async (date = selectedDate) => {
+    setLoading(true);
+    try {
+      const dateString = date.toISOString().split("T")[0];
+      const response = await apiCallWithRetry(
+        `${import.meta.env.VITE_API_URL}/api/meals?date=${dateString}`
+      );
+      if (response.ok) {
+        const mealsData = await response.json();
+        setMeals(mealsData);
+      } else {
+        console.error("Failed to fetch meals:", response.statusText);
+        // Reset to empty meals on error
         setMeals({
           breakfast: [],
           lunch: [],
           dinner: [],
-          snacks: []
+          snacks: [],
         });
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching meals:", error);
+      setMeals({
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        snacks: [],
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Handle real-time meal updates from WebSocket
+  const handleMealUpdate = (mealData) => {
+    console.log("LogMeal received meal update:", mealData);
+
+    // Check if the update is for the currently selected date
+    const updateDate = new Date(mealData.date).toISOString().split("T")[0];
+    const selectedDateString = selectedDate.toISOString().split("T")[0];
+
+    if (updateDate === selectedDateString) {
+      // Refresh meals for the current date
+      fetchMeals();
+    }
+  };
+
+  useEffect(() => {
     fetchMeals();
   }, [selectedDate]);
 
-  const calculateTotals = () => {
-    let totals = { calories: 0, carbs: 0, fat: 0, protein: 0, sodium: 0, sugar: 0 };
+  // Set up WebSocket event handler
+  useEffect(() => {
+    // Set up event handler for real-time updates
+    websocketService.onMealUpdate(handleMealUpdate);
 
-    Object.values(meals).flat().forEach(food => {
-      totals.calories += food.calories;
-      totals.carbs += food.carbs;
-      totals.fat += food.fat;
-      totals.protein += food.protein;
-      totals.sodium += food.sodium;
-      totals.sugar += food.sugar;
-    });
+    // Cleanup function
+    return () => {
+      // Reset event handler to prevent memory leaks
+      websocketService.onMealUpdate(() => {});
+    };
+  }, [selectedDate]); // Re-setup when selected date changes
+
+  const calculateTotals = () => {
+    let totals = {
+      calories: 0,
+      carbs: 0,
+      fat: 0,
+      protein: 0,
+      sodium: 0,
+      sugar: 0,
+    };
+
+    Object.values(meals)
+      .flat()
+      .forEach((food) => {
+        totals.calories += food.calories;
+        totals.carbs += food.carbs;
+        totals.fat += food.fat;
+        totals.protein += food.protein;
+        totals.sodium += food.sodium;
+        totals.sugar += food.sugar;
+      });
 
     return totals;
   };
@@ -132,7 +168,7 @@ export default function LogMeal() {
     fat: Math.max(0, dailyGoals.fat - totals.fat),
     protein: Math.max(0, dailyGoals.protein - totals.protein),
     sodium: Math.max(0, dailyGoals.sodium - totals.sodium),
-    sugar: Math.max(0, dailyGoals.sugar - totals.sugar)
+    sugar: Math.max(0, dailyGoals.sugar - totals.sugar),
   };
 
   const formatDate = (date) => {
@@ -140,12 +176,12 @@ export default function LogMeal() {
       weekday: "long",
       month: "long",
       day: "numeric",
-      year: "numeric"
+      year: "numeric",
     });
   };
 
   const addWater = (amount) => {
-    setWaterIntake(prev => prev + amount);
+    setWaterIntake((prev) => prev + amount);
   };
 
   const addCustomWater = () => {
@@ -156,137 +192,157 @@ export default function LogMeal() {
     }
   };
 
-
   const [modal, setModal] = useState(null);
 
   const handleAddFood = (mealType) => {
-    console.log('add food to', mealType);
-    setModal ({ mealType });
+    console.log("add food to", mealType);
+    setModal({ mealType });
   };
   const closeModal = () => setModal(null);
 
-
   const handleAddToState = async (entry) => {
     try {
-      const dateString = selectedDate.toISOString().split('T')[0];
-      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'credentials': 'include',
-        },
-        body: JSON.stringify({
-          name: entry.name,
-          calories: entry.calories,
-          carbs: entry.carbs,
-          fat: entry.fat,
-          protein: entry.protein,
-          sodium: entry.sodium,
-          sugar: entry.sugar,
-          quantity: 1,
-          mealType: entry.mealType,
-          date: dateString,
-        }),
-      });
+      const dateString = selectedDate.toISOString().split("T")[0];
+      const response = await apiCallWithRetry(
+        `${import.meta.env.VITE_API_URL}/api/meals`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            credentials: "include",
+          },
+          body: JSON.stringify({
+            name: entry.name,
+            calories: entry.calories,
+            carbs: entry.carbs,
+            fat: entry.fat,
+            protein: entry.protein,
+            sodium: entry.sodium,
+            sugar: entry.sugar,
+            quantity: 1,
+            mealType: entry.mealType,
+            date: dateString,
+          }),
+        }
+      );
 
       if (response.ok) {
         const savedMeal = await response.json();
         setMeals((prev) => ({
           ...prev,
-          [entry.mealType.toLowerCase()]: [...prev[entry.mealType.toLowerCase()], savedMeal]
+          [entry.mealType.toLowerCase()]: [
+            ...prev[entry.mealType.toLowerCase()],
+            savedMeal,
+          ],
         }));
       } else {
-        console.error('Failed to save meal:', response.statusText);
-        alert('Failed to save meal. Please try again.');
+        console.error("Failed to save meal:", response.statusText);
+        alert("Failed to save meal. Please try again.");
       }
     } catch (error) {
-      console.error('Error saving meal:', error);
-      alert('Failed to save meal. Please try again.');
+      console.error("Error saving meal:", error);
+      alert("Failed to save meal. Please try again.");
     }
   };
 
   const handleQuickTools = (mealType) => {
     // TODO: make a dropdown(quick-actions) for each mealType
     // TODO: not an MVP, dependent on time
-    console.log('quick tools for', mealType);
+    console.log("quick tools for", mealType);
   };
 
   const handleRemoveFood = async (mealType, idx) => {
     const meal = meals[mealType][idx];
 
     if (!meal || !meal.id) {
-      setMeals(prev => ({
+      setMeals((prev) => ({
         ...prev,
-        [mealType]: prev[mealType].filter((_, i) => i !== idx)
+        [mealType]: prev[mealType].filter((_, i) => i !== idx),
       }));
       return;
     }
 
     try {
-      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals/${meal.id}`, {
-        method: 'DELETE',
-      });
+      const response = await apiCallWithRetry(
+        `${import.meta.env.VITE_API_URL}/api/meals/${meal.id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
-        setMeals(prev => ({
+        setMeals((prev) => ({
           ...prev,
-          [mealType]: prev[mealType].filter((_, i) => i !== idx)
+          [mealType]: prev[mealType].filter((_, i) => i !== idx),
         }));
       } else {
-        console.error('Failed to delete meal:', response.statusText);
-        alert('Failed to delete meal. Please try again.');
+        console.error("Failed to delete meal:", response.statusText);
+        alert("Failed to delete meal. Please try again.");
       }
     } catch (error) {
-      console.error('Error deleting meal:', error);
-      alert('Failed to delete meal. Please try again.');
+      console.error("Error deleting meal:", error);
+      alert("Failed to delete meal. Please try again.");
     }
   };
 
   const handleCompleteEntry = async () => {
     try {
-      const dateString = selectedDate.toISOString().split('T')[0];
+      const dateString = selectedDate.toISOString().split("T")[0];
       const totals = calculateTotals();
 
       const mealSummary = Object.entries(meals)
         .filter(([_, foods]) => foods.length > 0)
-        .map(([mealType, foods]) => `${mealType.charAt(0).toUpperCase() + mealType.slice(1)}: ${foods.length} items`)
-        .join(', ');
+        .map(
+          ([mealType, foods]) =>
+            `${mealType.charAt(0).toUpperCase() + mealType.slice(1)}: ${
+              foods.length
+            } items`
+        )
+        .join(", ");
 
-      const response = await apiCallWithRetry(`${import.meta.env.VITE_API_URL}/api/meals/complete-entry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          date: dateString,
-          summary: mealSummary || 'No meals logged',
-          totalCalories: Math.round(totals.calories),
-          totalCarbs: Math.round(totals.carbs),
-          totalFat: Math.round(totals.fat),
-          totalProtein: Math.round(totals.protein),
-          totalSodium: Math.round(totals.sodium),
-          totalSugar: Math.round(totals.sugar),
-          waterIntake: waterIntake
-        }),
-      });
+      const response = await apiCallWithRetry(
+        `${import.meta.env.VITE_API_URL}/api/meals/complete-entry`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            date: dateString,
+            summary: mealSummary || "No meals logged",
+            totalCalories: Math.round(totals.calories),
+            totalCarbs: Math.round(totals.carbs),
+            totalFat: Math.round(totals.fat),
+            totalProtein: Math.round(totals.protein),
+            totalSodium: Math.round(totals.sodium),
+            totalSugar: Math.round(totals.sugar),
+            waterIntake: waterIntake,
+          }),
+        }
+      );
 
       if (response.ok) {
-        alert('Entry completed successfully! Your daily meal log has been saved.');
-        navigate('/dashboard');
+        alert(
+          "Entry completed successfully! Your daily meal log has been saved."
+        );
+        navigate("/dashboard");
       } else {
-        console.error('Failed to complete entry:', response.statusText);
-        alert('Failed to complete entry. Please try again.');
+        console.error("Failed to complete entry:", response.statusText);
+        alert("Failed to complete entry. Please try again.");
       }
     } catch (error) {
-      console.error('Error completing entry:', error);
-      alert('Failed to complete entry. Please try again.');
+      console.error("Error completing entry:", error);
+      alert("Failed to complete entry. Please try again.");
     }
   };
 
   if (loading) {
     return (
       <div className="log-meal-page">
-        <button className="back-btn loading" onClick={() => navigate("/dashboard")}>
+        <button
+          className="back-btn loading"
+          onClick={() => navigate("/dashboard")}
+        >
           Back to Dashboard
         </button>
         <div className="log-meal-container">
@@ -308,13 +364,25 @@ export default function LogMeal() {
         <header className="log-meal-header">
           <h1>Your food log for:</h1>
           <div className="date-selector">
-            <button className="date-nav-btn"
-            onClick={() => setSelectedDate(new Date(selectedDate.getTime() - 24*60*60*1000))}>
+            <button
+              className="date-nav-btn"
+              onClick={() =>
+                setSelectedDate(
+                  new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000)
+                )
+              }
+            >
               ←
             </button>
             <span className="selected-date">{formatDate(selectedDate)}</span>
-            <button className="date-nav-btn"
-            onClick={() => setSelectedDate(new Date(selectedDate.getTime() + 24*60*60*1000))}>
+            <button
+              className="date-nav-btn"
+              onClick={() =>
+                setSelectedDate(
+                  new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000)
+                )
+              }
+            >
               →
             </button>
           </div>
@@ -324,38 +392,58 @@ export default function LogMeal() {
           <div className="table-header">
             <div className="meal-column">Meal</div>
             <div className="nutrition-columns">
-              <span>Calories <br/>
+              <span>
+                Calories <br />
                 <small>kcal</small>
               </span>
-              <span>Carbs<br/>  <small>g</small></span>
-              <span>Fat<br/><small>g</small></span>
-              <span>Protein<br/><small>g</small></span>
-              <span>Sodium<br/><small>g</small></span>
-              <span>Sugar<br/><small>g</small></span>
+              <span>
+                Carbs
+                <br /> <small>g</small>
+              </span>
+              <span>
+                Fat
+                <br />
+                <small>g</small>
+              </span>
+              <span>
+                Protein
+                <br />
+                <small>g</small>
+              </span>
+              <span>
+                Sodium
+                <br />
+                <small>g</small>
+              </span>
+              <span>
+                Sugar
+                <br />
+                <small>g</small>
+              </span>
               <span></span>
             </div>
           </div>
 
-           <div className="meal-section-wrapper">
-          {Object.entries(meals).map(([mealKey, foods]) => (
-            <MealSection
-            key={mealKey}
-            name={mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}
-            foods={foods}
-            onAddFood={() => handleAddFood(mealKey)}
-            onQuickTools={() => handleQuickTools(mealKey)}
-            onRemoveFood={(idx) => handleRemoveFood(mealKey, idx)}
-            />
-          ))}
-        </div>
+          <div className="meal-section-wrapper">
+            {Object.entries(meals).map(([mealKey, foods]) => (
+              <MealSection
+                key={mealKey}
+                name={mealKey.charAt(0).toUpperCase() + mealKey.slice(1)}
+                foods={foods}
+                onAddFood={() => handleAddFood(mealKey)}
+                onQuickTools={() => handleQuickTools(mealKey)}
+                onRemoveFood={(idx) => handleRemoveFood(mealKey, idx)}
+              />
+            ))}
+          </div>
 
-        {modal && (
-          <FoodSearch
-            mealType={modal.mealType}
-            onClose={closeModal}
-            onAdd={handleAddToState}
-          />
-        )}
+          {modal && (
+            <FoodSearch
+              mealType={modal.mealType}
+              onClose={closeModal}
+              onAdd={handleAddToState}
+            />
+          )}
 
           <div className="totals-section">
             <div className="totals-row">
@@ -373,11 +461,15 @@ export default function LogMeal() {
             <div className="goals-row">
               <span className="goals-label">Your Daily Goal</span>
               <div className="goals-values">
-                <span className="goal-value">{dailyGoals.calories.toLocaleString()}</span>
+                <span className="goal-value">
+                  {dailyGoals.calories.toLocaleString()}
+                </span>
                 <span className="goal-value">{dailyGoals.carbs}</span>
                 <span className="goal-value">{dailyGoals.fat}</span>
                 <span className="goal-value">{dailyGoals.protein}</span>
-                <span className="goal-value">{dailyGoals.sodium.toLocaleString()}</span>
+                <span className="goal-value">
+                  {dailyGoals.sodium.toLocaleString()}
+                </span>
                 <span className="goal-value">{dailyGoals.sugar}</span>
               </div>
             </div>
@@ -385,27 +477,36 @@ export default function LogMeal() {
             <div className="remaining-row">
               <span className="remaining-label">Remaining</span>
               <div className="remaining-values">
-                <span className={`remaining-value ${remaining.calories < 500 ? 'low' : ''}`}>
+                <span
+                  className={`remaining-value ${
+                    remaining.calories < 500 ? "low" : ""
+                  }`}
+                >
                   {remaining.calories.toLocaleString()}
                 </span>
                 <span className="remaining-value">{remaining.carbs}</span>
                 <span className="remaining-value">{remaining.fat}</span>
                 <span className="remaining-value">{remaining.protein}</span>
-                <span className="remaining-value">{remaining.sodium.toLocaleString()}</span>
+                <span className="remaining-value">
+                  {remaining.sodium.toLocaleString()}
+                </span>
                 <span className="remaining-value">{remaining.sugar}</span>
               </div>
             </div>
           </div>
         </div>
 
-
-
         <div>
           <div className="complete-entry-section">
             <p className="complete-text">
               When you're finished logging all foods for this day, click here:
             </p>
-            <button className="complete-entry-btn" onClick={handleCompleteEntry}>Complete This Entry</button>
+            <button
+              className="complete-entry-btn"
+              onClick={handleCompleteEntry}
+            >
+              Complete This Entry
+            </button>
           </div>
         </div>
 
@@ -419,17 +520,23 @@ export default function LogMeal() {
                 <span className="water-unit">cups</span>
               </div>
               <p className="water-goal">
-                Aim to drink at least 8 cups of water today. You can quick add common sizes or enter a custom amount.
+                Aim to drink at least 8 cups of water today. You can quick add
+                common sizes or enter a custom amount.
               </p>
             </div>
-
 
             <div className="quick-add-section meal">
               <h4>Quick Add</h4>
               <div className="quick-add-buttons meal">
-                <button className="water-btn" onClick={() => addWater(1)}>+1 cup</button>
-                <button className="water-btn" onClick={() => addWater(2)}>+2 cup</button>
-                <button className="water-btn" onClick={() => addWater(4)}>+4 cup</button>
+                <button className="water-btn" onClick={() => addWater(1)}>
+                  +1 cup
+                </button>
+                <button className="water-btn" onClick={() => addWater(2)}>
+                  +2 cup
+                </button>
+                <button className="water-btn" onClick={() => addWater(4)}>
+                  +4 cup
+                </button>
               </div>
             </div>
 
@@ -446,20 +553,28 @@ export default function LogMeal() {
                   step="0.5"
                 />
                 <span>cups</span>
-                <button className="add-custom-btn meal" onClick={addCustomWater}>Add</button>
+                <button
+                  className="add-custom-btn meal"
+                  onClick={addCustomWater}
+                >
+                  Add
+                </button>
               </div>
             </div>
-
 
             <div className="water-progress">
               <div className="water-progress-bar">
                 <div
                   className="water-progress-fill"
-                  style={{ width: `${Math.min((waterIntake / 8) * 100, 100)}%` }}
+                  style={{
+                    width: `${Math.min((waterIntake / 8) * 100, 100)}%`,
+                  }}
                 ></div>
               </div>
               <span className="water-progress-text">
-                {waterIntake >= 8 ? "Goal achieved! " : `${Math.max(0, 8 - waterIntake)} cups remaining`}
+                {waterIntake >= 8
+                  ? "Goal achieved! "
+                  : `${Math.max(0, 8 - waterIntake)} cups remaining`}
               </span>
             </div>
           </div>

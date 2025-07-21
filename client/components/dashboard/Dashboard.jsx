@@ -8,6 +8,7 @@ import Charts from "./Charts";
 import { geminimodel } from "../../src/firebase";
 import APITester from "../debug/APITester";
 import NotificationBell from "../notifications/NotificationBell";
+import websocketService from "../../src/services/websocketService";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -16,59 +17,134 @@ export default function Dashboard() {
   const [workouts, setWorkouts] = useState({});
   const [showChatbot, setShowChatbot] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [wsConnected, setWsConnected] = useState(false);
   const navigate = useNavigate();
 
+  const refreshTodaysData = () => {
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/meals?date=${dateStr}`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => setMeals(data))
+      .catch(() => {});
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/exercises?date=${dateStr}`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => setWorkouts(data))
+      .catch(() => {});
+  };
+
+  const handleMealUpdate = (mealData) => {
+    console.log("Dashboard received meal update:", mealData);
+
+    const updateDate = new Date(mealData.date).toISOString().slice(0, 10);
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    if (updateDate === todayStr) {
+      refreshTodaysData();
+    }
+  };
+
+  const handleWorkoutUpdate = (workoutData) => {
+    console.log("Dashboard received workout update:", workoutData);
+
+    const updateDate = new Date(workoutData.date).toISOString().slice(0, 10);
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    if (updateDate === todayStr) {
+      refreshTodaysData();
+    }
+  };
+
   useEffect(() => {
+    const initializeWebSocket = async () => {
+      try {
+        await webSocketService.connect();
+        setWsConnected(webSocketService.isSocketConnected());
+
+        websocketService.onMealUpdate(handleMealUpdate);
+        websocketService.onWorkoutUpdate(handleWorkoutUpdate);
+
+        console.log("Dashboard WebSocket initialized");
+      } catch (error) {
+        console.error("Failed to initialize WebSocket:", error);
+      }
+    };
+
     axios
       .get(`${import.meta.env.VITE_API_URL}/auth/me`, { withCredentials: true })
-      .then(({ data }) => setUser(data))
+      .then(({ data }) => {
+        setUser(data);
+
+        initializeWebSocket();
+      })
       .catch(() => {});
 
     const now = new Date();
-    setToday(now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }))
-    const dateStr = now.toISOString().slice(0,10);
-    axios.get(`${import.meta.env.VITE_API_URL}/api/meals?date=${dateStr}`, { withCredentials: true })
-      .then(({ data }) => setMeals(data))
-      .catch(() => {});
-    axios.get(`${import.meta.env.VITE_API_URL}/api/exercises?date=${dateStr}`, { withCredentials: true })
-      .then(({ data }) => setWorkouts(data))
-      .catch(() => {});
+    setToday(
+      now.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      })
+    );
+    refreshTodaysData();
+
+    return () => {
+      websocketService.onMealUpdate(() => {});
+      websocketService.onWorkoutUpdate(() => {});
+    };
   }, []);
 
   const logout = () => {
-    axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, { withCredentials: true })
-      .then(() => navigate('/login'));
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {},
+        { withCredentials: true }
+      )
+      .then(() => navigate("/login"));
   };
 
   const calculateDailyCalories = () => {
     let caloriesIn = 0;
     let caloriesOut = 0;
 
-    Object.values(meals).flat().forEach((meal) => {
-      caloriesIn += meal.calories || 0;
-    });
+    Object.values(meals)
+      .flat()
+      .forEach((meal) => {
+        caloriesIn += meal.calories || 0;
+      });
 
-    Object.values(workouts).flat().forEach((workout) => {
-      caloriesOut += workout.calories || 0;
-    });
+    Object.values(workouts)
+      .flat()
+      .forEach((workout) => {
+        caloriesOut += workout.calories || 0;
+      });
 
     return { caloriesIn, caloriesOut };
   };
 
   const calculateMacros = () => {
     let carbs = 0,
-    fat = 0,
-    protein = 0,
-    sodium = 0,
-    sugar = 0;
+      fat = 0,
+      protein = 0,
+      sodium = 0,
+      sugar = 0;
 
-    Object.values(meals).flat().forEach((meal) => {
-      carbs += meal.carbs || 0;
-      fat += meal.fat || 0;
-      protein += meal.protein || 0;
-      sodium += meal.sodium || 0;
-      sugar += meal.sugar || 0;
-    });
+    Object.values(meals)
+      .flat()
+      .forEach((meal) => {
+        carbs += meal.carbs || 0;
+        fat += meal.fat || 0;
+        protein += meal.protein || 0;
+        sodium += meal.sodium || 0;
+        sugar += meal.sugar || 0;
+      });
 
     return { carbs, fat, protein, sodium, sugar };
   };
@@ -95,9 +171,11 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       {showSidebar && (
-        <div className="sidebar-overlay"
-        onClick={() =>setShowSidebar(false)}>
-        </div>)}
+        <div
+          className="sidebar-overlay"
+          onClick={() => setShowSidebar(false)}
+        ></div>
+      )}
 
       {/* sidebar */}
       <nav className={`sidebar ${showSidebar ? "sidebar-open" : ""}`}>
@@ -105,7 +183,10 @@ export default function Dashboard() {
           <h2>FitSync</h2>
           <button
             className="sidebar-close"
-            onClick={() => setShowSidebar(false)}> ×
+            onClick={() => setShowSidebar(false)}
+          >
+            {" "}
+            ×
           </button>
         </div>
         <div className="sidebar-content">
@@ -157,7 +238,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-{/* header */}
+      {/* header */}
       <header className="dashboard-header">
         <button className="menu-toggle" onClick={() => setShowSidebar(true)}>
           <span></span>
@@ -166,6 +247,10 @@ export default function Dashboard() {
         </button>
         <h1 className="dashboard-title">FitSync Dashboard</h1>
         <div className="header-actions">
+          <div className={`ws-status ${wsConnected ? 'connected' : 'disconnected'}`} title={wsConnected ? 'Real-time sync active' : 'Real-time sync offline'}>
+            <span className="ws-indicator"></span>
+            {wsConnected ? 'Live' : 'Offline'}
+          </div>
           <NotificationBell />
           <button className="logout-btn" onClick={logout}>
             <span>←</span> Logout
@@ -247,7 +332,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-         {/* Macros section */}
+        {/* Macros section */}
         <section className="macros-section">
           <div className="macros-content">
             <div className="macros-breakdown">
@@ -309,7 +394,10 @@ export default function Dashboard() {
         <section className="notes-section">
           <div className="section-header">
             <h3>Recent Workout Notes</h3>
-            <button className="view-all-btn" onClick={() => navigate("/log-workout")}>
+            <button
+              className="view-all-btn"
+              onClick={() => navigate("/log-workout")}
+            >
               Add Notes
             </button>
           </div>
@@ -317,15 +405,21 @@ export default function Dashboard() {
             <div className="notes-list">
               <div className="note-item">
                 <div className="note-date">Today</div>
-                <div className="note-text">Great leg day! Increased squat weight by 10lbs.</div>
+                <div className="note-text">
+                  Great leg day! Increased squat weight by 10lbs.
+                </div>
               </div>
               <div className="note-item">
                 <div className="note-date">Yesterday</div>
-                <div className="note-text">Cardio session felt easier today. Building endurance.</div>
+                <div className="note-text">
+                  Cardio session felt easier today. Building endurance.
+                </div>
               </div>
               <div className="note-item">
                 <div className="note-date">2 days ago</div>
-                <div className="note-text">Need to focus more on form during bench press.</div>
+                <div className="note-text">
+                  Need to focus more on form during bench press.
+                </div>
               </div>
             </div>
           </div>
@@ -341,8 +435,7 @@ export default function Dashboard() {
       </button>
 
       {showChatbot && (
-
-    <div className="chatbot-container">
+        <div className="chatbot-container">
           <div className="chatbot-content">
             <div className="chatbot-header">
               <h4>AI Fitness Trainer</h4>
@@ -374,7 +467,7 @@ export default function Dashboard() {
               <button disabled>Send</button>
             </div>
           </div>
-      </div>
+        </div>
       )}
     </div>
   );

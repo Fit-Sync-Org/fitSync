@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const db = new PrismaClient();
 const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
+const webSocketService = require("../services/webSocketService");
 
 exports.getWorkoutByDate = async (req, res) => {
   try {
@@ -101,7 +102,7 @@ exports.addWorkout = async (req, res) => {
 
     await checkProgressAndNotify(userId);
 
-    res.status(201).json({
+    const workoutData = {
       id: w.id,
       type : w.workoutType,
       name: w.name,
@@ -112,7 +113,12 @@ exports.addWorkout = async (req, res) => {
       weight: w.weight,
       notes: w.notes,
       date: w.date,
-    });
+      action: 'added',
+      timestamp: new Date().toISOString()
+    };
+
+    webSocketService.broadcastWorkoutUpdate(userId, workoutData);
+    res.status(201).json(workoutData);
   } catch (err) {
     console.error('addWorkout error:', err);
     res.status(500).json({ error: 'Failed to add workout' });
@@ -147,7 +153,7 @@ exports.updateWorkout = async (req, res) => {
     });
 
 
-    res.json({
+    const workoutData = {
       id: updated.id,
       type: updated.workoutType,
       name: updated.name,
@@ -157,8 +163,13 @@ exports.updateWorkout = async (req, res) => {
       reps: updated.reps,
       weight: updated.weight,
       notes: updated.notes,
-      date: updated.date
-    });
+      date: updated.date,
+      action: 'updated',
+      timestamp: new Date().toISOString()
+    };
+
+    webSocketService.broadcastWorkoutUpdate(userId, workoutData);
+    res.json(workoutData);
   } catch (err) {
     console.error('updateWorkout error:', err);
     res.status(500).json({ error: 'Failed to update workout' });
@@ -178,7 +189,18 @@ exports.deleteWorkout = async (req, res) => {
     }
 
     await db.workout.delete({ where: { id: Number(id) } });
-    res.json({ message: 'Workout deleted successfully' });
+
+    const deleteData = {
+          id: existing.id,
+          name: existing.name,
+          type: existing.workoutType,
+          date: existing.date,
+          action: 'deleted',
+          timestamp: new Date().toISOString()
+        };
+
+    webSocketService.broadcastWorkoutUpdate(userId, deleteData);
+    res.json({ message: 'Workout deleted successfully', deletedWorkout: deleteData });
   } catch (err) {
     console.error('deleteWorkout error:', err);
     res.status(500).json({ error: 'Failed to delete workout' });

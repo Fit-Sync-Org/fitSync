@@ -1,6 +1,9 @@
 const { Server } = require("socket.io");
 const admin = require("../firebase");
 const { PrismaClient } = require("@prisma/client");
+const { RetryEngine } = require("../utils/retryEngine");
+const { EncryptionEngine } = require("../utils/encryptionEngine");
+const { DynamicConfigEngine } = require("../utils/dynamicConfigEngine");
 
 class WebSocketService {
   constructor() {
@@ -8,6 +11,20 @@ class WebSocketService {
     this.userSockets = new Map();
     this.socketUsers = new Map();
     this.db = new PrismaClient();
+    this.dynamicConfig = new DynamicConfigEngine(this);
+    this.dbRetry = new RetryEngine({
+      maxRetries: 3,
+      baseDelay: 500,
+      onFailure: (err) =>
+        console.error("DB operation failed after retries:", err),
+      dynamicConfig: this.dynamicConfig,
+    });
+    this.encryptor = new EncryptionEngine({
+      secretKey: process.env.ENCRYPTION_KEY || "FitSyncDefaultSecretKey2024",
+      enabled:
+        process.env.NODE_ENV === "production" ||
+        process.env.ENABLE_ENCRYPTION === "true",
+    });
   }
 
   initialize(server) {
@@ -47,6 +64,114 @@ class WebSocketService {
 
       socket.on("ping", () => {
         socket.emit("pong", { timestamp: Date.now() });
+      });
+
+      socket.on("meal_updated", async (mealData, ack) => {
+        try {
+          const userAgent = socket.handshake.headers["user-agent"] || "unknown";
+          const userId = this.socketUsers.get(socket.id);
+
+          if (!userId) {
+            return ack({ success: false, error: "User not authenticated" });
+          }
+
+          if (!mealData || !mealData.userId || !mealData.date) {
+            return ack({ success: false, error: "Invalid meal data" });
+          }
+
+          if (mealData.calories && mealData.calories > 10000) {
+            return ack({
+              success: false,
+              error: "Calorie amount seems unusually high",
+              suggestion: "Please verify the serving size",
+            });
+          }
+
+          const userRetry = new RetryEngine({
+            maxRetries: 3,
+            baseDelay: 200,
+            userId: userId,
+            userAgent: userAgent,
+            dynamicConfig: this.dynamicConfig,
+          });
+
+          await userRetry.start(async () => {
+            await this.db.meal.update({
+              where: { id: mealData.id },
+              data: mealData,
+            });
+          });
+
+          const encryptionParams =
+            await this.dynamicConfig.calculateEncryptionParams(
+              userId,
+              userAgent,
+              "health_critical"
+            );
+
+          const encryptedMealData = encryptionParams.shouldEncrypt
+            ? this.encryptor.encryptSensitiveData(mealData)
+            : mealData;
+
+          this.io
+            .to(`user_${mealData.userId}`)
+            .emit("meal_updated", encryptedMealData);
+
+          ack({ success: true });
+        } catch (err) {
+          console.error("Meal update error:", err);
+          ack({ success: false, error: err.message });
+        }
+      });
+
+      socket.on("workout_updated", async (workoutData, ack) => {
+        try {
+          const userAgent = socket.handshake.headers["user-agent"] || "unknown";
+          const userId = this.socketUsers.get(socket.id);
+
+          if (!userId) {
+            return ack({ success: false, error: "User not authenticated" });
+          }
+
+          if (!workoutData || !workoutData.userId || !workoutData.date) {
+            return ack({ success: false, error: "Invalid workout data" });
+          }
+
+          const userRetry = new RetryEngine({
+            maxRetries: 3,
+            baseDelay: 200,
+            userId: userId,
+            userAgent: userAgent,
+            dynamicConfig: this.dynamicConfig,
+          });
+
+          await userRetry.start(async () => {
+            await this.db.workout.update({
+              where: { id: workoutData.id },
+              data: workoutData,
+            });
+          });
+
+          const encryptionParams =
+            await this.dynamicConfig.calculateEncryptionParams(
+              userId,
+              userAgent,
+              "health_critical"
+            );
+
+          const encryptedWorkoutData = encryptionParams.shouldEncrypt
+            ? this.encryptor.encryptSensitiveData(workoutData)
+            : workoutData;
+
+          this.io
+            .to(`user_${workoutData.userId}`)
+            .emit("workout_updated", encryptedWorkoutData);
+
+          ack({ success: true });
+        } catch (err) {
+          console.error("Workout update error:", err);
+          ack({ success: false, error: err.message });
+        }
       });
     });
   }
@@ -351,6 +476,38 @@ class WebSocketService {
     await this.db.$disconnect();
 
     console.log("WebSocket service shutdown complete");
+  }
+
+  getRetryMetrics() {
+    return this.dbRetry.getMetrics();
+  }
+
+  getEncryptionMetrics() {
+    return this.encryptor.getMetrics();
+  }
+
+  getAllMetrics() {
+    return {
+      retry: this.dbRetry.getMetrics(),
+      encryption: this.encryptor.getMetrics(),
+    };
+  }
+
+  getDynamicMetrics() {
+    return {
+      retry: this.dbRetry.getMetrics(),
+      encryption: this.encryptor.getMetrics(),
+      dynamicConfig: {
+        cacheSize: this.dynamicConfig.contextCache.size,
+        configVersion: "1.0",
+      },
+    };
+  }
+
+  setupCacheCleanup() {
+    setInterval(() => {
+      this.dynamicConfig.cleanupCache();
+    }, 10 * 60 * 1000); // Every 10 minutes
   }
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import {auth} from "../../src/firebase";
 import { generateAndSavePlan } from "../../src/utils/planGeneration";
+import websocketService  from "../../src/services/websocketService";
 
 import StepName from "./StepName";
 import StepAge from "./StepAge";
@@ -178,6 +179,14 @@ export default function OnboardingWizard() {
       }
 
       sessionStorage.removeItem("fitsyncTempToken");
+
+      try {
+        console.log("Onboarding completed, connecting to websocket.");
+        await websocketService.connect();
+        console.log("Websocket connected.");
+      } catch (err) {
+        console.error("Failed to connect to websocket:", err);
+      }
       navigate("/dashboard");
     } catch (err) {
       console.error(err);

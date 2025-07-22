@@ -18,12 +18,26 @@ function App() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log("User authenticated, initializing WebSocket...");
+        console.log("User authenticated, checking onboardin status");
         try {
-          await websocketService.connect();
-          console.log("WebSocket initialized successfully");
+          const response = await fetch(`$import.meta.env.VITE_API_URL/auth/me`, {
+          credentials: "include",
+          });
+
+        if (response.ok) {
+          const userData = await response.json();
+          if (user.Data.hasCompletedOnboarding) {
+            console.log("User has completed onboarding, connecting WebSocket...");
+            await websocketService.connect();
+            console.log("WebSocket connected");
+          } else {
+            console.log("User has not completed onboarding, skip websocket connection");
+          }
+        } else {
+          console.log("Could not verify user's onboarding status")
+        }
         } catch (error) {
-          console.error("Failed to initialize WebSocket:", error);
+        console.error("Failed to initialize WebSocket:", error);
         }
       } else {
         console.log("User not authenticated, disconnecting WebSocket...");
@@ -44,14 +58,6 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/register" element={<Register />} />
           <Route path="/OnboardingWizard" element={<OnboardingWizard />} />
-          <Route
-            element={
-              <ProtectedRoute>
-                {" "}
-                <Dashboard />{" "}
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/dashboard"
             element={

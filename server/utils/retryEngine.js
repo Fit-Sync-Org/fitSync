@@ -178,10 +178,3 @@ class RetryEngine {
 }
 
 module.exports = { RetryEngine, RetryExhaustedError };
-
-// Example usage (for Clare):
-/*
-const { RetryEngine } = require("./retryEngine");
-const retryDb = new RetryEngine({ maxRetries: 3 });
-retryDb.start(() => db.user.update(...));
-*/

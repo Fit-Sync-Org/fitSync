@@ -14,8 +14,13 @@ class EncryptionEngine {
     this.secretKey = options.secretKey || this.generateDefaultKey();
     this.enabled = options.enabled !== false;
     this.ivLength = 16; // For AES-256-CBC
-
-    this.keyBuffer = this.deriveKey(this.secretKey);
+    this.GDPR_SALT = "FitSyncGDPRSalt2024";
+    this.DEFAULT_SALT = "FitSyncSalt2024";
+    this.keyBuffer = this.deriveKey(
+      this.secretKey,
+      this.DEFAULT_SALT,
+      "DEFAULT"
+    );
 
     this.metrics = {
       encryptions: 0,
@@ -34,8 +39,13 @@ class EncryptionEngine {
     );
   }
 
-  deriveKey(secretKey) {
-    const salt = "FitSyncSalt2024";
+  deriveKey(secretKey, userSalt, region) {
+    let salt = this.DEFAULT_SALT;
+    if (region === "EU") {
+      salt = (userSalt || "") + this.GDPR_SALT;
+    } else if (userSalt) {
+      salt = userSalt;
+    }
     return crypto.pbkdf2Sync(secretKey, salt, 10000, 32, "sha256");
   }
 
@@ -43,24 +53,24 @@ class EncryptionEngine {
     return crypto.randomBytes(this.ivLength);
   }
 
-  encrypt(plainObject) {
+  encrypt(plainObject, { region = "DEFAULT", userSalt = null } = {}) {
     if (!this.enabled) return plainObject;
-
     const startTime = Date.now();
     try {
       const plainText = JSON.stringify(plainObject);
       const iv = this.generateIV();
-      const cipher = crypto.createCipheriv(this.algorithm, this.keyBuffer, iv);
+      const keyBuffer = this.deriveKey(this.secretKey, userSalt, region);
+      const algorithm = region === "EU" ? "aes-256-cbc" : this.algorithm;
+      const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
       let encrypted = cipher.update(plainText, "utf8", "hex");
       encrypted += cipher.final("hex");
-
       const encryptionTime = Date.now() - startTime;
       this.updateMetrics("encrypt", encryptionTime);
-
       return {
         ciphertext: encrypted,
         iv: iv.toString("hex"),
-        algorithm: this.algorithm,
+        algorithm,
+        region,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -72,31 +82,25 @@ class EncryptionEngine {
     }
   }
 
-  decrypt(cipherObject) {
+  decrypt(cipherObject, { region = "DEFAULT", userSalt = null } = {}) {
     if (!this.enabled) return cipherObject;
-
     const startTime = Date.now();
     try {
       if (!cipherObject.ciphertext || !cipherObject.iv) {
         throw new Error("Invalid cipher object: missing ciphertext or IV");
       }
-
       const iv = Buffer.from(cipherObject.iv, "hex");
-
-      const decipher = crypto.createDecipheriv(
-        this.algorithm,
-        this.keyBuffer,
-        iv
-      );
-
+      const keyBuffer = this.deriveKey(this.secretKey, userSalt, region);
+      const algorithm =
+        region === "EU"
+          ? "aes-256-cbc"
+          : cipherObject.algorithm || this.algorithm;
+      const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
       let decrypted = decipher.update(cipherObject.ciphertext, "hex", "utf8");
       decrypted += decipher.final("utf8");
-
       const result = JSON.parse(decrypted);
-
       const decryptionTime = Date.now() - startTime;
       this.updateMetrics("decrypt", decryptionTime);
-
       return result;
     } catch (error) {
       this.metrics.failures++;
@@ -122,9 +126,8 @@ class EncryptionEngine {
     }
   }
 
-  encryptSensitiveData(data) {
+  encryptSensitiveData(data, { region = "DEFAULT", userSalt = null } = {}) {
     if (!this.enabled || !data || typeof data !== "object") return data;
-
     const sensitiveFields = [
       "calories",
       "weight",
@@ -134,19 +137,19 @@ class EncryptionEngine {
       "fat",
     ];
     const result = { ...data };
-
     for (const field of sensitiveFields) {
       if (result[field] !== undefined) {
-        result[field] = this.encrypt({ value: result[field] });
+        result[field] = this.encrypt(
+          { value: result[field] },
+          { region, userSalt }
+        );
       }
     }
-
     return result;
   }
 
-  decryptSensitiveData(data) {
+  decryptSensitiveData(data, { region = "DEFAULT", userSalt = null } = {}) {
     if (!data || typeof data !== "object") return data;
-
     const sensitiveFields = [
       "calories",
       "weight",
@@ -156,7 +159,6 @@ class EncryptionEngine {
       "fat",
     ];
     const result = { ...data };
-
     for (const field of sensitiveFields) {
       if (
         result[field] &&
@@ -164,14 +166,13 @@ class EncryptionEngine {
         result[field].ciphertext
       ) {
         try {
-          const decrypted = this.decrypt(result[field]);
+          const decrypted = this.decrypt(result[field], { region, userSalt });
           result[field] = decrypted.value;
         } catch (error) {
           console.error(`Failed to decrypt field ${field}:`, error.message);
         }
       }
     }
-
     return result;
   }
 

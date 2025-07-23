@@ -38,33 +38,11 @@ export default function Dashboard() {
       .catch(() => {});
   };
 
-  const handleMealUpdate = (mealData) => {
-    console.log("Dashboard received meal update:", mealData);
-
-    const updateDate = new Date(mealData.date).toISOString().slice(0, 10);
-    const todayStr = new Date().toISOString().slice(0, 10);
-
-    if (updateDate === todayStr) {
-      refreshTodaysData();
-    }
-  };
-
-  const handleWorkoutUpdate = (workoutData) => {
-    console.log("Dashboard received workout update:", workoutData);
-
-    const updateDate = new Date(workoutData.date).toISOString().slice(0, 10);
-    const todayStr = new Date().toISOString().slice(0, 10);
-
-    if (updateDate === todayStr) {
-      refreshTodaysData();
-    }
-  };
-
   useEffect(() => {
     websocketService.onMealUpdate(handleMealUpdate);
     websocketService.onWorkoutUpdate(handleWorkoutUpdate);
 
-    setWsConnected(websocketService.isConnected());
+    setWsConnected(websocketService.isConnected);
 
     axios
       .get(`${import.meta.env.VITE_API_URL}/auth/me`, { withCredentials: true })

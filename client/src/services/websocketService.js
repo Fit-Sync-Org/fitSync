@@ -431,7 +431,8 @@ class WebSocketService {
         break;
 
       case "ONBOARDING_INCOMPLETE":
-        if (typeof window !== "undefined") {
+
+        if (typeof window !== "undefined" && !window.location.pathname.includes("OnboardingWizard")) {
           window.location.href = "/OnboardingWizard";
         }
         break;

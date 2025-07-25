@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { notificationsAPI } from "../../src/api/notifications";
-import "./NotificationCenter.css";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { notificationsAPI } from '../../src/api/notifications';
+import './NotificationCenter.css';
 
 export default function NotificationCenter({ compact = false, onClose }) {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({});
-  const [filterType, setFilterType] = useState("all");
+  const [filterType, setFilterType] = useState('all');
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
   useEffect(() => {
@@ -39,8 +39,8 @@ export default function NotificationCenter({ compact = false, onClose }) {
         prev.map((notification) =>
           notification.id === notificationId
             ? { ...notification, isRead: true }
-            : notification
-        )
+            : notification,
+        ),
       );
       // Recalculate stats after marking as read
       const unreadCount = notifications.filter(n => !n.isRead).length - 1;
@@ -50,11 +50,11 @@ export default function NotificationCenter({ compact = false, onClose }) {
 
   const handleMarkAllAsRead = async () => {
     const result = await notificationsAPI.markAllAsRead(
-      filterType === "all" ? undefined : filterType
+      filterType === 'all' ? undefined : filterType,
     );
     if (result.success) {
       setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, isRead: true }))
+        prev.map((notification) => ({ ...notification, isRead: true })),
       );
       // Recalculate stats after marking all as read
       setStats({ unreadCount: 0 });
@@ -65,7 +65,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
     const result = await notificationsAPI.deleteNotification(notificationId);
     if (result.success) {
       setNotifications((prev) =>
-        prev.filter((notification) => notification.id !== notificationId)
+        prev.filter((notification) => notification.id !== notificationId),
       );
       // Recalculate stats after deletion
       const remainingNotifications = notifications.filter(n => n.id !== notificationId);
@@ -75,16 +75,16 @@ export default function NotificationCenter({ compact = false, onClose }) {
   };
 
   const filterTypes = [
-    { value: "all", label: "All", icon: "" },
-    { value: "PLAN_READY", label: "Plan Ready", icon: "" },
-    { value: "PROGRESS_ALERT", label: "Progress", icon: "" },
-    { value: "MILESTONE", label: "Milestones", icon: "" },
-    { value: "WEEKLY_SUMMARY", label: "Weekly", icon: "" },
+    { value: 'all', label: 'All', icon: '' },
+    { value: 'PLAN_READY', label: 'Plan Ready', icon: '' },
+    { value: 'PROGRESS_ALERT', label: 'Progress', icon: '' },
+    { value: 'MILESTONE', label: 'Milestones', icon: '' },
+    { value: 'WEEKLY_SUMMARY', label: 'Weekly', icon: '' },
   ];
 
   if (loading) {
     return (
-      <div className={`notification-center ${compact ? "compact" : ""}`}>
+      <div className={`notification-center ${compact ? 'compact' : ''}`}>
         <div className="notification-loading">
           <div className="loading-spinner"></div>
           <p>Loading notifications...</p>
@@ -95,7 +95,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
 
   if (error) {
     return (
-      <div className={`notification-center ${compact ? "compact" : ""}`}>
+      <div className={`notification-center ${compact ? 'compact' : ''}`}>
         <div className="notification-error">
           <div className="error-icon"></div>
           <p>Failed to load notifications</p>
@@ -134,7 +134,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
               <div className="more-notifications">
                 <button
                   className="view-all-btn"
-                  onClick={() => (window.location.href = "/notifications")}
+                  onClick={() => (window.location.href = '/notifications')}
                 >
                   View All ({notifications.length - 3} more)
                 </button>
@@ -211,7 +211,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
             <button
               key={filter.value}
               className={`filter-tab ${
-                filterType === filter.value ? "active" : ""
+                filterType === filter.value ? 'active' : ''
               }`}
               onClick={() => setFilterType(filter.value)}
             >
@@ -239,9 +239,9 @@ export default function NotificationCenter({ compact = false, onClose }) {
             <p>
               {showUnreadOnly
                 ? "You're all caught up! No unread notifications."
-                : filterType === "all"
-                ? "No notifications yet. We'll notify you about your progress and milestones."
-                : `No ${filterType.toLowerCase()} notifications found.`}
+                : filterType === 'all'
+                  ? "No notifications yet. We'll notify you about your progress and milestones."
+                  : `No ${filterType.toLowerCase()} notifications found.`}
             </p>
           </div>
         ) : (
@@ -262,7 +262,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
                     ))}
                   </div>
                 </div>
-              )
+              ),
             )}
           </div>
         )}
@@ -294,8 +294,8 @@ function NotificationItem({
   return (
     <div
       className={`notification-item ${
-        notification.isRead ? "read" : "unread"
-      } ${compact ? "compact" : ""}`}
+        notification.isRead ? 'read' : 'unread'
+      } ${compact ? 'compact' : ''}`}
       onClick={handleMarkAsRead}
     >
       <div className="notification-icon" style={{ color: notification.color }}>
@@ -307,12 +307,12 @@ function NotificationItem({
           <span className="notification-time">{notification.timeAgo}</span>
         </div>
         <p className="notification-message">{notification.message}</p>
-        {notification.type === "PROGRESS_ALERT" && (
+        {notification.type === 'PROGRESS_ALERT' && (
           <div className="progress-alert-details">
             <span className="alert-badge">Action Required</span>
           </div>
         )}
-        {notification.type === "MILESTONE" && (
+        {notification.type === 'MILESTONE' && (
           <div className="milestone-details">
             <span className="milestone-badge">Achievement</span>
           </div>
@@ -341,7 +341,7 @@ function NotificationItem({
             disabled={isDeleting}
             title="Delete notification"
           >
-            {isDeleting ? "⏳" : "🗑️"}
+            {isDeleting ? '⏳' : '🗑️'}
           </button>
         </div>
       )}

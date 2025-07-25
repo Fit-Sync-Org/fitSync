@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { notificationsAPI } from "../../src/api/notifications";
-import "./NotificationBell.css";
+import { useState, useEffect } from 'react';
+import { notificationsAPI } from '../../src/api/notifications';
+import './NotificationBell.css';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -22,7 +22,7 @@ export default function NotificationBell() {
         setUnreadCount(result.data.unreadCount);
       }
     } catch (error) {
-      console.error("Failed to fetch notifications:", error);
+      console.error('Failed to fetch notifications:', error);
     }
   };
 
@@ -34,13 +34,13 @@ export default function NotificationBell() {
           prev.map(notif =>
             notif.id === notificationId
               ? { ...notif, isRead: true }
-              : notif
-          )
+              : notif,
+          ),
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
-      console.error("Failed to mark notification as read:", error);
+      console.error('Failed to mark notification as read:', error);
     }
   };
 
@@ -50,12 +50,12 @@ export default function NotificationBell() {
       const result = await notificationsAPI.markAllAsRead();
       if (result.success) {
         setNotifications(prev =>
-          prev.map(notif => ({ ...notif, isRead: true }))
+          prev.map(notif => ({ ...notif, isRead: true })),
         );
         setUnreadCount(0);
       }
     } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
+      console.error('Failed to mark all notifications as read:', error);
     } finally {
       setLoading(false);
     }

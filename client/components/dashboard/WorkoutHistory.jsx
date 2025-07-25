@@ -1,7 +1,7 @@
 import './WorkoutHistory.css';
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 export default function WorkoutHistory() {
@@ -15,7 +15,7 @@ export default function WorkoutHistory() {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/exercises/completed-entries`, {
           withCredentials: true,
-          params: { days: 30 }
+          params: { days: 30 },
         });
 
         if (response.data) {
@@ -24,7 +24,7 @@ export default function WorkoutHistory() {
           setWorkoutHistory(response.data.slice(0, 3));
         }
       } catch (error) {
-        console.error("Failed to fetch workout history:", error);
+        console.error('Failed to fetch workout history:', error);
         setWorkoutHistory([]);
         setAllWorkoutHistory([]);
       }
@@ -41,16 +41,16 @@ export default function WorkoutHistory() {
     if (
       window.confirm(
         `Are you sure you want to delete all workouts for ${new Date(
-          date
-        ).toLocaleDateString()}?`
+          date,
+        ).toLocaleDateString()}?`,
       )
     ) {
       try {
         setWorkoutHistory((prev) => prev.filter((entry) => entry.id !== id));
-        alert("Workout log deleted successfully!");
+        alert('Workout log deleted successfully!');
       } catch (error) {
-        console.error("Failed to delete workout log:", error);
-        alert("Failed to delete workout log. Please try again.");
+        console.error('Failed to delete workout log:', error);
+        alert('Failed to delete workout log. Please try again.');
       }
     }
   };
@@ -62,14 +62,14 @@ export default function WorkoutHistory() {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return "Today";
+      return 'Today';
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday";
+      return 'Yesterday';
     } else {
-      return date.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
       });
     }
   };
@@ -113,10 +113,10 @@ export default function WorkoutHistory() {
                     </span>
                     <span
                       className={`status-badge ${
-                        entry.isCompleted ? "completed" : "incomplete"
+                        entry.isCompleted ? 'completed' : 'incomplete'
                       }`}
                     >
-                      {entry.isCompleted ? "✓ Complete" : "In Progress"}
+                      {entry.isCompleted ? '✓ Complete' : 'In Progress'}
                     </span>
                   </div>
                 </div>
@@ -187,10 +187,10 @@ export default function WorkoutHistory() {
                             </span>
                             <span
                               className={`status-badge ${
-                                entry.isCompleted ? "completed" : "incomplete"
+                                entry.isCompleted ? 'completed' : 'incomplete'
                               }`}
                             >
-                              {entry.isCompleted ? "✓ Complete" : "⏳ In Progress"}
+                              {entry.isCompleted ? '✓ Complete' : '⏳ In Progress'}
                             </span>
                           </div>
                         </div>

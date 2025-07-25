@@ -1,4 +1,4 @@
-import "./onbooarding-styles/ProgressBar.css";
+import './onbooarding-styles/ProgressBar.css';
 
 export default function ProgressBar({ currentStep, totalSteps }) {
   const percent = ((currentStep + 1) / totalSteps) * 100;

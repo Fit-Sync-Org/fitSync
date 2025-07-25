@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import MealHistory from "./MealHistory";
-import WorkoutHistory from "./WorkoutHistory";
-import "./Dashboard.css";
-import Charts from "./Charts";
-import { geminimodel } from "../../src/firebase";
-import APITester from "../debug/APITester";
-import NotificationBell from "../notifications/NotificationBell";
-import websocketService from "../../src/services/websocketService";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import MealHistory from './MealHistory';
+import WorkoutHistory from './WorkoutHistory';
+import './Dashboard.css';
+import Charts from './Charts';
+// import { geminimodel } from '../../src/firebase';
+import APITester from '../debug/APITester';
+import NotificationBell from '../notifications/NotificationBell';
+import websocketService from '../../src/services/websocketService';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [today, setToday] = useState("");
+  const [today, setToday] = useState('');
   const [meals, setMeals] = useState({});
   const [workouts, setWorkouts] = useState({});
   const [showChatbot, setShowChatbot] = useState(false);
@@ -53,11 +53,11 @@ export default function Dashboard() {
 
     const now = new Date();
     setToday(
-      now.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      })
+      now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      }),
     );
     refreshTodaysData();
 
@@ -72,9 +72,9 @@ export default function Dashboard() {
       .post(
         `${import.meta.env.VITE_API_URL}/auth/logout`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       )
-      .then(() => navigate("/login"));
+      .then(() => navigate('/login'));
   };
 
   const calculateDailyCalories = () => {
@@ -121,6 +121,17 @@ export default function Dashboard() {
     setShowSidebar(false);
   };
 
+  const handleMealUpdate = (updatedMeal) => {
+    console.log('Meal update received:', updatedMeal);
+    refreshTodaysData();
+  };
+
+
+  const handleWorkoutUpdate = (updatedWorkout) => {
+    console.log('Workout update received:', updatedWorkout);
+    refreshTodaysData();
+  };
+
   if (!user) {
     return (
       <div className="dashboard-loading">
@@ -145,14 +156,14 @@ export default function Dashboard() {
       )}
 
       {/* sidebar */}
-      <nav className={`sidebar ${showSidebar ? "sidebar-open" : ""}`}>
+      <nav className={`sidebar ${showSidebar ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <h2>FitSync</h2>
           <button
             className="sidebar-close"
             onClick={() => setShowSidebar(false)}
           >
-            {" "}
+            {' '}
             ×
           </button>
         </div>
@@ -161,32 +172,32 @@ export default function Dashboard() {
             <h3>Navigation</h3>
             <ul className="nav-links">
               <li>
-                <button onClick={() => handleNavigation("/dashboard")}>
+                <button onClick={() => handleNavigation('/dashboard')}>
                   <span>Dashboard</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/log-meal")}>
+                <button onClick={() => handleNavigation('/log-meal')}>
                   <span>Log Meal</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/log-workout")}>
+                <button onClick={() => handleNavigation('/log-workout')}>
                   <span>Log Workout</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/plans")}>
+                <button onClick={() => handleNavigation('/plans')}>
                   <span>My Plans</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/notifications")}>
+                <button onClick={() => handleNavigation('/notifications')}>
                   <span>Notifications</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/profile")}>
+                <button onClick={() => handleNavigation('/profile')}>
                   <span>Profile</span>
                 </button>
               </li>
@@ -235,12 +246,12 @@ export default function Dashboard() {
                   <img src={user.avatarUrl} alt="Profile" />
                 ) : (
                   <div className="avatar-placeholder">
-                    {user.firstName?.charAt(0) || "U"}
+                    {user.firstName?.charAt(0) || 'U'}
                   </div>
                 )}
               </div>
               <div className="user-details">
-                <h2>Welcome, {user.firstName || "Champ"}!</h2>
+                <h2>Welcome, {user.firstName || 'Champ'}!</h2>
                 <p className="welcome-date">{today}</p>
               </div>
             </div>
@@ -293,7 +304,7 @@ export default function Dashboard() {
             </div>
             <div className="goal-status">
               {caloriesIn >= calorieGoal
-                ? ":tada: Goal reached!"
+                ? ':tada: Goal reached!'
                 : `${calorieGoal - caloriesIn} kcal remaining`}
             </div>
           </div>
@@ -363,7 +374,7 @@ export default function Dashboard() {
             <h3>Recent Workout Notes</h3>
             <button
               className="view-all-btn"
-              onClick={() => navigate("/log-workout")}
+              onClick={() => navigate('/log-workout')}
             >
               Add Notes
             </button>

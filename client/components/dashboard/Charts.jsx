@@ -1,15 +1,15 @@
-import './Charts.css'
+import './Charts.css';
 
-export default function Charts({ meals, workouts}) {
+export default function Charts({ _meals, _workouts }) {
   return (
     <div className='charts-container'>
-        <h3>Progress Charts</h3>
-        <div className='chart-placeholder'>
-            <div className='content'>
-                <div className='icon'> 📊 </div>
-                <p>Calorie charts coming soonn</p>
-                <span> weekly progress and nutrition trends </span>
-            </div>
+      <h3>Progress Charts</h3>
+      <div className='chart-placeholder'>
+        <div className='content'>
+          <div className='icon'> 📊 </div>
+          <p>Calorie charts coming soonn</p>
+          <span> weekly progress and nutrition trends </span>
         </div>
+      </div>
     </div>
-)};
+  );};

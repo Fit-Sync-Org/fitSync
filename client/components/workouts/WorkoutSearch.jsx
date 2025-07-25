@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import "./WorkoutSearch.css";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import './WorkoutSearch.css';
 
 export default function WorkoutSearch({ date, workoutType, onClose, onAdd }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [duration, setDuration] = useState(30);
   const [sets, setSets] = useState(1);
   const [reps, setReps] = useState(10);
   const [weight, setWeight] = useState(0);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
 
   useEffect(() => {
     if (!query) {
@@ -22,18 +22,18 @@ export default function WorkoutSearch({ date, workoutType, onClose, onAdd }) {
       try {
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/workouts/log`,
-           {
+          {
             query,
-            gender: "male",
+            gender: 'male',
             weight_kg: 70,
             age: 30,
             height_cm: 175,
-          }
-         );
+          },
+        );
         console.log('Workout search results:', res.data);
         setSuggestions(Array.isArray(res.data) ? res.data.slice(0, 20) : []);
       } catch (err) {
-        console.error("Exercise lookup failed", err);
+        console.error('Exercise lookup failed', err);
         setSuggestions([]);
       }
     }, 300);
@@ -177,7 +177,7 @@ export default function WorkoutSearch({ date, workoutType, onClose, onAdd }) {
                 placeholder="Add any notes about your workout..."
                 rows="3"
                 onChange={e => setNotes(e.target.value)}
-                style={{resize: 'vertical', minHeight: '80px'}}
+                style={{ resize: 'vertical', minHeight: '80px' }}
               />
             </div>
 
@@ -224,7 +224,7 @@ export default function WorkoutSearch({ date, workoutType, onClose, onAdd }) {
                 color: '#2c332e',
                 cursor: 'pointer',
                 width: '100%',
-                marginTop: '1rem'
+                marginTop: '1rem',
               }}
             >
               Add Workout

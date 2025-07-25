@@ -4,7 +4,7 @@ export default function WorkoutSection({
   name,
   items,
   onAdd,
-  onRemove
+  onRemove,
 }) {
   return (
     <div className="workout-section">

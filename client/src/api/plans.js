@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -12,13 +12,13 @@ export const plansAPI = {
       if (error.response?.status === 404) {
         return {
           success: false,
-          error: "No active plan found",
-          noActivePlan: true
+          error: 'No active plan found',
+          noActivePlan: true,
         };
       }
       return {
         success: false,
-        error: error.response?.data?.error || "Failed to fetch plan"
+        error: error.response?.data?.error || 'Failed to fetch plan',
       };
     }
   },
@@ -26,13 +26,13 @@ export const plansAPI = {
   async getPlanHistory(page = 1, limit = 10) {
     try {
       const response = await axios.get(`${API_BASE}/api/plans/history`, {
-        params: { page, limit }
+        params: { page, limit },
       });
       return { success: true, data: response.data };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || "Failed to fetch plan history"
+        error: error.response?.data?.error || 'Failed to fetch plan history',
       };
     }
   },
@@ -44,7 +44,7 @@ export const plansAPI = {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || "Failed to fetch plan"
+        error: error.response?.data?.error || 'Failed to fetch plan',
       };
     }
   },
@@ -53,21 +53,21 @@ export const plansAPI = {
     try {
       const response = await axios.post(
         `${API_BASE}/api/plans/generate`,
-        weekStart ? { weekStart } : {}
+        weekStart ? { weekStart } : {},
       );
       return { success: true, data: response.data };
     } catch (error) {
       if (error.response?.status === 409) {
         return {
           success: false,
-          error: "Plan already exists for this week",
+          error: 'Plan already exists for this week',
           conflictError: true,
-          existingPlan: error.response.data.existingPlan
+          existingPlan: error.response.data.existingPlan,
         };
       }
       return {
         success: false,
-        error: error.response?.data?.error || "Failed to generate plan"
+        error: error.response?.data?.error || 'Failed to generate plan',
       };
     }
   },
@@ -75,14 +75,14 @@ export const plansAPI = {
   async getGenerationStatus() {
     try {
       const response = await axios.get(
-        `${API_BASE}/api/plans/generation/status`
+        `${API_BASE}/api/plans/generation/status`,
       );
       return { success: true, data: response.data };
     } catch (error) {
       return {
         success: false,
         error:
-          error.response?.data?.error || "Failed to fetch generation status"
+          error.response?.data?.error || 'Failed to fetch generation status',
       };
     }
   },
@@ -94,10 +94,10 @@ export const plansAPI = {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || "Failed to fetch job status"
+        error: error.response?.data?.error || 'Failed to fetch job status',
       };
     }
-  }
+  },
 };
 
 export const planHelpers = {
@@ -114,15 +114,15 @@ export const planHelpers = {
       totalPlannedCalories += day.totalCalories || 0;
       totalPlannedWorkouts += day.totalWorkouts || day.workouts?.length || 0;
       const dayActualMeals = userMeals.filter(
-        (meal) => new Date(meal.date).toDateString() === dayDate.toDateString()
+        (meal) => new Date(meal.date).toDateString() === dayDate.toDateString(),
       );
       const dayActualWorkouts = userWorkouts.filter(
         (workout) =>
-          new Date(workout.date).toDateString() === dayDate.toDateString()
+          new Date(workout.date).toDateString() === dayDate.toDateString(),
       );
       totalActualCalories += dayActualMeals.reduce(
         (sum, meal) => sum + (meal.calories || 0),
-        0
+        0,
       );
       totalActualWorkouts += dayActualWorkouts.length;
     });
@@ -138,13 +138,13 @@ export const planHelpers = {
       totalPlannedCalories,
       totalActualCalories,
       totalPlannedWorkouts,
-      totalActualWorkouts
+      totalActualWorkouts,
     };
   },
 
   getCurrentDayPlan(plan) {
     if (!plan?.plan?.days) return null;
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0];
     return plan.plan.days.find((day) => day.date === today) || null;
   },
 
@@ -157,7 +157,7 @@ export const planHelpers = {
       totalDays: plan.plan.days?.length || 0,
       totalWeeklyCalories: plan.plan.totalWeeklyCalories || 0,
       days: plan.plan.days || [],
-      createdAt: plan.createdAt
+      createdAt: plan.createdAt,
     };
   },
 
@@ -168,12 +168,12 @@ export const planHelpers = {
       const date = new Date(start);
       date.setDate(start.getDate() + i);
       dates.push({
-        date: date.toISOString().split("T")[0],
-        dayName: date.toLocaleDateString("en-US", { weekday: "short" }),
+        date: date.toISOString().split('T')[0],
+        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNumber: date.getDate(),
-        isToday: date.toDateString() === new Date().toDateString()
+        isToday: date.toDateString() === new Date().toDateString(),
       });
     }
     return dates;
-  }
+  },
 };

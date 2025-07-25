@@ -11,14 +11,14 @@ const StepPreference = ({ value, setValue }) => {
         </label>
         <div className="options">
           <button
-            className={value === "SHORTER_MORE" ? "active" : ""}
-            onClick={() => setValue("SHORTER_MORE")}
+            className={value === 'SHORTER_MORE' ? 'active' : ''}
+            onClick={() => setValue('SHORTER_MORE')}
           >
             More frequent, shorter sessions
           </button>
           <button
-            className={value === "LONGER_FEWER" ? "active" : ""}
-            onClick={() => setValue("LONGER_FEWER")}
+            className={value === 'LONGER_FEWER' ? 'active' : ''}
+            onClick={() => setValue('LONGER_FEWER')}
           >
             Fewer, longer sessions
           </button>
@@ -26,6 +26,6 @@ const StepPreference = ({ value, setValue }) => {
       </div>
     </div>
   );
-}
+};
 
 export default StepPreference;

@@ -21,13 +21,13 @@ export const getAgeBasedApproach = (age) => {
   if (age < 40) return 'moderate_activity';
   if (age < 50) return 'balanced';
   if (age < 60) return 'gentle';
- return 'senior';
+  return 'senior';
 };
 
 //age-appropriate prompt section
 export const generateAgeBasedPrompt = (age, approach) => {
- const basePrompts = {
-   high_activity: `
+  const basePrompts = {
+    high_activity: `
 **Fitness Approach for Young Adults (Under30**
 - Focus on high-intensity workouts and strength training
 - Include advanced exercises like HIIT, plyometrics, and heavy lifting
@@ -36,7 +36,7 @@ export const generateAgeBasedPrompt = (age, approach) => {
 - Include recovery days but maintain high overall activity level
 - Target 5-6 workout sessions per week with varying intensity`,
 
-   moderate_activity: `
+    moderate_activity: `
 **Fitness Approach for Adults (30
 - Balance between high-intensity and moderate workouts
 - Focus on functional fitness and injury prevention
@@ -45,7 +45,7 @@ export const generateAgeBasedPrompt = (age, approach) => {
 - Include flexibility and mobility work
 - Target 4-5 workout sessions per week with good recovery`,
 
-   balanced: `
+    balanced: `
 **Fitness Approach for Adults (40-49Moderate intensity workouts with focus on form
 - Emphasize functional movements and core strength
 - Include low-impact cardio options
@@ -53,7 +53,7 @@ export const generateAgeBasedPrompt = (age, approach) => {
 - Include stretching and flexibility work
 - Target 3-4 workout sessions per week with adequate rest`,
 
-   gentle: `
+    gentle: `
 **Fitness Approach for Adults (50
 - Low to moderate intensity workouts
 - Focus on mobility, flexibility, and balance
@@ -62,7 +62,7 @@ export const generateAgeBasedPrompt = (age, approach) => {
 - Include regular stretching and recovery
 - Target 3-4 workout sessions per week`,
 
-   senior: `
+    senior: `
 **Fitness Approach for Seniors (60+):**
 - Very gentle, low-impact exercises
 - Focus on balance, flexibility, and mobility
@@ -71,18 +71,18 @@ export const generateAgeBasedPrompt = (age, approach) => {
 - Include regular stretching and rest days
 - Target 2-3 gentle sessions per week with plenty of recovery`,
 
-   general: `
+    general: `
 **General Fitness Approach:**
 - Balanced mix of cardio, strength, and flexibility
 - Moderate intensity suitable for most fitness levels
 - Focus on sustainable habits and gradual progress
 - Include variety in workout types
 - Emphasize proper form and safety
-- Target 3-4 workout sessions per week`
- };
+- Target 3-4 workout sessions per week`,
+  };
 
 
- return basePrompts[approach] || basePrompts.general;
+  return basePrompts[approach] || basePrompts.general;
 };
 // Check for significant changes that warrant regeneration
 export const shouldRegeneratePlan = (currentPlan, userProfile) => {
@@ -90,7 +90,7 @@ export const shouldRegeneratePlan = (currentPlan, userProfile) => {
   const planData = currentPlan.plan;
   if (!planData || !planData.userProfile) return true;
 
-  const storedProfile = planData.userProfile
+  const storedProfile = planData.userProfile;
 
   const ageChanged = Math.abs((storedProfile.age || 0) - (userProfile.age || 0)) >= 5;
   const weightChanged = Math.abs((storedProfile.weightKg || 0) - (userProfile.weightKg || 0)) >= 5;
@@ -261,14 +261,14 @@ Generate the complete 7-day plan now:`;
       weekStart: weekStartStr,
       bmi,
       bmiCategory,
-      ageApproach
+      ageApproach,
     };
 
   } catch (error) {
     console.error('Error generating AI plan:', error);
     return {
       success: false,
-      error: error.message || 'Failed to generate AI plan'
+      error: error.message || 'Failed to generate AI plan',
     };
   }
 };
@@ -277,7 +277,7 @@ export const savePlanToServer = async (planData, weekStart) => {
   try {
     console.log('Saving plan to server...');
 
-    const idToken = sessionStorage.getItem("fitsyncTempToken");
+    const idToken = sessionStorage.getItem('fitsyncTempToken');
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -292,8 +292,8 @@ export const savePlanToServer = async (planData, weekStart) => {
       credentials: 'include',
       body: JSON.stringify({
         planData,
-        weekStart
-      })
+        weekStart,
+      }),
     });
 
     if (!response.ok) {
@@ -306,14 +306,14 @@ export const savePlanToServer = async (planData, weekStart) => {
 
     return {
       success: true,
-      data: result
+      data: result,
     };
 
   } catch (error) {
     console.error('Error saving plan to server:', error);
     return {
       success: false,
-      error: error.message || 'Failed to save plan to server'
+      error: error.message || 'Failed to save plan to server',
     };
   }
 };
@@ -328,7 +328,7 @@ export const generateAndSavePlan = async (userProfile) => {
 
     const saveResult = await savePlanToServer(
       generationResult.planData,
-      generationResult.weekStart
+      generationResult.weekStart,
     );
 
     if (!saveResult.success) {
@@ -342,14 +342,14 @@ export const generateAndSavePlan = async (userProfile) => {
       message: 'Plan generated and saved successfully',
       bmi: generationResult.bmi,
       bmiCategory: generationResult.bmiCategory,
-      ageApproach: generationResult.ageApproach
+      ageApproach: generationResult.ageApproach,
     };
 
   } catch (error) {
     console.error('Error in generateAndSavePlan:', error);
     return {
       success: false,
-      error: error.message || 'Failed to generate and save plan'
+      error: error.message || 'Failed to generate and save plan',
     };
   }
 };
@@ -361,7 +361,7 @@ export const regeneratePlanIfNeeded = async (currentPlan, userProfile) => {
       console.log('Profile changes detected, regenerating plan...');
       const clearResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/ai-plans/regenerate`, {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (!clearResponse.ok) {
@@ -373,14 +373,14 @@ export const regeneratePlanIfNeeded = async (currentPlan, userProfile) => {
     return {
       success: true,
       message: 'No significant profile changes detected, keeping current plan',
-      planId: currentPlan.id
+      planId: currentPlan.id,
     };
 
   } catch (error) {
     console.error('Error in regeneratePlanIfNeeded:', error);
     return {
       success: false,
-      error: error.message || 'Failed to regenerate plan'
+      error: error.message || 'Failed to regenerate plan',
     };
   }
 };

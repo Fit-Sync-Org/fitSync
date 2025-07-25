@@ -11,10 +11,10 @@ const StepAge = ({ value, setValue }) => {
           </span>
         </label>
         <input id="age" name="Age" type="text" placeholder="Your age" value={value || ''}
-        onChange={(e) => setValue(Number(e.target.value))}/>
+          onChange={(e) => setValue(Number(e.target.value))}/>
       </div>
     </div>
   );
-}
+};
 
 export default StepAge;

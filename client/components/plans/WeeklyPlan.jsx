@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { plansAPI, planHelpers } from "../../src/api/plans";
-import "./WeeklyPlan.css";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { plansAPI, planHelpers } from '../../src/api/plans';
+import './WeeklyPlan.css';
 
 export default function WeeklyPlan({ plan: propPlan, compact = false }) {
   const navigate = useNavigate();
@@ -149,7 +149,7 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
             </div>
             <button
               className="view-full-btn"
-              onClick={() => navigate("/plans")}
+              onClick={() => navigate('/plans')}
             >
               View Full Week Plan
             </button>
@@ -159,7 +159,7 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
             <p>No plan available for today</p>
             <button
               className="view-full-btn"
-              onClick={() => navigate("/plans")}
+              onClick={() => navigate('/plans')}
             >
               View Weekly Plan
             </button>
@@ -187,11 +187,11 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
           <div className="plan-title">
             <h2>Weekly Fitness Plan</h2>
             <p>
-              Week of{" "}
-              {new Date(plan.weekStart).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
+              Week of{' '}
+              {new Date(plan.weekStart).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
               })}
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
           <div className="week-stats">
             <div className="stat">
               <span className="number">
-                {plan.plan.totalWeeklyCalories || "N/A"}
+                {plan.plan.totalWeeklyCalories || 'N/A'}
               </span>
               <span className="label">Weekly Calories</span>
             </div>
@@ -217,7 +217,7 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
               <span className="number">
                 {plan.plan.days.reduce(
                   (total, day) => total + (day.workouts?.length || 0),
-                  0
+                  0,
                 )}
               </span>
               <span className="label">Total Workouts</span>
@@ -228,8 +228,8 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
           {weekDates.map((dateInfo, index) => (
             <button
               key={dateInfo.date}
-              className={`day-tab ${dateInfo.isToday ? "today" : ""} ${
-                selectedDay === index ? "active" : ""
+              className={`day-tab ${dateInfo.isToday ? 'today' : ''} ${
+                selectedDay === index ? 'active' : ''
               }`}
               onClick={() => setSelectedDay(index)}
             >
@@ -302,137 +302,137 @@ function DayPlan({ day, dateInfo }) {
           <div className="workouts-section wp">
             <h4>Workouts</h4>
             <div className="workout-list">
-             {day.workouts.map((workout, index) => {
-               const isStringWorkout = typeof workout === 'string';
-               const workoutName = isStringWorkout ? workout : (workout.name || workout.type || "Workout");
+              {day.workouts.map((workout, index) => {
+                const isStringWorkout = typeof workout === 'string';
+                const workoutName = isStringWorkout ? workout : (workout.name || workout.type || 'Workout');
 
 
-               return (
-                 <div key={index} className="workout-item">
-                   <div className="workout-header">
-                     <div className="workout-title">
-                       <span className="workout-name">{workoutName}</span>
-                       {!isStringWorkout && workout.type && workout.type !== workout.name && (
-                         <span className="workout-type">({workout.type})</span>
-                       )}
-                     </div>
-                     {!isStringWorkout && (
-                       <div className="workout-meta">
-                         {workout.calories_burned && (
-                           <span className="workout-calories">
-                             <i className="icon-fire"></i> {workout.calories_burned} kcal
-                           </span>
-                         )}
-                         {workout.rest_seconds && workout.rest_seconds > 0 && (
-                           <span className="workout-rest">
-                             <i className="icon-time"></i> {workout.rest_seconds}s rest
-                           </span>
-                         )}
-                       </div>
-                     )}
-                   </div>
+                return (
+                  <div key={index} className="workout-item">
+                    <div className="workout-header">
+                      <div className="workout-title">
+                        <span className="workout-name">{workoutName}</span>
+                        {!isStringWorkout && workout.type && workout.type !== workout.name && (
+                          <span className="workout-type">({workout.type})</span>
+                        )}
+                      </div>
+                      {!isStringWorkout && (
+                        <div className="workout-meta">
+                          {workout.calories_burned && (
+                            <span className="workout-calories">
+                              <i className="icon-fire"></i> {workout.calories_burned} kcal
+                            </span>
+                          )}
+                          {workout.rest_seconds && workout.rest_seconds > 0 && (
+                            <span className="workout-rest">
+                              <i className="icon-time"></i> {workout.rest_seconds}s rest
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
 
-                   {!isStringWorkout && (
-                     <div className="workout-details">
-                       <div className="workout-specs">
-                         {workout.sets && (
-                           <span className="workout-sets">
-                             <strong>Sets:</strong> {workout.sets}
-                           </span>
-                         )}
-                         {workout.reps && (
-                           <span className="workout-reps">
-                             <strong>Reps:</strong> {workout.reps}
-                           </span>
-                         )}
-                         {workout.weight && workout.weight !== 'N/A' && (
-                           <span className="workout-weight">
-                             <strong>Weight:</strong> {workout.weight}
-                           </span>
-                         )}
-                       </div>
-                     </div>
-                   )}
+                    {!isStringWorkout && (
+                      <div className="workout-details">
+                        <div className="workout-specs">
+                          {workout.sets && (
+                            <span className="workout-sets">
+                              <strong>Sets:</strong> {workout.sets}
+                            </span>
+                          )}
+                          {workout.reps && (
+                            <span className="workout-reps">
+                              <strong>Reps:</strong> {workout.reps}
+                            </span>
+                          )}
+                          {workout.weight && workout.weight !== 'N/A' && (
+                            <span className="workout-weight">
+                              <strong>Weight:</strong> {workout.weight}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
 
-                   {!isStringWorkout && workout.exercises && Array.isArray(workout.exercises) && workout.exercises.length > 0 && (
-                     <div className="workout-exercises">
-                       <h5 className="exercises-title">Exercises:</h5>
-                       {workout.exercises.map((exercise, idx) => (
-                         <div key={idx} className="exercise-item">
-                           <div className="exercise-header">
-                             <span className="exercise-name">{exercise.name}</span>
-                             <div className="exercise-details">
-                               {exercise.sets && exercise.reps ? (
-                                 <span className="exercise-sets-reps">
-                                   {exercise.sets} sets × {exercise.reps} reps
-                                   {exercise.weight && (
-                                     <span className="exercise-weight"> @ {exercise.weight}lbs</span>
-                                   )}
-                                 </span>
-                               ) : exercise.duration ? (
-                                 <span className="exercise-duration">
-                                   {exercise.duration} minutes
-                                 </span>
-                               ) : exercise.reps ? (
-                                 <span className="exercise-reps">
-                                   {exercise.reps} reps
-                                   {exercise.weight && (
-                                     <span className="exercise-weight"> @ {exercise.weight}lbs</span>
-                                   )}
-                                 </span>
-                               ) : null}
-                             </div>
-                           </div>
-                           {exercise.notes && (
-                             <div className="exercise-notes">
-                               <i className="icon-info"></i> {exercise.notes}
-                             </div>
-                           )}
-                         </div>
-                       ))}
-                     </div>
-                   )}
+                    {!isStringWorkout && workout.exercises && Array.isArray(workout.exercises) && workout.exercises.length > 0 && (
+                      <div className="workout-exercises">
+                        <h5 className="exercises-title">Exercises:</h5>
+                        {workout.exercises.map((exercise, idx) => (
+                          <div key={idx} className="exercise-item">
+                            <div className="exercise-header">
+                              <span className="exercise-name">{exercise.name}</span>
+                              <div className="exercise-details">
+                                {exercise.sets && exercise.reps ? (
+                                  <span className="exercise-sets-reps">
+                                    {exercise.sets} sets × {exercise.reps} reps
+                                    {exercise.weight && (
+                                      <span className="exercise-weight"> @ {exercise.weight}lbs</span>
+                                    )}
+                                  </span>
+                                ) : exercise.duration ? (
+                                  <span className="exercise-duration">
+                                    {exercise.duration} minutes
+                                  </span>
+                                ) : exercise.reps ? (
+                                  <span className="exercise-reps">
+                                    {exercise.reps} reps
+                                    {exercise.weight && (
+                                      <span className="exercise-weight"> @ {exercise.weight}lbs</span>
+                                    )}
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                            {exercise.notes && (
+                              <div className="exercise-notes">
+                                <i className="icon-info"></i> {exercise.notes}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
 
-                   {!isStringWorkout && workout.notes && (
-                     <div className="workout-notes">
-                       <i className="icon-info"></i> {workout.notes}
-                     </div>
-                   )}
-                 </div>
-               );
-             })}
-           </div>
-         </div>
-       )}
-       {Array.isArray(day.meals) && day.meals.length > 0 && (
-         <div className="meals-section">
-           <h4>Meals</h4>
-           <div className="meal-list">
-             {day.meals.map((meal, idx) => (
-               <div key={idx} className="meal-item">
-                 <div className="meal-header">
-                   <span className="meal-name">{meal.name}</span>
-                   <span className="meal-calories">{meal.calories} kcal</span>
-                 </div>
-                 {meal.foods && (
-                   <div className="meal-foods">{meal.foods.join(", ")}</div>
-                 )}
-                 {meal.macros && (
-                   <div className="meal-macros">
+                    {!isStringWorkout && workout.notes && (
+                      <div className="workout-notes">
+                        <i className="icon-info"></i> {workout.notes}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {Array.isArray(day.meals) && day.meals.length > 0 && (
+          <div className="meals-section">
+            <h4>Meals</h4>
+            <div className="meal-list">
+              {day.meals.map((meal, idx) => (
+                <div key={idx} className="meal-item">
+                  <div className="meal-header">
+                    <span className="meal-name">{meal.name}</span>
+                    <span className="meal-calories">{meal.calories} kcal</span>
+                  </div>
+                  {meal.foods && (
+                    <div className="meal-foods">{meal.foods.join(', ')}</div>
+                  )}
+                  {meal.macros && (
+                    <div className="meal-macros">
                      Protein: {meal.macros.protein}g, Carbs: {meal.macros.carbs}g, Fat: {meal.macros.fat}g
-                   </div>
-                 )}
-               </div>
-             ))}
-           </div>
-         </div>
-       )}
-     </div>
-   </div>
- );
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 

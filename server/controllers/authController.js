@@ -2,7 +2,7 @@ const admin = require("../firebase");
 const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 
-exports.firebaseLogin = async (req, res) => {
+exports.firebaseLogin = async(req, res) => {
   const { idToken } = req.body;
 
   try {
@@ -24,18 +24,18 @@ exports.firebaseLogin = async (req, res) => {
     }
 
     res.cookie("token", idToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ? true : false,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        path: "/",
-      });
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+    });
 
 
     res.json({
-    message: "Firebase login successful",
-     user: {
-        id: user.id, email: user.email, hasCompletedOnboarding: user.hasCompletedOnboarding}
-});
+      message: "Firebase login successful",
+      user: {
+        id: user.id, email: user.email, hasCompletedOnboarding: user.hasCompletedOnboarding }
+    });
   } catch (err) {
     console.error("firebaseLogin error:", err);
     return res
@@ -65,7 +65,7 @@ exports.me = (req, res) => {
   }
 };
 
-exports.completeOnboarding = async (req, res) => {
+exports.completeOnboarding = async(req, res) => {
   try {
     await db.user.update({
       where: { id: req.user.id },

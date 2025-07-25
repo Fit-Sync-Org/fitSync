@@ -5,7 +5,7 @@ const {
 } = require("../config/email");
 const prisma = new PrismaClient();
 
-const checkProgressAndNotify = async (userId) => {
+const checkProgressAndNotify = async(userId) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -142,7 +142,7 @@ const checkProgressAndNotify = async (userId) => {
   }
 };
 
-const checkInactivity = async () => {
+const checkInactivity = async() => {
   try {
     const users = await prisma.user.findMany({
       where: {

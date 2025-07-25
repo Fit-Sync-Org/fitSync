@@ -9,7 +9,7 @@ module.exports = async function requireAuth(req, res, next) {
 
     if (!idToken) {
       const authHeader = req.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
+      if (authHeader && authHeader.startsWith("Bearer ")) {
         idToken = authHeader.substring(7);
       }
     }

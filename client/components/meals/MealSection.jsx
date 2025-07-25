@@ -38,26 +38,26 @@ export default function MealSection({ name, foods, onAddFood, onQuickTools, onRe
           ))
         ) : (
 
-            <div className="food-item-row empty">
-              <div className='food-item-details'>
-                <div>
-                  <span className="food-name empty">No foods logged</span>
-                </div>
-
-                <div className='food-data'>
-                  <span className="food-calories">0</span>
-                  <span className="food-carbs">0</span>
-                  <span className="food-fat">0</span>
-                  <span className="food-protein">0</span>
-                  <span className="food-sodium">0</span>
-                  <span className="food-sugar">0</span>
-                </div>
-              </div>
-              <div className='item-remove-btn'>
-                <button className="remove-food-btn empty" onClick={() => onRemoveFood(index)}>×</button>
+          <div className="food-item-row empty">
+            <div className='food-item-details'>
+              <div>
+                <span className="food-name empty">No foods logged</span>
               </div>
 
+              <div className='food-data'>
+                <span className="food-calories">0</span>
+                <span className="food-carbs">0</span>
+                <span className="food-fat">0</span>
+                <span className="food-protein">0</span>
+                <span className="food-sodium">0</span>
+                <span className="food-sugar">0</span>
+              </div>
             </div>
+            <div className='item-remove-btn'>
+              <button className="remove-food-btn empty" onClick={() => onRemoveFood(0)}>×</button>
+            </div>
+
+          </div>
         )}
       </div>
     </div>

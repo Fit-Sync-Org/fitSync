@@ -1,34 +1,34 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 
 const transporter = nodemailer.createTransport({
- service: 'gmail',
- auth: {
-   user: process.env.EMAIL_USER,
-   pass: process.env.EMAIL_PASSWORD
- }
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
 });
 
 
-const sendEmail = async (to, subject, html) => {
- try {
-   const mailOptions = {
-     from: process.env.EMAIL_USER,
-     to,
-     subject,
-     html
-   };
-   const result = await transporter.sendMail(mailOptions);
-   return { success: true, messageId: result.messageId };
- } catch (error) {
-   return { success: false, error: error.message };
- }
+const sendEmail = async(to, subject, html) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html
+    };
+    const result = await transporter.sendMail(mailOptions);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 };
 
 
-const sendProgressAlertEmail = async (user, alertData) => {
- const subject = `FitSync Alert: ${alertData.title}`;
- const html = `
+const sendProgressAlertEmail = async(user, alertData) => {
+  const subject = `FitSync Alert: ${alertData.title}`;
+  const html = `
    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
      <h2 style="color: #333;">${alertData.title}</h2>
      <p style="color: #666; line-height:1.6;">${alertData.message}</p>
@@ -43,15 +43,15 @@ const sendProgressAlertEmail = async (user, alertData) => {
      <p style="color: #999; font-size: 12px;">Stay on track with FitSync!</p>
    </div>
  `;
- return await sendEmail(user.email, subject, html);
+  return await sendEmail(user.email, subject, html);
 };
 
 
-const sendInactivityEmail = async (user, daysInactive) => {
- const subject = `FitSync: We Miss You!`;
- const html = `
+const sendInactivityEmail = async(user, daysInactive) => {
+  const subject = "FitSync: We Miss You!";
+  const html = `
    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-     <h2 style="color: #333;">Hey ${user.firstName || 'there'}!</h2>
+     <h2 style="color: #333;">Hey ${user.firstName || "there"}!</h2>
      <p style="color: #666; line-height: 1.6;">We noticed you haven't logged any activities for ${daysInactive} days. Don't let your fitness goals slip away!</p>
      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin:20px 0;">
        <h3 style="color: #333; margin-top: 0;">Get Back on Track:</h3>
@@ -64,13 +64,13 @@ const sendInactivityEmail = async (user, daysInactive) => {
      <p style="color: #999; font-size: 12px;">Your fitness journey continues with FitSync!</p>
    </div>
  `;
- return await sendEmail(user.email, subject, html);
+  return await sendEmail(user.email, subject, html);
 };
 
 
 module.exports = {
- sendEmail,
- sendProgressAlertEmail,
- sendInactivityEmail
+  sendEmail,
+  sendProgressAlertEmail,
+  sendInactivityEmail
 };
 

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import "./Profile.css";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './Profile.css';
 
 
 export default function Profile() {
@@ -29,9 +29,9 @@ export default function Profile() {
       .post(
         `${import.meta.env.VITE_API_URL}/auth/logout`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       )
-      .then(() => navigate("/login"));
+      .then(() => navigate('/login'));
   };
 
 
@@ -42,31 +42,31 @@ export default function Profile() {
 
 
   const formatGoals = (goals) => {
-    if (!goals || goals.length === 0) return "No goals set";
+    if (!goals || goals.length === 0) return 'No goals set';
 
 
     const goalMap = {
-      LOSE_WEIGHT: "Weight Loss",
-      GAIN_WEIGHT: "Healthy Weight Gain",
-      BUILD_MUSCLE: "Muscle Building",
-      TONE_AND_STRENGTHEN: "Tone & Strengthening",
-      MAINTAIN_WEIGHT: "Weight Maintenance",
-      EAT_HEALTHY: "Improve Eating Habits",
-      HEALTH_AND_LONGEVITY: "Health & Longevity",
-      MANAGE_STRESS_AND_RECOVERY: "Stress Management & Recovery",
+      LOSE_WEIGHT: 'Weight Loss',
+      GAIN_WEIGHT: 'Healthy Weight Gain',
+      BUILD_MUSCLE: 'Muscle Building',
+      TONE_AND_STRENGTHEN: 'Tone & Strengthening',
+      MAINTAIN_WEIGHT: 'Weight Maintenance',
+      EAT_HEALTHY: 'Improve Eating Habits',
+      HEALTH_AND_LONGEVITY: 'Health & Longevity',
+      MANAGE_STRESS_AND_RECOVERY: 'Stress Management & Recovery',
     };
 
 
-    return goals.map((goal) => goalMap[goal] || goal).join(", ");
+    return goals.map((goal) => goalMap[goal] || goal).join(', ');
   };
 
 
   const formatGender = (gender) => {
     const genderMap = {
-      MALE: "Male",
-      FEMALE: "Female",
-      OTHER: "Other",
-      RATHER_NOT_SAY: "Rather Not Say",
+      MALE: 'Male',
+      FEMALE: 'Female',
+      OTHER: 'Other',
+      RATHER_NOT_SAY: 'Rather Not Say',
     };
     return genderMap[gender] || gender;
   };
@@ -74,15 +74,15 @@ export default function Profile() {
 
   const formatPreference = (preference) => {
     const prefMap = {
-      SHORTER_MORE: "More frequent, shorter sessions",
-      LONGER_FEWER: "Fewer, longer sessions",
+      SHORTER_MORE: 'More frequent, shorter sessions',
+      LONGER_FEWER: 'Fewer, longer sessions',
     };
     return prefMap[preference] || preference;
   };
 
 
   const formatHeight = (heightCm) => {
-    if (!heightCm) return "Not specified";
+    if (!heightCm) return 'Not specified';
     const feet = Math.floor(heightCm / 30.48);
     const inches = Math.round((heightCm / 30.48 - feet) * 12);
     return `${heightCm} cm (${feet}'${inches}")`;
@@ -90,7 +90,7 @@ export default function Profile() {
 
 
   const formatWeight = (weightKg) => {
-    if (!weightKg) return "Not specified";
+    if (!weightKg) return 'Not specified';
     const pounds = Math.round(weightKg * 2.20462);
     return `${weightKg} kg (${pounds} lbs)`;
   };
@@ -110,7 +110,7 @@ export default function Profile() {
     return (
       <div className="profile-error">
         <p>Unable to load profile. Please try again.</p>
-        <button onClick={() => navigate("/dashboard")}>
+        <button onClick={() => navigate('/dashboard')}>
           Return to Dashboard
         </button>
       </div>
@@ -129,7 +129,7 @@ export default function Profile() {
 
 
       {/* Sidebar */}
-      <nav className={`sidebar ${showSidebar ? "sidebar-open" : ""}`}>
+      <nav className={`sidebar ${showSidebar ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <h2>FitSync</h2>
           <button
@@ -144,33 +144,33 @@ export default function Profile() {
             <h3>Navigation</h3>
             <ul className="nav-links">
               <li>
-                <button onClick={() => handleNavigation("/dashboard")}>
+                <button onClick={() => handleNavigation('/dashboard')}>
                   <span>Dashboard</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/log-meal")}>
+                <button onClick={() => handleNavigation('/log-meal')}>
                   <span>Log Meal</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/log-workout")}>
+                <button onClick={() => handleNavigation('/log-workout')}>
                   <span>Log Workout</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/plans")}>
+                <button onClick={() => handleNavigation('/plans')}>
                   <span>My Plans</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation("/notifications")}>
+                <button onClick={() => handleNavigation('/notifications')}>
                   <span>Notifications</span>
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleNavigation("/profile")}
+                  onClick={() => handleNavigation('/profile')}
                   className="active"
                 >
                   <span>Profile</span>
@@ -215,13 +215,13 @@ export default function Profile() {
               <img src={user.avatarUrl} alt="Profile" />
             ) : (
               <div className="avatar-placeholder">
-                {user.firstName?.charAt(0) || "U"}
+                {user.firstName?.charAt(0) || 'U'}
               </div>
             )}
           </div>
           <div className="profile-info">
             <h2>
-              {user.firstName || "User"} {user.lastName || ""}
+              {user.firstName || 'User'} {user.lastName || ''}
             </h2>
             <p className="profile-email">{user.email}</p>
             <div className="profile-stats">
@@ -230,7 +230,7 @@ export default function Profile() {
                 <span className="stat-label">Day Streak</span>
               </div>
               <div className="stat">
-                <span className="stat-number">{user.age || "N/A"}</span>
+                <span className="stat-number">{user.age || 'N/A'}</span>
                 <span className="stat-label">Age</span>
               </div>
             </div>
@@ -245,12 +245,12 @@ export default function Profile() {
             <div className="profile-field">
               <label>Full Name</label>
               <p>
-                {user.firstName || "Not specified"} {user.lastName || ""}
+                {user.firstName || 'Not specified'} {user.lastName || ''}
               </p>
             </div>
             <div className="profile-field">
               <label>Age</label>
-              <p>{user.age || "Not specified"}</p>
+              <p>{user.age || 'Not specified'}</p>
             </div>
             <div className="profile-field">
               <label>Gender</label>
@@ -258,11 +258,11 @@ export default function Profile() {
             </div>
             <div className="profile-field">
               <label>Occupation</label>
-              <p>{user.occupation || "Not specified"}</p>
+              <p>{user.occupation || 'Not specified'}</p>
             </div>
             <div className="profile-field">
               <label>Phone</label>
-              <p>{user.phone || "Not specified"}</p>
+              <p>{user.phone || 'Not specified'}</p>
             </div>
           </div>
         </section>
@@ -303,7 +303,7 @@ export default function Profile() {
               <p>
                 {user.weeklyWorkoutHours
                   ? `${user.weeklyWorkoutHours} hours per week`
-                  : "Not specified"}
+                  : 'Not specified'}
               </p>
             </div>
             <div className="profile-field">
@@ -319,7 +319,7 @@ export default function Profile() {
           <h3>Dietary Information</h3>
           <div className="profile-field">
             <label>Dietary Restrictions</label>
-            <p>{user.dietaryRestrictions || "None specified"}</p>
+            <p>{user.dietaryRestrictions || 'None specified'}</p>
           </div>
         </section>
 
@@ -333,7 +333,7 @@ export default function Profile() {
               <p>
                 {user.createdAt
                   ? new Date(user.createdAt).toLocaleDateString()
-                  : "Not available"}
+                  : 'Not available'}
               </p>
             </div>
             <div className="profile-field">
@@ -341,7 +341,7 @@ export default function Profile() {
               <p>
                 {user.lastLogin
                   ? new Date(user.lastLogin).toLocaleDateString()
-                  : "Not available"}
+                  : 'Not available'}
               </p>
             </div>
           </div>

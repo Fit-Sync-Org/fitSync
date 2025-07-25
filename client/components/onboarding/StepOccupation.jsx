@@ -20,6 +20,6 @@ const StepOccupation = ({ value, setValue }) => {
       </div>
     </div>
   );
-}
+};
 
 export default StepOccupation;

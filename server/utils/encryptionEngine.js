@@ -168,8 +168,8 @@ class EncryptionEngine {
         try {
           const decrypted = this.decrypt(result[field], { region, userSalt });
           result[field] = decrypted.value;
-        } catch (error) {
-          console.error(`Failed to decrypt field ${field}:`, error.message);
+        } catch (err) {
+          console.error(`Failed to decrypt field ${field}:`, err.message);
         }
       }
     }
@@ -197,7 +197,7 @@ class EncryptionEngine {
       const encrypted = this.encrypt(testData);
       const decrypted = this.decrypt(encrypted);
       return JSON.stringify(testData) === JSON.stringify(decrypted);
-    } catch (error) {
+    } catch {
       return false;
     }
   }

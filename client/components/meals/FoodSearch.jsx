@@ -8,7 +8,7 @@ export default function FoodSearch({ mealType, onClose, onAdd }) {
   const [selected, setSelected] = useState(null);
   const [quantity, setQuantity] = useState(1.0);
   const [servingUnit, setServingUnit] = useState('1 medium');
-  const [selectedMeal, setSelectedMeal] = useState(mealType);
+  const [selectedMeal, _setSelectedMeal] = useState(mealType);
 
   useEffect(() => {
     if (!query) {
@@ -33,7 +33,7 @@ export default function FoodSearch({ mealType, onClose, onAdd }) {
   const handlePick = async (food) => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/foods/nutrients`, {
-        query: `${quantity} ${food.food_name}`
+        query: `${quantity} ${food.food_name}`,
       });
       setSelected(res.data || null);
       setServingUnit(`${food.serving_qty} ${food.serving_unit}`);
@@ -52,7 +52,7 @@ export default function FoodSearch({ mealType, onClose, onAdd }) {
       fat: Math.round(selected.nf_total_fat * (quantity / selected.serving_qty)),
       protein: Math.round(selected.nf_protein * (quantity / selected.serving_qty)),
       sodium: Math.round(selected.nf_sodium * (quantity / selected.serving_qty)),
-      sugar: Math.round(selected.nf_sugars * (quantity / selected.serving_qty))
+      sugar: Math.round(selected.nf_sugars * (quantity / selected.serving_qty)),
     });
     onClose();
   };

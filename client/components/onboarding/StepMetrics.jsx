@@ -36,6 +36,6 @@ const StepMetrics = ({ value, setValue }) => {
       </div>
     </div>
   );
-}
+};
 
 export default StepMetrics;

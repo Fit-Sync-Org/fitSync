@@ -1,69 +1,69 @@
-import React, { useState, useEffect, use } from "react";
-import { useNavigate } from "react-router-dom";
-import {auth} from "../../src/firebase";
-import { generateAndSavePlan } from "../../src/utils/planGeneration";
-import websocketService  from "../../src/services/websocketService";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../../src/firebase';
+import { generateAndSavePlan } from '../../src/utils/planGeneration';
+import websocketService from '../../src/services/websocketService';
 
-import StepName from "./StepName";
-import StepAge from "./StepAge";
-import StepGoal from "./StepGoal";
-import StepGender from "./StepGender";
-import StepOccupation from "./StepOccupation";
-import StepAvailability from "./StepAvailability";
-import StepPreference from "./StepPreference";
-import StepDiet from "./StepDiet";
-import StepMetrics from "./StepMetrics";
-import StepPhone from "./StepPhone";
-import ProgressBar from "./ProgressBar";
-import "./onbooarding-styles/OnboardingWizard.css";
+import StepName from './StepName';
+import StepAge from './StepAge';
+import StepGoal from './StepGoal';
+import StepGender from './StepGender';
+import StepOccupation from './StepOccupation';
+import StepAvailability from './StepAvailability';
+import StepPreference from './StepPreference';
+import StepDiet from './StepDiet';
+import StepMetrics from './StepMetrics';
+import StepPhone from './StepPhone';
+import ProgressBar from './ProgressBar';
+import './onbooarding-styles/OnboardingWizard.css';
 
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: { firstName: "", lastName: "", },
-    age: "",
+    name: { firstName: '', lastName: '' },
+    age: '',
     goal: [],
-    gender: "",
-    occupation: "",
-    availability: "",
-    preference: "",
-    diet: "",
-    metrics: { height: "", weight: "" },
-    phone: "",
+    gender: '',
+    occupation: '',
+    availability: '',
+    preference: '',
+    diet: '',
+    metrics: { height: '', weight: '' },
+    phone: '',
   });
 
   useEffect(() => {
     const handleTooltipClick = (e) => {
-      const tooltip = e.target.closest(".tooltip");
+      const tooltip = e.target.closest('.tooltip');
 
-      const tooltips = document.querySelectorAll(".tooltip");
-      tooltips.forEach((el) => el.classList.remove("active"));
+      const tooltips = document.querySelectorAll('.tooltip');
+      tooltips.forEach((el) => el.classList.remove('active'));
 
       if (tooltip) {
         e.preventDefault();
         e.stopPropagation();
-        tooltip.classList.add("active");
+        tooltip.classList.add('active');
       }
     };
 
-    document.addEventListener("click", handleTooltipClick);
+    document.addEventListener('click', handleTooltipClick);
     return () => {
-      document.removeEventListener("click", handleTooltipClick);
+      document.removeEventListener('click', handleTooltipClick);
     };
   }, []);
 
 
   const steps = [
-    { id: "name", required: true },
-    { id: "age", required: true },
-    { id: "goal", required: true },
-    { id: "gender", required: true },
-    { id: "occupation", required: false },
-    { id: "availability", required: true },
-    { id: "preference", required: true },
-    { id: "diet", required: false },
-    { id: "phone", required: false },
-    { id: "metrics", required: true },
+    { id: 'name', required: true },
+    { id: 'age', required: true },
+    { id: 'goal', required: true },
+    { id: 'gender', required: true },
+    { id: 'occupation', required: false },
+    { id: 'availability', required: true },
+    { id: 'preference', required: true },
+    { id: 'diet', required: false },
+    { id: 'phone', required: false },
+    { id: 'metrics', required: true },
   ];
 
   const stepComponents = {
@@ -88,19 +88,19 @@ export default function OnboardingWizard() {
     const value = formData[stepId];
 
     switch (stepId) {
-      case "name":
+      case 'name':
         return value.firstName && value.lastName;
-      case "age":
-        return value !== "" && !isNaN(value);
-      case "goal":
+      case 'age':
+        return value !== '' && !isNaN(value);
+      case 'goal':
         return Array.isArray(value) && value.length > 0;
-      case "gender":
-        return value !== "";
-      case "availability":
-        return value !== "" && !isNaN(value);
-      case "diet":
-        return value.trim() !== "";
-      case "metrics":
+      case 'gender':
+        return value !== '';
+      case 'availability':
+        return value !== '' && !isNaN(value);
+      case 'diet':
+        return value.trim() !== '';
+      case 'metrics':
         return value.height && value.weight;
       default:
         return true;
@@ -108,8 +108,8 @@ export default function OnboardingWizard() {
   };
 
   const nextStep = () => {
-    const {id, required} = steps[currentStep];
-    if (required && !isStepValid(id)) {alert("Please fill required fields"); return; };
+    const { id, required } = steps[currentStep];
+    if (required && !isStepValid(id)) {alert('Please fill required fields'); return; };
 
     if (currentStep < steps.length - 1) setCurrentStep((prev) => prev + 1);
   };
@@ -135,62 +135,62 @@ export default function OnboardingWizard() {
 
     try {
       const idToken = await auth.currentUser.getIdToken(true);
-      sessionStorage.setItem("fitsyncTempToken", idToken);
+      sessionStorage.setItem('fitsyncTempToken', idToken);
 
-      console.log("Sending Bearer token:", idToken?.slice(0, 25), "...");
+      console.log('Sending Bearer token:', idToken?.slice(0, 25), '...');
       const resp = await fetch(
         `${import.meta.env.VITE_API_URL}/onboarding/register`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${idToken}`,
           },
           body: JSON.stringify(sanitized),
-        }
+        },
       );
 
       const registrationResult = await resp.json();
-      console.log("Registration completed successfully:", registrationResult);
+      console.log('Registration completed successfully:', registrationResult);
 
       const userResp = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (userResp.ok) {
         const userProfile = await userResp.json();
-        console.log("Starting AI plan generation for new user...");
+        console.log('Starting AI plan generation for new user...');
 
         const planResult = await generateAndSavePlan(userProfile);
 
         if (planResult.success) {
-          console.log("Plan generated successfully:", planResult);
-          alert("Welcome to FitSync! Your personalized plan has been generated and is ready to use.");
+          console.log('Plan generated successfully:', planResult);
+          alert('Welcome to FitSync! Your personalized plan has been generated and is ready to use.');
         } else {
-          console.error("Plan generation failed:", planResult.error);
-          alert("Registration completed, but plan generation failed. You can generate a plan later from the My Plans section.");
+          console.error('Plan generation failed:', planResult.error);
+          alert('Registration completed, but plan generation failed. You can generate a plan later from the My Plans section.');
         }
       } else {
-        console.error("Failed to fetch user profile for plan generation");
+        console.error('Failed to fetch user profile for plan generation');
         alert("Registration completed, but couldn't generate your initial plan. You can generate one later from the Plans section.");
       }
 
-      sessionStorage.removeItem("fitsyncTempToken");
+      sessionStorage.removeItem('fitsyncTempToken');
 
       try {
-        console.log("Onboarding completed, connecting to websocket.");
+        console.log('Onboarding completed, connecting to websocket.');
         await websocketService.connect();
-        console.log("Websocket connected.");
+        console.log('Websocket connected.');
       } catch (err) {
-        console.error("Failed to connect to websocket:", err);
+        console.error('Failed to connect to websocket:', err);
       }
-      navigate("/dashboard");
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      alert(err.message || "Could not complete onboarding");
+      alert(err.message || 'Could not complete onboarding');
     }
   };
 
@@ -217,8 +217,8 @@ export default function OnboardingWizard() {
             Previous
           </button>
 
-          <button className= {steps[currentStep].required ? "skip-disabled" : "secondary"}
-                  onClick={skipStep} disabled={steps[currentStep].required}>
+          <button className= {steps[currentStep].required ? 'skip-disabled' : 'secondary'}
+            onClick={skipStep} disabled={steps[currentStep].required}>
             Skip
           </button>
 

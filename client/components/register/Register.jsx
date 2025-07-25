@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { auth, googleProvider } from "../../src/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import "./Register.css";
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { auth, googleProvider } from '../../src/firebase';
+import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import './Register.css';
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const stashToken = (idToken) => sessionStorage.setItem("fitsyncTempToken", idToken);
+  const stashToken = (idToken) => sessionStorage.setItem('fitsyncTempToken', idToken);
 
 
   const handleRegister = async (e) => {
@@ -17,10 +17,10 @@ export default function Register() {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       const idToken = await user.getIdToken(true);
       stashToken(idToken);
-      navigate("/OnboardingWizard");
+      navigate('/OnboardingWizard');
     } catch (err) {
-      console.error("Register failed:", err);
-      alert(err.message || "Registration failed");
+      console.error('Register failed:', err);
+      alert(err.message || 'Registration failed');
     }
   };
 
@@ -29,10 +29,10 @@ export default function Register() {
       const { user } = await signInWithPopup(auth, googleProvider);
       const idToken = await user.getIdToken(true);
       stashToken(idToken);
-      navigate("/OnboardingWizard");
+      navigate('/OnboardingWizard');
     } catch (err) {
-      console.error("Register failed:", err);
-      alert(err.message || "Registration failed");
+      console.error('Register failed:', err);
+      alert(err.message || 'Registration failed');
     }
   };
 
@@ -68,14 +68,14 @@ export default function Register() {
               className="google-icon"
               src="../icons8-google.svg"
               alt="Google icon"
-              style={{ marginRight: "8px" }}
+              style={{ marginRight: '8px' }}
             />
             Sign up with Google
           </button>
         </div>
       </div>
       <p className="login-tag">
-        Already have an account?{" "}
+        Already have an account?{' '}
         <Link to="/login" className="login-link">
           Log in
         </Link>

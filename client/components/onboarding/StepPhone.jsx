@@ -11,11 +11,11 @@ const StepPhone = ({ value, setValue }) => {
         </label>
 
         <input id="phone-number" name="phoneNumber" type="tel" placeholder="e.g., +1 234 567 8901" value={value || ''}
-        onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setValue(e.target.value)}
         />
       </div>
     </div>
   );
-}
+};
 
-export default StepPhone
+export default StepPhone;

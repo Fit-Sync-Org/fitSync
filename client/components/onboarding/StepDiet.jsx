@@ -20,6 +20,6 @@ const StepDiet = ({ value, setValue }) => {
       </div>
     </div>
   );
-}
+};
 
 export default StepDiet;

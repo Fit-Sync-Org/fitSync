@@ -1,7 +1,7 @@
 const admin = require("../firebase");
 
 module.exports = async function verifyToken(req, res, next) {
-    console.log("requireAuth hit!", req.path);
+  console.log("requireAuth hit!", req.path);
   try {
     const token =
       req.headers.authorization?.split("Bearer ")[1] || req.cookies.token;

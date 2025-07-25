@@ -4,6 +4,8 @@
   "description": "FitSync Meta Universitym Capstone Project",
   "main": "server.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "npm install && npx prisma migrate deploy && npx prisma db seed && npx prisma generate",
@@ -44,8 +46,14 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@types/jest": "^30.0.0",
+    "eslint": "^9.31.0",
+    "globals": "^16.3.0",
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10",
-    "prisma": "^6.11.1"
+    "prisma": "^6.11.1",
+    "supertest": "^7.1.4"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

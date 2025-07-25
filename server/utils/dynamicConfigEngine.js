@@ -1,5 +1,3 @@
-const { PrismaClient } = require("@prisma/client");
-
 class DynamicConfigEngine {
   constructor(webSocketService = null) {
     this.wsService = webSocketService;

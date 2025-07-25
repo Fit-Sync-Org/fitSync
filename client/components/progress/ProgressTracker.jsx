@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { notificationsAPI } from "../../src/api/notifications";
-import { plansAPI, planHelpers } from "../../src/api/plans";
-import axios from "axios";
-import "./ProgressTracker.css";
+import { useState, useEffect } from 'react';
+import { notificationsAPI } from '../../src/api/notifications';
+import { plansAPI, planHelpers } from '../../src/api/plans';
+import axios from 'axios';
+import './ProgressTracker.css';
 
 export default function ProgressTracker({ compact = false }) {
   const [currentPlan, setCurrentPlan] = useState(null);
@@ -11,7 +11,7 @@ export default function ProgressTracker({ compact = false }) {
   const [progressData, setProgressData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState("week");
+  const [timeRange, setTimeRange] = useState('week');
   const [progressAlerts, setProgressAlerts] = useState([]);
 
   useEffect(() => {
@@ -43,14 +43,14 @@ export default function ProgressTracker({ compact = false }) {
         const progress = planHelpers.calculateWeeklyProgress(
           planResult.data,
           mealsResult.data || [],
-          workoutsResult.data || []
+          workoutsResult.data || [],
         );
         setProgressData(progress);
       } else {
         setError(planResult.error);
       }
     } catch (err) {
-      setError("Failed to fetch progress data");
+      setError('Failed to fetch progress data');
     }
     setLoading(false);
   };
@@ -60,10 +60,10 @@ export default function ProgressTracker({ compact = false }) {
       const meals = [];
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
-        const dateStr = currentDate.toISOString().split("T")[0];
+        const dateStr = currentDate.toISOString().split('T')[0];
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/meals?date=${dateStr}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         if (response.data) {
           Object.values(response.data)
@@ -76,7 +76,7 @@ export default function ProgressTracker({ compact = false }) {
       }
       return { success: true, data: meals };
     } catch {
-      return { success: false, error: "Failed to fetch meals" };
+      return { success: false, error: 'Failed to fetch meals' };
     }
   };
 
@@ -85,10 +85,10 @@ export default function ProgressTracker({ compact = false }) {
       const workouts = [];
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
-        const dateStr = currentDate.toISOString().split("T")[0];
+        const dateStr = currentDate.toISOString().split('T')[0];
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/exercises?date=${dateStr}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         if (response.data) {
           Object.values(response.data)
@@ -101,22 +101,22 @@ export default function ProgressTracker({ compact = false }) {
       }
       return { success: true, data: workouts };
     } catch {
-      return { success: false, error: "Failed to fetch workouts" };
+      return { success: false, error: 'Failed to fetch workouts' };
     }
   };
 
   const getComplianceColor = (percentage) => {
-    if (percentage >= 90) return "#ADC97E";
-    if (percentage >= 70) return "#FFC107";
-    if (percentage >= 50) return "#FF8C00";
-    return "#FF6B6B";
+    if (percentage >= 90) return '#ADC97E';
+    if (percentage >= 70) return '#FFC107';
+    if (percentage >= 50) return '#FF8C00';
+    return '#FF6B6B';
   };
 
   const getComplianceLabel = (percentage) => {
-    if (percentage >= 90) return "Excellent";
-    if (percentage >= 70) return "Good";
-    if (percentage >= 50) return "Fair";
-    return "Needs Improvement";
+    if (percentage >= 90) return 'Excellent';
+    if (percentage >= 70) return 'Good';
+    if (percentage >= 50) return 'Fair';
+    return 'Needs Improvement';
   };
 
   const getDailyProgress = () => {
@@ -125,21 +125,21 @@ export default function ProgressTracker({ compact = false }) {
     return currentPlan.plan.days.map((day, index) => {
       const dayDate = new Date(weekStart);
       dayDate.setDate(dayDate.getDate() + index);
-      const dateStr = dayDate.toISOString().split("T")[0];
+      const dateStr = dayDate.toISOString().split('T')[0];
       const dayMeals = userMeals.filter((meal) => meal.date === dateStr);
       const dayWorkouts = userWorkouts.filter(
-        (workout) => workout.date === dateStr
+        (workout) => workout.date === dateStr,
       );
       const plannedCalories = day.totalCalories || 0;
       const actualCalories = dayMeals.reduce(
         (sum, meal) => sum + (meal.calories || 0),
-        0
+        0,
       );
       const plannedWorkouts = day.workouts?.length || 0;
       const actualWorkouts = dayWorkouts.length;
       return {
         date: dateStr,
-        dayName: dayDate.toLocaleDateString("en-US", { weekday: "short" }),
+        dayName: dayDate.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNumber: dayDate.getDate(),
         plannedCalories,
         actualCalories,
@@ -157,7 +157,7 @@ export default function ProgressTracker({ compact = false }) {
 
   if (loading) {
     return (
-      <div className={`progress-tracker ${compact ? "compact" : ""}`}>
+      <div className={`progress-tracker ${compact ? 'compact' : ''}`}>
         <div className="progress-loading">
           <div className="loading-spinner"></div>
           <p>Loading progress data...</p>
@@ -168,7 +168,7 @@ export default function ProgressTracker({ compact = false }) {
 
   if (error) {
     return (
-      <div className={`progress-tracker ${compact ? "compact" : ""}`}>
+      <div className={`progress-tracker ${compact ? 'compact' : ''}`}>
         <div className="progress-error">
           <div className="error-icon"></div>
           <h3>Progress Tracking Unavailable</h3>
@@ -183,7 +183,7 @@ export default function ProgressTracker({ compact = false }) {
 
   if (!currentPlan) {
     return (
-      <div className={`progress-tracker ${compact ? "compact" : ""}`}>
+      <div className={`progress-tracker ${compact ? 'compact' : ''}`}>
         <div className="no-plan">
           <div className="no-plan-icon"></div>
           <h3>No Active Plan</h3>
@@ -213,7 +213,7 @@ export default function ProgressTracker({ compact = false }) {
                   className="compliance-fill"
                   style={{
                     background: `conic-gradient(${getComplianceColor(
-                      progressData.calorieCompliance
+                      progressData.calorieCompliance,
                     )} ${
                       progressData.calorieCompliance * 3.6
                     }deg, rgba(58, 65, 61, 0.5) 0deg)`,
@@ -235,7 +235,7 @@ export default function ProgressTracker({ compact = false }) {
                   className="compliance-fill"
                   style={{
                     background: `conic-gradient(${getComplianceColor(
-                      progressData.workoutCompliance
+                      progressData.workoutCompliance,
                     )} ${
                       progressData.workoutCompliance * 3.6
                     }deg, rgba(58, 65, 61, 0.5) 0deg)`,
@@ -268,7 +268,7 @@ export default function ProgressTracker({ compact = false }) {
 
         <button
           className="view-detailed-btn"
-          onClick={() => (window.location.href = "/progress")}
+          onClick={() => (window.location.href = '/progress')}
         >
           View Detailed Progress
         </button>
@@ -282,11 +282,11 @@ export default function ProgressTracker({ compact = false }) {
         <div className="header-left">
           <h2>Progress Tracking</h2>
           <p>
-            Week of{" "}
-            {new Date(currentPlan.weekStart).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
+            Week of{' '}
+            {new Date(currentPlan.weekStart).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
             })}
           </p>
         </div>
@@ -294,14 +294,14 @@ export default function ProgressTracker({ compact = false }) {
         <div className="header-actions">
           <div className="time-range-selector">
             <button
-              className={timeRange === "week" ? "active" : ""}
-              onClick={() => setTimeRange("week")}
+              className={timeRange === 'week' ? 'active' : ''}
+              onClick={() => setTimeRange('week')}
             >
               This Week
             </button>
             <button
-              className={timeRange === "month" ? "active" : ""}
-              onClick={() => setTimeRange("month")}
+              className={timeRange === 'month' ? 'active' : ''}
+              onClick={() => setTimeRange('month')}
             >
               This Month
             </button>
@@ -318,7 +318,7 @@ export default function ProgressTracker({ compact = false }) {
                   className="stat-fill"
                   style={{
                     background: `conic-gradient(${getComplianceColor(
-                      progressData.calorieCompliance
+                      progressData.calorieCompliance,
                     )} ${
                       progressData.calorieCompliance * 3.6
                     }deg, rgba(58, 65, 61, 0.5) 0deg)`,
@@ -357,7 +357,7 @@ export default function ProgressTracker({ compact = false }) {
                   className="stat-fill"
                   style={{
                     background: `conic-gradient(${getComplianceColor(
-                      progressData.workoutCompliance
+                      progressData.workoutCompliance,
                     )} ${
                       progressData.workoutCompliance * 3.6
                     }deg, rgba(58, 65, 61, 0.5) 0deg)`,
@@ -399,8 +399,8 @@ export default function ProgressTracker({ compact = false }) {
           {dailyProgress.map((day, index) => (
             <div
               key={index}
-              className={`day-progress ${day.isToday ? "today" : ""} ${
-                day.isPast ? "past" : ""
+              className={`day-progress ${day.isToday ? 'today' : ''} ${
+                day.isPast ? 'past' : ''
               }`}
             >
               <div className="day-header">
@@ -417,13 +417,13 @@ export default function ProgressTracker({ compact = false }) {
                       style={{
                         width: `${Math.min(day.calorieCompliance, 100)}%`,
                         backgroundColor: getComplianceColor(
-                          day.calorieCompliance
+                          day.calorieCompliance,
                         ),
                       }}
                     ></div>
                   </div>
                   <div className="metric-values">
-                    <span>{day.actualCalories}</span> /{" "}
+                    <span>{day.actualCalories}</span> /{' '}
                     <span>{day.plannedCalories}</span>
                   </div>
                 </div>
@@ -436,13 +436,13 @@ export default function ProgressTracker({ compact = false }) {
                       style={{
                         width: `${Math.min(day.workoutCompliance, 100)}%`,
                         backgroundColor: getComplianceColor(
-                          day.workoutCompliance
+                          day.workoutCompliance,
                         ),
                       }}
                     ></div>
                   </div>
                   <div className="metric-values">
-                    <span>{day.actualWorkouts}</span> /{" "}
+                    <span>{day.actualWorkouts}</span> /{' '}
                     <span>{day.plannedWorkouts}</span>
                   </div>
                 </div>

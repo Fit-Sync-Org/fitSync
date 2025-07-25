@@ -4,7 +4,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 const { checkInactivity } = require("../utils/simpleProgressTracking");
 
-router.get("/", async (req, res) => {
+router.get("/", async(req, res) => {
   try {
     const userId = req.user.id;
     const { page = 1, limit = 20, unreadOnly = false, type } = req.query;
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/stats", async (req, res) => {
+router.get("/stats", async(req, res) => {
   try {
     const userId = req.user.id;
 
@@ -76,7 +76,7 @@ router.get("/stats", async (req, res) => {
   }
 });
 
-router.patch("/:notificationId/read", async (req, res) => {
+router.patch("/:notificationId/read", async(req, res) => {
   try {
     const userId = req.user.id;
     const notificationId = parseInt(req.params.notificationId);
@@ -105,7 +105,7 @@ router.patch("/:notificationId/read", async (req, res) => {
   }
 });
 
-router.patch("/read-all", async (req, res) => {
+router.patch("/read-all", async(req, res) => {
   try {
     const userId = req.user.id;
     const { type } = req.body;
@@ -131,7 +131,7 @@ router.patch("/read-all", async (req, res) => {
   }
 });
 
-router.delete("/:notificationId", async (req, res) => {
+router.delete("/:notificationId", async(req, res) => {
   try {
     const userId = req.user.id;
     const notificationId = parseInt(req.params.notificationId);
@@ -153,7 +153,7 @@ router.delete("/:notificationId", async (req, res) => {
   }
 });
 
-router.delete("/cleanup/old", async (req, res) => {
+router.delete("/cleanup/old", async(req, res) => {
   try {
     const userId = req.user.id;
     const { days = 30 } = req.query;
@@ -180,7 +180,7 @@ router.delete("/cleanup/old", async (req, res) => {
   }
 });
 
-router.get("/progress-alerts", async (req, res) => {
+router.get("/progress-alerts", async(req, res) => {
   try {
     const userId = req.user.id;
     const { days = 7 } = req.query;
@@ -208,7 +208,7 @@ router.get("/progress-alerts", async (req, res) => {
   }
 });
 
-router.post("/test", async (req, res) => {
+router.post("/test", async(req, res) => {
   try {
     const userId = req.user.id;
     const { type = "MILESTONE", title, message } = req.body;
@@ -234,86 +234,86 @@ router.post("/test", async (req, res) => {
   }
 });
 
-router.post('/check-inactivity', async (req, res) => {
+router.post("/check-inactivity", async(req, res) => {
   await checkInactivity();
   res.json({ success: true });
 });
 
-const webSocketService = require('../services/webSocketService');
+const webSocketService = require("../services/webSocketService");
 
-router.get('/websocket/status', (req, res) => {
- try {
-   const status = webSocketService.getConnectionStatus();
-   res.json({
-     success: true,
-     ...status,
-     timestamp: new Date()
-   });
- } catch (error) {
-   console.error('WebSocket status error:', error);
-   res.status(500).json({ error: 'Failed to get WebSocket status' });
- }
+router.get("/websocket/status", (req, res) => {
+  try {
+    const status = webSocketService.getConnectionStatus();
+    res.json({
+      success: true,
+      ...status,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error("WebSocket status error:", error);
+    res.status(500).json({ error: "Failed to get WebSocket status" });
+  }
 });
 
-router.get('/websocket/my-connection', (req, res) => {
- try {
-   const userId = req.user.id;
-   const connections = webSocketService.getUserConnections(userId);
-   const isConnected = webSocketService.isUserConnected(userId);
+router.get("/websocket/my-connection", (req, res) => {
+  try {
+    const userId = req.user.id;
+    const connections = webSocketService.getUserConnections(userId);
+    const isConnected = webSocketService.isUserConnected(userId);
 
-   res.json({
-     success: true,
-     userId,
-     isConnected,
-     connectionCount: connections.length,
-     socketIds: connections,
-     timestamp: new Date()
-   });
- } catch (error) {
-   console.error('WebSocket user connection error:', error);
-   res.status(500).json({ error: 'Failed to get connection info' });
- }
+    res.json({
+      success: true,
+      userId,
+      isConnected,
+      connectionCount: connections.length,
+      socketIds: connections,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error("WebSocket user connection error:", error);
+    res.status(500).json({ error: "Failed to get connection info" });
+  }
 });
 
-router.post('/websocket/cleanup', (req, res) => {
- try {
-   const cleanedCount = webSocketService.cleanupOrphanedConnections();
-   res.json({
-     success: true,
-     cleanedConnections: cleanedCount,
-     message: `Cleaned up ${cleanedCount} orphaned connection(s)`,
-     timestamp: new Date()
-   });
- } catch (error) {
-   console.error('WebSocket cleanup error:', error);
-   res.status(500).json({ error: 'Failed to cleanup connections' });
- }
+router.post("/websocket/cleanup", (req, res) => {
+  try {
+    const cleanedCount = webSocketService.cleanupOrphanedConnections();
+    res.json({
+      success: true,
+      cleanedConnections: cleanedCount,
+      message: `Cleaned up ${cleanedCount} orphaned connection(s)`,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error("WebSocket cleanup error:", error);
+    res.status(500).json({ error: "Failed to cleanup connections" });
+  }
 });
 
-router.post('/websocket/disconnect/:userId', async (req, res) => {
- try {
-   const { userId } = req.params;
-   const { reason = 'Administrative disconnect' } = req.body;
+router.post("/websocket/disconnect/:userId", async(req, res) => {
+  try {
+    const { userId } = req.params;
+    const { reason = "Administrative disconnect" } = req.body;
 
-   const success = await webSocketService.forceDisconnectUser(userId);
+    const success = await webSocketService.forceDisconnectUser(userId);
 
-   if (success) {
-     res.json({
-       success: true,
-       message: `User ${userId} has been disconnected`,
-       reason,
-       timestamp: new Date()
-     });
-   } else {
-     res.status(404).json({
-       success: false,
-       error: `User ${userId} is not currently connected`
-     });
-   }
- } catch (error) {
-   console.error('WebSocket force disconnect error:', error);
-   res.status(500).json({ error: 'Failed to disconnect user' });
- }
+    if (success) {
+      res.json({
+        success: true,
+        message: `User ${userId} has been disconnected`,
+        reason,
+        timestamp: new Date()
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: `User ${userId} is not currently connected`
+      });
+    }
+  } catch (error) {
+    console.error("WebSocket force disconnect error:", error);
+    res.status(500).json({ error: "Failed to disconnect user" });
+  }
 });
 
 

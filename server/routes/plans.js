@@ -5,7 +5,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 
-router.get("/current", async (req, res) => {
+router.get("/current", async(req, res) => {
   try {
     const userId = req.user.id;
     const today = new Date();
@@ -79,7 +79,7 @@ router.get("/current", async (req, res) => {
   }
 });
 
-router.get("/history", async (req, res) => {
+router.get("/history", async(req, res) => {
   try {
     const userId = req.user.id;
     const { page = 1, limit = 10 } = req.query;
@@ -120,7 +120,7 @@ router.get("/history", async (req, res) => {
   }
 });
 
-router.get("/:planId", async (req, res) => {
+router.get("/:planId", async(req, res) => {
   try {
     const userId = req.user.id;
     const { planId } = req.params;
@@ -152,7 +152,7 @@ router.get("/:planId", async (req, res) => {
 
 // Remove the generate endpoint since plans are now auto-generated after onboarding
 
-router.get("/generation/status", async (req, res) => {
+router.get("/generation/status", async(req, res) => {
   try {
     const userId = req.user.id;
 

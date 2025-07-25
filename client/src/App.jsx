@@ -1,46 +1,46 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LogIn from "../components/login/LogIn";
-import Dashboard from "../components/dashboard/Dashboard";
-import ProtectedRoute from "../components/ProtectedRoute";
-import "./App.css";
-import Register from "../components/register/Register";
-import OnboardingWizard from "../components/onboarding/OnboardingWizard";
-import LogMeal from "../components/meals/LogMeal";
-import LogWorkout from "../components/workouts/LogWorkout";
-import Profile from "../components/profile/Profile";
-import WeeklyPlan from "../components/plans/WeeklyPlan";
-import NotificationCenter from "../components/notifications/NotificationCenter";
-import { useEffect } from "react";
-import { auth } from "./firebase";
-import websocketService from "./services/websocketService";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LogIn from '../components/login/LogIn';
+import Dashboard from '../components/dashboard/Dashboard';
+import ProtectedRoute from '../components/ProtectedRoute';
+import './App.css';
+import Register from '../components/register/Register';
+import OnboardingWizard from '../components/onboarding/OnboardingWizard';
+import LogMeal from '../components/meals/LogMeal';
+import LogWorkout from '../components/workouts/LogWorkout';
+import Profile from '../components/profile/Profile';
+import WeeklyPlan from '../components/plans/WeeklyPlan';
+import NotificationCenter from '../components/notifications/NotificationCenter';
+import { useEffect } from 'react';
+import { auth } from './firebase';
+import websocketService from './services/websocketService';
 
 function App() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log("User authenticated, checking onboardin status");
+        console.log('User authenticated, checking onboardin status');
         try {
-          const response = await fetch(`$import.meta.env.VITE_API_URL/auth/me`, {
-          credentials: "include",
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+            credentials: 'include',
           });
 
-        if (response.ok) {
-          const userData = await response.json();
-          if (user.Data.hasCompletedOnboarding) {
-            console.log("User has completed onboarding, connecting WebSocket...");
-            await websocketService.connect();
-            console.log("WebSocket connected");
+          if (response.ok) {
+            const userData = await response.json();
+            if (userData.hasCompletedOnboarding) {
+              console.log('User has completed onboarding, connecting WebSocket...');
+              await websocketService.connect();
+              console.log('WebSocket connected');
+            } else {
+              console.log('User has not completed onboarding, skip websocket connection');
+            }
           } else {
-            console.log("User has not completed onboarding, skip websocket connection");
+            console.log("Could not verify user's onboarding status");
           }
-        } else {
-          console.log("Could not verify user's onboarding status")
-        }
         } catch (error) {
-        console.error("Failed to initialize WebSocket:", error);
+          console.error('Failed to initialize WebSocket:', error);
         }
       } else {
-        console.log("User not authenticated, disconnecting WebSocket...");
+        console.log('User not authenticated, disconnecting WebSocket...');
         websocketService.disconnect();
       }
     });
@@ -62,8 +62,8 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                {" "}
-                <Dashboard />{" "}
+                {' '}
+                <Dashboard />{' '}
               </ProtectedRoute>
             }
           />
@@ -71,8 +71,8 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                {" "}
-                <Profile />{" "}
+                {' '}
+                <Profile />{' '}
               </ProtectedRoute>
             }
           />
@@ -80,8 +80,8 @@ function App() {
             path="/log-meal"
             element={
               <ProtectedRoute>
-                {" "}
-                <LogMeal />{" "}
+                {' '}
+                <LogMeal />{' '}
               </ProtectedRoute>
             }
           />
@@ -89,8 +89,8 @@ function App() {
             path="/log-workout"
             element={
               <ProtectedRoute>
-                {" "}
-                <LogWorkout />{" "}
+                {' '}
+                <LogWorkout />{' '}
               </ProtectedRoute>
             }
           />
@@ -98,8 +98,8 @@ function App() {
             path="/plans"
             element={
               <ProtectedRoute>
-                {" "}
-                <WeeklyPlan />{" "}
+                {' '}
+                <WeeklyPlan />{' '}
               </ProtectedRoute>
             }
           />
@@ -107,8 +107,8 @@ function App() {
             path="/notifications"
             element={
               <ProtectedRoute>
-                {" "}
-                <NotificationCenter />{" "}
+                {' '}
+                <NotificationCenter />{' '}
               </ProtectedRoute>
             }
           />

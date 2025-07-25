@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import PlanGenerationStatus from "./PlanGenerationStatus";
-import "./PlanGeneration.css";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PlanGenerationStatus from './PlanGenerationStatus';
+import './PlanGeneration.css';
 
 export default function PlanGeneration() {
   const [user, setUser] = useState(null);
@@ -10,7 +10,7 @@ export default function PlanGeneration() {
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-      credentials: 'include'
+      credentials: 'include',
     })
       .then(res => res.json())
       .then(userData => {

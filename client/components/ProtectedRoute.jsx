@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import { auth } from "../src/firebase";
+import { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import { auth } from '../src/firebase';
 
 export default function ProtectedRoute({ children }) {
-  const [loading, setLoading]      = useState(true);
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setAuth] = useState(false);
 
   useEffect(() => {
@@ -13,9 +13,9 @@ export default function ProtectedRoute({ children }) {
 
     async function refreshCookie(idToken) {
       await fetch(`${import.meta.env.VITE_API_URL}/auth/firebase-login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
         signal,
       });
@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children }) {
     async function check() {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          credentials: "include",
+          credentials: 'include',
           signal,
         });
 
@@ -39,7 +39,7 @@ export default function ProtectedRoute({ children }) {
 
           /* retry once */
           const retry = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-            credentials: "include",
+            credentials: 'include',
             signal,
           });
           if (!cancelled) setAuth(retry.ok);
@@ -48,7 +48,7 @@ export default function ProtectedRoute({ children }) {
 
         if (!cancelled) setAuth(false);
       } catch (err) {
-        console.error("auth check failed:", err);
+        console.error('auth check failed:', err);
         if (!cancelled) setAuth(false);
       } finally {
         if (!cancelled) setLoading(false);
@@ -57,9 +57,9 @@ export default function ProtectedRoute({ children }) {
 
     check();
     return () => {
-       cancelled = true;
-       controller.abort();
-      };
+      cancelled = true;
+      controller.abort();
+    };
   }, []);
 
   if (loading) return <p>Checking authentication…</p>;

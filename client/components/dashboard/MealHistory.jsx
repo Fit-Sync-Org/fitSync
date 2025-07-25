@@ -14,7 +14,7 @@ export default function MealHistory() {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/meals/completed-entries`, {
           withCredentials: true,
-          params: { days: 30 }
+          params: { days: 30 },
         });
 
         if (response.data) {
@@ -31,24 +31,24 @@ export default function MealHistory() {
     fetchMealHistory();
   }, []);
 
-    const handleEdit = (date) => {
-      navigate(`/log-meal?date=${date}`);
-    };
+  const handleEdit = (date) => {
+    navigate(`/log-meal?date=${date}`);
+  };
 
-    const handleDelete = async (id, date) => {
+  const handleDelete = async (id, date) => {
     if (
       window.confirm(
         `Are you sure you want to delete all meals for ${new Date(
-          date
-        ).toLocaleDateString()}?`
+          date,
+        ).toLocaleDateString()}?`,
       )
     ) {
       try {
         setMealHistory((prev) => prev.filter((entry) => entry.id !== id));
-        alert("Meal log deleted successfully!");
+        alert('Meal log deleted successfully!');
       } catch (error) {
-        console.error("Failed to delete meal log:", error);
-        alert("Failed to delete meal log. Please try again.");
+        console.error('Failed to delete meal log:', error);
+        alert('Failed to delete meal log. Please try again.');
       }
     }
   };
@@ -60,14 +60,14 @@ export default function MealHistory() {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return "Today";
+      return 'Today';
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday";
+      return 'Yesterday';
     } else {
-      return date.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
       });
     }
   };
@@ -108,10 +108,10 @@ export default function MealHistory() {
                     </span>
                     <span
                       className={`status-badge ${
-                        entry.isCompleted ? "completed" : "incomplete"
+                        entry.isCompleted ? 'completed' : 'incomplete'
                       }`}
                     >
-                      {entry.isCompleted ? "✓ Complete" : "⏳ In Progress"}
+                      {entry.isCompleted ? '✓ Complete' : '⏳ In Progress'}
                     </span>
                   </div>
                 </div>
@@ -181,10 +181,10 @@ export default function MealHistory() {
                             </span>
                             <span
                               className={`status-badge ${
-                                entry.isCompleted ? "completed" : "incomplete"
+                                entry.isCompleted ? 'completed' : 'incomplete'
                               }`}
                             >
-                              {entry.isCompleted ? "Complete" : "In Progress"}
+                              {entry.isCompleted ? 'Complete' : 'In Progress'}
                             </span>
                           </div>
                         </div>

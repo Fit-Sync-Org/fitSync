@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { plansAPI } from "../../src/api/plans";
-import { generateAndSavePlan } from "../../src/utils/planGeneration";
-import "./PlanGenerationStatus.css";
+import { useState, useEffect } from 'react';
+import { plansAPI } from '../../src/api/plans';
+import { generateAndSavePlan } from '../../src/utils/planGeneration';
+import './PlanGenerationStatus.css';
 
 export default function PlanGenerationStatus({
-  compact = false, onPlanGenerated,}) {
+  compact = false, onPlanGenerated }) {
   const [user, setUser] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -21,7 +21,7 @@ export default function PlanGenerationStatus({
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-        credentials: 'include'
+        credentials: 'include',
       });
       if (response.ok) {
         const userData = await response.json();
@@ -36,7 +36,7 @@ export default function PlanGenerationStatus({
     try {
       const result = await plansAPI.getCurrentPlan();
       setHasCurrentPlan(result.success && result.data);
-    } catch (err) {
+    } catch {
       setHasCurrentPlan(false);
     }
   };
@@ -99,7 +99,7 @@ export default function PlanGenerationStatus({
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ai-plans/regenerate`, {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (response.ok) {

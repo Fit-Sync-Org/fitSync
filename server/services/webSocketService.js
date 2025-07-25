@@ -66,7 +66,7 @@ class WebSocketService {
         socket.emit("pong", { timestamp: Date.now() });
       });
 
-      socket.on("meal_updated", async (mealData, ack) => {
+      socket.on("meal_updated", async(mealData, ack) => {
         try {
           const userAgent = socket.handshake.headers["user-agent"] || "unknown";
           const userId = this.socketUsers.get(socket.id);
@@ -95,7 +95,7 @@ class WebSocketService {
             dynamicConfig: this.dynamicConfig,
           });
 
-          await userRetry.start(async () => {
+          await userRetry.start(async() => {
             await this.db.meal.update({
               where: { id: mealData.id },
               data: mealData,
@@ -124,7 +124,7 @@ class WebSocketService {
         }
       });
 
-      socket.on("workout_updated", async (workoutData, ack) => {
+      socket.on("workout_updated", async(workoutData, ack) => {
         try {
           const userAgent = socket.handshake.headers["user-agent"] || "unknown";
           const userId = this.socketUsers.get(socket.id);
@@ -145,7 +145,7 @@ class WebSocketService {
             dynamicConfig: this.dynamicConfig,
           });
 
-          await userRetry.start(async () => {
+          await userRetry.start(async() => {
             await this.db.workout.update({
               where: { id: workoutData.id },
               data: workoutData,

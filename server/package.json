@@ -12,6 +12,10 @@
     "postinstall": "npx prisma generate",
     "workers": "node workers/index.js",
     "workers:dev": "nodemon workers/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose",
     "test-queue": "node test-queue.js",
     "test-integration": "node test-integration.js"
   },

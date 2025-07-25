@@ -8,3 +8,6 @@ server/Firebase/
 /private-keys/
 /*.json
 firebase-service-account.json
+
+coverage/
+*.lcov

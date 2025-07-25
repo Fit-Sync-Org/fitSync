@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 
-exports.registerNewUser = async (req, res) => {
+exports.registerNewUser = async(req, res) => {
   const { uid, email } = req.decoded;
   const data = req.body;
 
@@ -46,7 +46,7 @@ exports.registerNewUser = async (req, res) => {
   });
 };
 
-exports.completeOnboarding = async (req, res) => {
+exports.completeOnboarding = async(req, res) => {
   try {
     await db.user.update({
       where: { id: req.user.id },

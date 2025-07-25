@@ -11,7 +11,7 @@ const PROGRESS_THRESHOLDS = {
   PLAN_ADJUSTMENT_THRESHOLD: 0.7,
 };
 
-const calculateDailyProgress = (plannedDay, actualMeals, actualWorkouts) => {
+const calculateDailyProgress = (plannedDay, actualMeals, actualWorkoutsList) => {
   const plannedCalories = plannedDay.totalCalories || 0;
   const plannedWorkouts = plannedDay.workouts?.length || 0;
 
@@ -19,7 +19,7 @@ const calculateDailyProgress = (plannedDay, actualMeals, actualWorkouts) => {
     (sum, meal) => sum + (meal.calories || 0),
     0
   );
-  const actualWorkouts = actualWorkouts.length;
+  const actualWorkouts = actualWorkoutsList.length;
 
   const calorieDeviation =
     plannedCalories > 0
@@ -115,7 +115,7 @@ const calculateWeeklyProgress = (plan, userMeals, userWorkouts) => {
   };
 };
 
-const checkProgressAlerts = async (weeklyProgress, userId) => {
+const checkProgressAlerts = async(weeklyProgress) => {
   const alerts = [];
   if (!weeklyProgress) return alerts;
 
@@ -189,7 +189,7 @@ const checkProgressAlerts = async (weeklyProgress, userId) => {
   return alerts;
 };
 
-const createNotification = async (userId, alert) => {
+const createNotification = async(userId, alert) => {
   try {
     const notification = await prisma.notification.create({
       data: {
@@ -216,7 +216,7 @@ const createNotification = async (userId, alert) => {
   }
 };
 
-const trackProgress = async (userId) => {
+const trackProgress = async(userId) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },

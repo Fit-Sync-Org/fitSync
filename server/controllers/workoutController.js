@@ -1,14 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const db = new PrismaClient();
 const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
 const webSocketService = require("../services/webSocketService");
 
-exports.getWorkoutByDate = async (req, res) => {
+exports.getWorkoutByDate = async(req, res) => {
   try {
     const { date } = req.query;
     const userId = req.user?.id;
     if (!date) {
-      return res.status(400).json({ error: 'Date parameter is required' });
+      return res.status(400).json({ error: "Date parameter is required" });
     }
 
     const target = new Date(date);
@@ -22,7 +22,7 @@ exports.getWorkoutByDate = async (req, res) => {
         userId,
         date: { gte: startOfDay, lte: endOfDay },
       },
-      orderBy: { date: 'asc' }
+      orderBy: { date: "asc" },
     });
 
     const grouped = {
@@ -31,7 +31,7 @@ exports.getWorkoutByDate = async (req, res) => {
       flexibility: [],
       sports: [],
     };
-    list.forEach(w => {
+    list.forEach((w) => {
       if (grouped[w.workoutType]) {
         grouped[w.workoutType].push({
           id: w.id,
@@ -48,12 +48,12 @@ exports.getWorkoutByDate = async (req, res) => {
 
     res.json(grouped);
   } catch (err) {
-    console.error('getWorkoutsByDate error:', err);
-    res.status(500).json({ error: 'Failed to fetch workouts' });
+    console.error("getWorkoutsByDate error:", err);
+    res.status(500).json({ error: "Failed to fetch workouts" });
   }
 };
 
-exports.addWorkout = async (req, res) => {
+exports.addWorkout = async(req, res) => {
   try {
     const userId = req.user?.id;
     const {
@@ -68,7 +68,7 @@ exports.addWorkout = async (req, res) => {
       reps,
       weight,
       notes,
-      date
+      date,
     } = req.body;
 
     const finalWorkoutType = type || workoutType;
@@ -81,7 +81,11 @@ exports.addWorkout = async (req, res) => {
       finalDuration == null ||
       finalCalories == null
     ) {
-      return res.status(400).json({ error: 'Workout type, name, duration, and calories are required' });
+      return res
+        .status(400)
+        .json({
+          error: "Workout type, name, duration, and calories are required",
+        });
     }
 
     const workoutDate = date ? new Date(date) : new Date();
@@ -95,16 +99,16 @@ exports.addWorkout = async (req, res) => {
         sets: sets || 0,
         reps: reps || 0,
         weight: weight || 0,
-        notes: notes || '',
-        date: workoutDate
-      }
+        notes: notes || "",
+        date: workoutDate,
+      },
     });
 
     await checkProgressAndNotify(userId);
 
     const workoutData = {
       id: w.id,
-      type : w.workoutType,
+      type: w.workoutType,
       name: w.name,
       duration: w.durationMinutes,
       calories: w.caloriesBurned,
@@ -113,29 +117,29 @@ exports.addWorkout = async (req, res) => {
       weight: w.weight,
       notes: w.notes,
       date: w.date,
-      action: 'added',
-      timestamp: new Date().toISOString()
+      action: "added",
+      timestamp: new Date().toISOString(),
     };
 
     webSocketService.broadcastWorkoutUpdate(userId, workoutData);
     res.status(201).json(workoutData);
   } catch (err) {
-    console.error('addWorkout error:', err);
-    res.status(500).json({ error: 'Failed to add workout' });
+    console.error("addWorkout error:", err);
+    res.status(500).json({ error: "Failed to add workout" });
   }
 };
 
-exports.updateWorkout = async (req, res) => {
+exports.updateWorkout = async(req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
     const data = req.body;
 
     const existing = await db.workout.findFirst({
-      where: { id: Number(id), userId }
+      where: { id: Number(id), userId },
     });
     if (!existing) {
-      return res.status(404).json({ error: 'Workout not found' });
+      return res.status(404).json({ error: "Workout not found" });
     }
 
     const updated = await db.workout.update({
@@ -148,10 +152,9 @@ exports.updateWorkout = async (req, res) => {
         sets: data.sets ?? existing.sets,
         reps: data.reps ?? existing.reps,
         weight: data.weight ?? existing.weight,
-        notes: data.notes ?? existing.notes
-      }
+        notes: data.notes ?? existing.notes,
+      },
     });
-
 
     const workoutData = {
       id: updated.id,
@@ -164,50 +167,53 @@ exports.updateWorkout = async (req, res) => {
       weight: updated.weight,
       notes: updated.notes,
       date: updated.date,
-      action: 'updated',
-      timestamp: new Date().toISOString()
+      action: "updated",
+      timestamp: new Date().toISOString(),
     };
 
     webSocketService.broadcastWorkoutUpdate(userId, workoutData);
     res.json(workoutData);
   } catch (err) {
-    console.error('updateWorkout error:', err);
-    res.status(500).json({ error: 'Failed to update workout' });
+    console.error("updateWorkout error:", err);
+    res.status(500).json({ error: "Failed to update workout" });
   }
 };
 
-exports.deleteWorkout = async (req, res) => {
+exports.deleteWorkout = async(req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
 
     const existing = await db.workout.findFirst({
-      where: { id: Number(id), userId }
+      where: { id: Number(id), userId },
     });
     if (!existing) {
-      return res.status(404).json({ error: 'Workout not found' });
+      return res.status(404).json({ error: "Workout not found" });
     }
 
     await db.workout.delete({ where: { id: Number(id) } });
 
     const deleteData = {
-          id: existing.id,
-          name: existing.name,
-          type: existing.workoutType,
-          date: existing.date,
-          action: 'deleted',
-          timestamp: new Date().toISOString()
-        };
+      id: existing.id,
+      name: existing.name,
+      type: existing.workoutType,
+      date: existing.date,
+      action: "deleted",
+      timestamp: new Date().toISOString(),
+    };
 
     webSocketService.broadcastWorkoutUpdate(userId, deleteData);
-    res.json({ message: 'Workout deleted successfully', deletedWorkout: deleteData });
+    res.json({
+      message: "Workout deleted successfully",
+      deletedWorkout: deleteData,
+    });
   } catch (err) {
-    console.error('deleteWorkout error:', err);
-    res.status(500).json({ error: 'Failed to delete workout' });
+    console.error("deleteWorkout error:", err);
+    res.status(500).json({ error: "Failed to delete workout" });
   }
 };
 
-exports.completeEntry = async (req, res) => {
+exports.completeEntry = async(req, res) => {
   try {
     const userId = req.user?.id;
     const {
@@ -215,7 +221,7 @@ exports.completeEntry = async (req, res) => {
       summary,
       totalCaloriesBurned,
       totalDuration,
-      totalExercises
+      totalExercises,
     } = req.body;
 
     if (!date) {
@@ -237,7 +243,8 @@ exports.completeEntry = async (req, res) => {
         where: { id: existingEntry.id },
         data: {
           summary: summary || existingEntry.summary,
-          totalCaloriesBurned: totalCaloriesBurned || existingEntry.totalCaloriesBurned,
+          totalCaloriesBurned:
+            totalCaloriesBurned || existingEntry.totalCaloriesBurned,
           totalDuration: totalDuration || existingEntry.totalDuration,
           totalExercises: totalExercises || existingEntry.totalExercises,
           isCompleted: true,
@@ -248,7 +255,7 @@ exports.completeEntry = async (req, res) => {
         data: {
           userId: userId,
           date: entryDate,
-          summary: summary || 'No workouts logged',
+          summary: summary || "No workouts logged",
           totalCaloriesBurned: totalCaloriesBurned || 0,
           totalDuration: totalDuration || 0,
           totalExercises: totalExercises || 0,
@@ -264,7 +271,7 @@ exports.completeEntry = async (req, res) => {
   }
 };
 
-exports.getCompletedEntries = async (req, res) => {
+exports.getCompletedEntries = async(req, res) => {
   try {
     const userId = req.user?.id;
     const { days = 30 } = req.query;
@@ -281,7 +288,7 @@ exports.getCompletedEntries = async (req, res) => {
         isCompleted: true,
       },
       orderBy: {
-        date: 'desc',
+        date: "desc",
       },
     });
 

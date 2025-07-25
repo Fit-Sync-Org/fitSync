@@ -1,11 +1,11 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const requireAuth = require('../middleware/requireAuth');
+const express = require("express");
+const { PrismaClient } = require("@prisma/client");
+const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.post('/generate', requireAuth, async (req, res) => {
+router.post("/generate", requireAuth, async(req, res) => {
   try {
     const userId = req.user.id;
     const { planData, weekStart } = req.body;
@@ -13,13 +13,13 @@ router.post('/generate', requireAuth, async (req, res) => {
 
     if (!planData || !planData.days || !Array.isArray(planData.days)) {
       return res.status(400).json({
-        error: 'Invalid plan data: missing or invalid days array'
+        error: "Invalid plan data: missing or invalid days array"
       });
     }
 
     if (!weekStart) {
       return res.status(400).json({
-        error: 'weekStart parameter missing'
+        error: "weekStart parameter missing"
       });
     }
 
@@ -36,7 +36,7 @@ router.post('/generate', requireAuth, async (req, res) => {
 
     if (existingPlan) {
       return res.status(409).json({
-        error: 'Plan already exists for this week',
+        error: "Plan already exists for this week",
         planId: existingPlan.id
       });
     }
@@ -45,9 +45,9 @@ router.post('/generate', requireAuth, async (req, res) => {
 
     const enhancedPlanData = {
       ...planData,
-      generatedBy: 'client-ai',
+      generatedBy: "client-ai",
       generatedAt: new Date().toISOString(),
-      note: 'This plan was generated using client-side AI (Firebase Vertex AI).'
+      note: "This plan was generated using client-side AI (Firebase Vertex AI)."
     };
 
     const savedPlan = await prisma.userPlan.create({
@@ -78,19 +78,19 @@ router.post('/generate', requireAuth, async (req, res) => {
       planId: savedPlan.id,
       weekStart: weekStart,
       totalDays: planData.days.length,
-      message: 'AI-generated plan saved successfully'
+      message: "AI-generated plan saved successfully"
     });
 
   } catch (error) {
-    console.error('Error saving plan:', error);
+    console.error("Error saving plan:", error);
     res.status(500).json({
-      error: 'Failed to save plan',
+      error: "Failed to save plan",
       details: error.message
     });
   }
 });
 
-router.post('/regenerate', requireAuth, async (req, res) => {
+router.post("/regenerate", requireAuth, async(req, res) => {
   try {
     const userId = req.user.id;
 
@@ -116,14 +116,14 @@ router.post('/regenerate', requireAuth, async (req, res) => {
 
     res.json({
       success: true,
-      weekStart: weekStart.toISOString().split('T')[0],
-      message: 'Ready for new plan generation'
+      weekStart: weekStart.toISOString().split("T")[0],
+      message: "Ready for new plan generation"
     });
 
   } catch (error) {
-    console.error('Error preparing for plan regeneration:', error);
+    console.error("Error preparing for plan regeneration:", error);
     res.status(500).json({
-      error: 'Failed to prepare for plan regeneration',
+      error: "Failed to prepare for plan regeneration",
       details: error.message
     });
   }

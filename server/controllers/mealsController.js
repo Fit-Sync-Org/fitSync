@@ -3,7 +3,7 @@ const db = new PrismaClient();
 const { checkProgressAndNotify } = require("../utils/simpleProgressTracking");
 const webSocketService = require("../services/webSocketService");
 
-exports.getMealsByDate = async (req, res) => {
+exports.getMealsByDate = async(req, res) => {
   try {
     const { date } = req.query;
     const userId = req.user.id;
@@ -29,7 +29,7 @@ exports.getMealsByDate = async (req, res) => {
         },
       },
       orderBy: {
-        date: 'asc',
+        date: "asc",
       },
     });
 
@@ -64,7 +64,7 @@ exports.getMealsByDate = async (req, res) => {
   }
 };
 
-exports.addMeal = async (req, res) => {
+exports.addMeal = async(req, res) => {
   try {
     const userId = req.user.id;
     const {
@@ -114,7 +114,7 @@ exports.addMeal = async (req, res) => {
       quantity: meal.quantity,
       mealType: meal.mealType,
       date: meal.date,
-      action: 'added',
+      action: "added",
       timestamp: new Date().toISOString()
     };
 
@@ -127,7 +127,7 @@ exports.addMeal = async (req, res) => {
   }
 };
 
-exports.updateMeal = async (req, res) => {
+exports.updateMeal = async(req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -182,7 +182,7 @@ exports.updateMeal = async (req, res) => {
       quantity: updatedMeal.quantity,
       mealType: updatedMeal.mealType,
       date: updatedMeal.date,
-      action: 'updated',
+      action: "updated",
       timestamp: new Date().toISOString()
     };
 
@@ -194,7 +194,7 @@ exports.updateMeal = async (req, res) => {
   }
 };
 
-exports.deleteMeal = async (req, res) => {
+exports.deleteMeal = async(req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -219,7 +219,7 @@ exports.deleteMeal = async (req, res) => {
       name: existingMeal.foodName,
       mealType: existingMeal.mealType,
       date: existingMeal.date,
-      action: 'deleted',
+      action: "deleted",
       timestamp: new Date().toISOString()
     };
 
@@ -231,7 +231,7 @@ exports.deleteMeal = async (req, res) => {
   }
 };
 
-exports.completeEntry = async (req, res) => {
+exports.completeEntry = async(req, res) => {
   try {
     const userId = req.user.id;
     const {
@@ -280,7 +280,7 @@ exports.completeEntry = async (req, res) => {
         data: {
           userId: userId,
           date: entryDate,
-          summary: summary || 'No meals logged',
+          summary: summary || "No meals logged",
           totalCalories: totalCalories || 0,
           totalCarbs: totalCarbs || 0,
           totalFat: totalFat || 0,
@@ -300,7 +300,7 @@ exports.completeEntry = async (req, res) => {
   }
 };
 
-exports.getCompletedEntries = async (req, res) => {
+exports.getCompletedEntries = async(req, res) => {
   try {
     const userId = req.user.id;
     const { days = 30 } = req.query;
@@ -317,7 +317,7 @@ exports.getCompletedEntries = async (req, res) => {
         isCompleted: true,
       },
       orderBy: {
-        date: 'desc',
+        date: "desc",
       },
     });
 

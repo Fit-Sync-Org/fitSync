@@ -1,6 +1,6 @@
-const admin = require('firebase-admin');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
+const admin = require("firebase-admin");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
 
 // Initialize Firebase Admin and Gemini AI
 let geminiModel;
@@ -14,7 +14,7 @@ try {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 
     if (serviceAccount.private_key) {
-      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
     }
 
     if (!admin.apps.length) {

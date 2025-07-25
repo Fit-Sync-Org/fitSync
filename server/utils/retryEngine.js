@@ -1,3 +1,4 @@
+
 class RetryExhaustedError extends Error {
   constructor(message, details) {
     super(message);
@@ -102,7 +103,7 @@ class RetryEngine {
     );
   }
 
-  defaultOnSuccess(result) {
+  defaultOnSuccess() {
     console.log("[Server] Operation successful after retries");
   }
 
@@ -126,12 +127,12 @@ class RetryEngine {
   async start(operationFn) {
     let delay = 0;
     try {
-      const result = await operationFn();
+      const operationResult = await operationFn();
       this.updateMetrics(true, delay);
       this.updateConnectionHistory(true);
-      this.onSuccess(result);
+      this.onSuccess(operationResult);
       this.retryCount = 0;
-      return result;
+      return operationResult;
     } catch (err) {
       this.updateMetrics(false, delay, err);
       this.updateConnectionHistory(false, err);

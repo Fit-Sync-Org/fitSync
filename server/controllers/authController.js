@@ -57,7 +57,7 @@ exports.logout = (req, res) => {
 
 exports.me = (req, res) => {
   try {
-    const { /*password,*/ ...publicData } = req.user;
+    const { password, ...publicData } = req.user;
     return res.json(publicData);
   } catch (err) {
     console.error("me handler error:", err);

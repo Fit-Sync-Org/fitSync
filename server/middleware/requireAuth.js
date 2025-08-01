@@ -21,10 +21,21 @@ module.exports = async function requireAuth(req, res, next) {
     const decoded = await admin.auth().verifyIdToken(idToken);
     const { uid } = decoded;
 
-    const user = await db.user.findUnique({
-      where: { firebaseUid: uid },
-      include: { goals: true }
-    });
+    let user;
+    try {
+      user = await db.user.findUnique({
+        where: { firebaseUid: uid },
+        include: { goals: true }
+      });
+    } catch (dbError) {
+      console.error("Database connection error:", dbError);
+      // Return a more specific error for database issues
+      return res.status(503).json({ 
+        error: "Database temporarily unavailable", 
+        details: "Please try again in a few moments" 
+      });
+    }
+    
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });
     }

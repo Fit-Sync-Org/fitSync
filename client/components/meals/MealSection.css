@@ -4,7 +4,7 @@
   padding-bottom: 1.5rem;
 }
 
-.meal-header {
+.ms-meal-header {
   display: grid;
   grid-template-columns: 200px 1fr;
   gap: 2rem;
@@ -12,7 +12,7 @@
   margin-bottom: 1rem;
 }
 
-.meal-name {
+.ms-meal-name {
   font-size: 1.8rem;
   font-weight: 600;
   color: #adc97e;
@@ -52,7 +52,7 @@
   border: 1px solid rgba(173, 201, 126, 0.3);
 }
 
-.meal-foods {
+.ms-meal-foods {
   margin-left: 200px;
   padding-left: 2rem;
 }

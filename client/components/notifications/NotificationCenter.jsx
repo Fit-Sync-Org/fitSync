@@ -75,11 +75,11 @@ export default function NotificationCenter({ compact = false, onClose }) {
   };
 
   const filterTypes = [
-    { value: 'all', label: 'All', icon: '' },
-    { value: 'PLAN_READY', label: 'Plan Ready', icon: '' },
-    { value: 'PROGRESS_ALERT', label: 'Progress', icon: '' },
-    { value: 'MILESTONE', label: 'Milestones', icon: '' },
-    { value: 'WEEKLY_SUMMARY', label: 'Weekly', icon: '' },
+    { value: 'all', label: 'All', icon: 'ALL' },
+    { value: 'PLAN_READY', label: 'Plan Ready', icon: 'PLN' },
+    { value: 'PROGRESS_ALERT', label: 'Progress', icon: 'PRG' },
+    { value: 'MILESTONE', label: 'Milestones', icon: 'MST' },
+    { value: 'WEEKLY_SUMMARY', label: 'Weekly', icon: 'WKY' },
   ];
 
   if (loading) {
@@ -200,7 +200,7 @@ export default function NotificationCenter({ compact = false, onClose }) {
           )}
           {onClose && (
             <button className="close-btn" onClick={onClose}>
-              ×
+              CLOSE
             </button>
           )}
         </div>
@@ -298,11 +298,11 @@ function NotificationItem({
       } ${compact ? 'compact' : ''}`}
       onClick={handleMarkAsRead}
     >
-      <div className="notification-icon" style={{ color: notification.color }}>
-        {notification.icon}
+      <div className="notification-icon">
+        {notification.icon || 'NOT'}
       </div>
-      <div className="notification-content">
-        <div className="notification-header">
+      <div className="notification-content-text">
+        <div className="notification-header-text">
           <h4 className="notification-title">{notification.title}</h4>
           <span className="notification-time">{notification.timeAgo}</span>
         </div>
@@ -329,7 +329,7 @@ function NotificationItem({
               }}
               title="Mark as read"
             >
-              ✓
+              READ
             </button>
           )}
           <button
@@ -341,7 +341,7 @@ function NotificationItem({
             disabled={isDeleting}
             title="Delete notification"
           >
-            {isDeleting ? '⏳' : '🗑️'}
+            {isDeleting ? '...' : 'DEL'}
           </button>
         </div>
       )}

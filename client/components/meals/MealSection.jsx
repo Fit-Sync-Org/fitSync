@@ -3,15 +3,15 @@ import './MealSection.css';
 export default function MealSection({ name, foods, onAddFood, onQuickTools, onRemoveFood }) {
   return (
     <div className="meal-section">
-      <div className="meal-header">
-        <h3 className="meal-name">{name}</h3>
+          <div className="ms-meal-header">
+      <h3 className="ms-meal-name">{name}</h3>
         <div className="meal-actions">
           <button className="add-food-btn" onClick={onAddFood}>Add Food</button>
           <button className="quick-tools-btn" onClick={onQuickTools}>Quick Tools</button>
         </div>
       </div>
 
-      <div className="meal-foods">
+      <div className="ms-meal-foods">
         {foods.length > 0 ? (
           foods.map((food, index) => (
 

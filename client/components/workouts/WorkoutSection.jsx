@@ -18,7 +18,7 @@ export default function WorkoutSection({
       <div className="workout-items">
         {items.length > 0 ? (
           items.map((w) => (
-            <div key={w.id} className="workout-item">
+            <div key={w.id} className="ws-workout-item">
               <span className="wi-name">{w.name}</span>
               <span className="wi-duration">{w.duration}m</span>
               <span className="wi-cal">{Math.round(w.calories)} kcal</span>

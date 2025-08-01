@@ -47,7 +47,7 @@
   padding-left: 2rem;
 }
 
-.workout-item {
+.ws-workout-item {
   display: grid;
   grid-template-columns: 200px 80px 100px 80px 80px 30px;
   gap: 1rem;
@@ -59,7 +59,7 @@
   transition: all 0.3s ease;
 }
 
-.workout-item:hover {
+.ws-workout-item:hover {
   background: rgba(173, 201, 126, 0.1);
   transform: translateX(5px);
 }

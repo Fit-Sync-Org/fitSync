@@ -133,15 +133,15 @@ export default function WeeklyPlan({ plan: propPlan, compact = false }) {
             </div>
             <div className="quick-meals">
               <h4>Today's Meals</h4>
-              <div className="meal-list">
+              <div className="wp-meal-list">
                 {todaysPlan.meals?.slice(0, 3).map((meal, index) => (
-                  <div key={index} className="meal-item">
-                    <span className="meal-name">{meal.name}</span>
-                    <span className="meal-calories">{meal.calories} kcal</span>
+                  <div key={index} className="wp-meal-item">
+                    <span className="wp-meal-name">{meal.name}</span>
+                    <span className="wp-meal-calories">{meal.calories} kcal</span>
                   </div>
                 ))}
                 {todaysPlan.meals?.length > 3 && (
-                  <div className="meal-item more">
+                  <div className="wp-meal-item more">
                     <span>+{todaysPlan.meals.length - 3} more meals</span>
                   </div>
                 )}
@@ -299,19 +299,19 @@ function DayPlan({ day, dateInfo }) {
       </div>
       <div className="day-content">
         {Array.isArray(day.workouts) && day.workouts.length > 0 && (
-          <div className="workouts-section wp">
+          <div className="wp-workouts-section">
             <h4>Workouts</h4>
-            <div className="workout-list">
+            <div className="wp-workout-list">
               {day.workouts.map((workout, index) => {
                 const isStringWorkout = typeof workout === 'string';
                 const workoutName = isStringWorkout ? workout : (workout.name || workout.type || 'Workout');
 
 
                 return (
-                  <div key={index} className="workout-item">
-                    <div className="workout-header">
+                  <div key={index} className="wp-workout-item">
+                    <div className="wp-workout-header">
                       <div className="workout-title">
-                        <span className="workout-name">{workoutName}</span>
+                        <span className="wp-workout-name">{workoutName}</span>
                         {!isStringWorkout && workout.type && workout.type !== workout.name && (
                           <span className="workout-type">({workout.type})</span>
                         )}
@@ -319,7 +319,7 @@ function DayPlan({ day, dateInfo }) {
                       {!isStringWorkout && (
                         <div className="workout-meta">
                           {workout.calories_burned && (
-                            <span className="workout-calories">
+                            <span className="wp-workout-calories">
                               <i className="icon-fire"></i> {workout.calories_burned} kcal
                             </span>
                           )}
@@ -408,20 +408,20 @@ function DayPlan({ day, dateInfo }) {
           </div>
         )}
         {Array.isArray(day.meals) && day.meals.length > 0 && (
-          <div className="meals-section">
+          <div className="wp-meals-section">
             <h4>Meals</h4>
-            <div className="meal-list">
+            <div className="wp-meal-list">
               {day.meals.map((meal, idx) => (
-                <div key={idx} className="meal-item">
-                  <div className="meal-header">
-                    <span className="meal-name">{meal.name}</span>
-                    <span className="meal-calories">{meal.calories} kcal</span>
+                <div key={idx} className="wp-meal-item">
+                  <div className="wp-meal-header">
+                    <span className="wp-meal-name">{meal.name}</span>
+                    <span className="wp-meal-calories">{meal.calories} kcal</span>
                   </div>
                   {meal.foods && (
-                    <div className="meal-foods">{meal.foods.join(', ')}</div>
+                    <div className="wp-meal-foods">{meal.foods.join(', ')}</div>
                   )}
                   {meal.macros && (
-                    <div className="meal-macros">
+                    <div className="wp-meal-macros">
                      Protein: {meal.macros.protein}g, Carbs: {meal.macros.carbs}g, Fat: {meal.macros.fat}g
                     </div>
                   )}

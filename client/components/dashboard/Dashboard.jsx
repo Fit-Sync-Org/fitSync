@@ -5,8 +5,6 @@ import MealHistory from './MealHistory';
 import WorkoutHistory from './WorkoutHistory';
 import './Dashboard.css';
 import Charts from './Charts';
-// import { geminimodel } from '../../src/firebase';
-import APITester from '../debug/APITester';
 import NotificationBell from '../notifications/NotificationBell';
 import websocketService from '../../src/services/websocketService';
 
@@ -402,7 +400,6 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-        <APITester />
       </main>
 
       <button

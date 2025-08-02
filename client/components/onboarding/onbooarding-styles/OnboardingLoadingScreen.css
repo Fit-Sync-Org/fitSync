@@ -1,0 +1,164 @@
+.plan-generation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #2c332e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.plan-generation-modal {
+  max-width: 600px;
+  width: 90%;
+  background: linear-gradient(135deg, #3a413d 0%, #2c332e 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid #4a5d50;
+  color: #ffffff;
+  text-align: center;
+}
+
+.plan-generation-modal h2 {
+  font-size: 2.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #e6efd8;
+}
+
+.plan-generation-text {
+  font-size: 1.6rem;
+  color: #b8c8b8;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.plan-generation-tracker {
+  margin-bottom: 2.5rem;
+}
+
+.plan-generation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.plan-generation-current-step {
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #adc97e;
+}
+
+.plan-generation-percent {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #adc97e;
+}
+
+.plan-generation-bar {
+  height: 12px;
+  background-color: #4a5d50;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.plan-generation-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #adc97e 0%, #c8e6a0 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.plan-generation-phases {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.plan-generation-phases::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #4a5d50;
+  z-index: 1;
+}
+
+.plan-generation-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  width: 25%;
+}
+
+.phase-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #4a5d50;
+  border: 2px solid #4a5d50;
+  margin-bottom: 0.8rem;
+}
+
+.plan-generation-phase.phase-active .phase-dot {
+  background-color: #adc97e;
+  border-color: #adc97e;
+  box-shadow: 0 0 10px rgba(173, 201, 126, 0.5);
+}
+
+.plan-generation-phase.phase-completed .phase-dot {
+  background-color: #adc97e;
+  border-color: #adc97e;
+}
+
+.phase-name {
+  font-size: 1.4rem;
+  color: #b8c8b8;
+  text-align: center;
+}
+
+.plan-generation-phase.phase-active .phase-name,
+.plan-generation-phase.phase-completed .phase-name {
+  color: #adc97e;
+  font-weight: 500;
+}
+
+.plan-generation-info {
+  font-size: 1.4rem;
+  color: #8a9a8a;
+  font-style: italic;
+  background: rgba(74, 93, 80, 0.3);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 3px solid #adc97e;
+}
+
+@media (max-width: 768px) {
+  .plan-generation-modal {
+    padding: 2rem;
+    width: 95%;
+  }
+
+  .plan-generation-modal h2 {
+    font-size: 2rem;
+  }
+
+  .plan-generation-text {
+    font-size: 1.4rem;
+  }
+
+  .phase-name {
+    font-size: 1.2rem;
+  }
+}

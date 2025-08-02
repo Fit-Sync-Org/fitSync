@@ -1,6 +1,6 @@
 .weekly-plan-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #2C332E 0%, #3A413D 100%);
+  background: linear-gradient(135deg, #2c332e 0%, #3a413d 100%);
   padding: 2rem;
   width: 100%;
 }
@@ -29,7 +29,6 @@
   gap: 0.8rem;
   box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
 }
-
 
 .plan-page-header h1 {
   color: #ffffff;
@@ -121,7 +120,6 @@
   transition: all 0.3s ease;
   font-size: 1rem;
 }
-
 
 .weekly-plan.empty {
   padding: 3rem;
@@ -272,7 +270,6 @@
   transition: all 0.3s ease;
 }
 
-
 .quick-meals .meal-item.more {
   justify-content: center;
   color: #b8d8b8;
@@ -310,7 +307,6 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 
 .no-today-plan {
   text-align: center;
@@ -370,7 +366,6 @@
   box-shadow: 0 6px 20px rgba(74, 124, 89, 0.1);
 }
 
-
 .week-stats .stat .number {
   display: block;
   font-size: 3.6rem;
@@ -413,7 +408,6 @@
   align-items: center;
   gap: 0.8rem;
 }
-
 
 .day-tab.active {
   background: linear-gradient(135deg, #4a7c59 0%, #5a8c69 100%);
@@ -527,7 +521,6 @@
   margin-bottom: 2rem;
 }
 
-
 .overview-stat {
   background: rgba(58, 65, 61, 0.5);
   border-radius: 12px;
@@ -557,7 +550,8 @@
   gap: 2rem;
 }
 
-.wp-workouts-section {
+.wp-workouts-section,
+.plan-meals-section {
   background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
   border-radius: 20px;
   padding: 2.5rem;
@@ -566,9 +560,8 @@
   transition: all 0.3s ease;
 }
 
-
 .wp-workouts-section h4,
-.wp-meals-section h4 {
+.plan-meals-section h4 {
   margin: 0 0 2rem 0;
   color: #1a2e1a;
   font-size: 2.4rem;
@@ -592,7 +585,6 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(74, 124, 89, 0.1);
 }
-
 
 .wp-workout-header {
   display: flex;
@@ -722,6 +714,142 @@
   border-left: 4px solid #4a7c59;
 }
 
+/* Plan meal styles */
+.plan-meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.plan-meal-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 2px solid #c8e8c8;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(74, 124, 89, 0.1);
+}
+
+.plan-meal-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e8f5e8;
+}
+
+.plan-meal-title {
+  flex: 1;
+}
+
+.plan-meal-name {
+  color: #1a2e1a;
+  font-weight: 700;
+  font-size: 2rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.plan-meal-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.plan-meal-calories {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, #4a7c59, #5a8c69);
+  padding: 0.8rem 1.6rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
+  border: 2px solid #6a9c79;
+}
+
+.plan-meal-ingredients {
+  color: #5a8c69;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+  background: rgba(74, 124, 89, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 4px solid #4a7c59;
+}
+
+.plan-meal-notes {
+  color: #5a8c69;
+  font-size: 1.5rem;
+  font-style: italic;
+  line-height: 1.5;
+  background: rgba(74, 124, 89, 0.03);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #adc97e;
+}
+
+.plan-meal-macros {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Compact view styles for meals */
+.plan-meal-list.compact {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.plan-meal-item.compact {
+  background: linear-gradient(135deg, #4a6a4a 0%, #5a7a5a 100%);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  border: 2px solid #6a9c79;
+  box-shadow: 0 4px 12px rgba(74, 124, 89, 0.2);
+  transition: all 0.3s ease;
+}
+
+.plan-meal-item.compact .plan-meal-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.plan-meal-item.compact .plan-meal-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.8rem;
+  text-shadow: none;
+}
+
+.plan-meal-item.compact .plan-meal-calories {
+  color: #8fbc8f;
+  font-weight: 700;
+  font-size: 1.6rem;
+  background: rgba(143, 188, 143, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  box-shadow: none;
+  border: none;
+}
+
+.plan-meal-item.compact.more {
+  justify-content: center;
+  color: #b8d8b8;
+  font-style: italic;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
 .wp-meal-macros {
   display: flex;
   gap: 1.5rem;
@@ -754,21 +882,21 @@
 }
 
 .no-plan-content h3 {
-  color: #2C332E;
+  color: #2c332e;
   font-size: 1.8rem;
   margin: 0 0 1rem;
   font-weight: 600;
 }
 
 .no-plan-content p {
-  color: #6B7B6B;
+  color: #6b7b6b;
   font-size: 1.1rem;
   margin: 0 0 0.5rem;
   line-height: 1.5;
 }
 
 .no-plan-subtitle {
-  color: #8A9A8A !important;
+  color: #8a9a8a !important;
   font-size: 1rem !important;
   margin-bottom: 2rem !important;
 }
@@ -781,8 +909,8 @@
 }
 
 .complete-profile-btn {
-  background: #ADC97E;
-  color: #2C332E;
+  background: #adc97e;
+  color: #2c332e;
   border: none;
   padding: 1rem 2rem;
   border-radius: 12px;
@@ -793,10 +921,9 @@
   box-shadow: 0 4px 8px rgba(173, 201, 126, 0.3);
 }
 
-
 .back-dashboard-btn {
   background: transparent;
-  color: #6B7B6B;
+  color: #6b7b6b;
   border: 2px solid #e0e8e0;
   padding: 1rem 2rem;
   border-radius: 12px;
